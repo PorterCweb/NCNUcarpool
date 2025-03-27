@@ -200,7 +200,19 @@ for i in range(web_passenger_len):
 def get_key(dict, value):
     return [k for k, v in dict.items() if v == value]
 #   獲取 GoogleSheet 的司機、揪團試算表
-gc = gspread.service_account(os.getenv('GOOGLE_CREDENTIALS'))   
+from google.oauth2 import service_account  
+# 從環境變數讀取憑證
+credentials_str = os.getenv('GOOGLE_CREDENTIALS')
+if not credentials_str:
+    raise ValueError("GOOGLE_CREDENTIALS environment variable not set")
+
+# 解析 JSON 字串並創建憑證
+credentials_dict = json.loads(credentials_str)
+credentials = service_account.Credentials.from_service_account_info(
+    credentials_dict,
+    scopes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
+)
+gc = gspread.authorize(credentials)
 carpool = gc.open_by_url('https://docs.google.com/spreadsheets/d/1q8HKO2NBz1O8UBE7ag9Kq-eNAc114TKzkXyOq32vfSA/edit?gid=1437248658#gid=1437248658')
 driver_sheet = carpool.get_worksheet(0)
 passenger_sheet = carpool.get_worksheet(1)
