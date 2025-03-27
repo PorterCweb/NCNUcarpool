@@ -52,8 +52,10 @@ from linebot.v3.webhooks import (
 ) 
 
 app = Flask(__name__)
-configuration = Configuration(access_token='UlaItdkkQW33Qln6YyLrLsLDo83MhILpEzQbtmQGiyk6Y6XbxGQ+sr0jjJb4TX8QhUTn3ZHim0LbFpyQ09SR/dEI09B30r4exhTcGJE+68Jbcyp75Ze3mvv2U9bF+G77dVSGKrdZcuQ5E7M8eJ6OFwdB04t89/1O/w1cDnyilFU=')
-handler = WebhookHandler('8ac3233bceecc95f6fad0650a48f0567')
+#.env必要
+import os 
+configuration = Configuration(access_token=os.getenv('CHANNEL_ACCESS_TOKEN'))
+line_handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -65,7 +67,7 @@ def callback():
     app.logger.info("Request body:  " + body)
     # handle webhook body
     try:
-        handler.handle(body, signature)
+        line_handler.handle(body, signature)
     except InvalidSignatureError:
         app.logger.info("Invalid signature. Please check your channel access token/channel secret.")
         abort(400)
@@ -218,7 +220,7 @@ worksheet.insert_rows(data,6)
 #-------------------------練習------------------------------------------------------------------------------------------------------------------------------------------
 # 訊息事件
 # 傳送postback物件並回傳
-@handler.add(MessageEvent, message=TextMessageContent)
+@line_handler.add(MessageEvent, message=TextMessageContent)
 def handle_message(event):
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
@@ -239,12 +241,12 @@ def handle_message(event):
                     messages=[template_message]
                 )  
             )
-@handler.add(PostbackEvent)
+@line_handler.add(PostbackEvent)
 def handle_postback(event):
         if event.postback.data == 'postback':
             print('Postback event is triggered!')
 # 傳送訊息
-@handler.add(MessageEvent, message = TextMessageContent)
+@line_handler.add(MessageEvent, message = TextMessageContent)
 def message_text(event):
     with ApiClient(configuration) as api_client: #透過confriguration創造ApiClient物件
         line_bot_api = MessagingApi(api_client)
@@ -288,7 +290,7 @@ def message_text(event):
         #        notificationDisabled=True
         #    )
         #)
-@handler.add(MessageEvent, message=TextMessageContent)
+@line_handler.add(MessageEvent, message=TextMessageContent)
 def handle_message(event):
     text = event.message.text
     with ApiClient(configuration) as api_client:
@@ -675,7 +677,7 @@ def queue_execution(func):
 #表單是否需要LineID、名稱、系級?新增
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Tamplate Message
-@handler.add(MessageEvent, message = TextMessageContent)
+@line_handler.add(MessageEvent, message = TextMessageContent)
 def handle_message(event):
     text = event.message.text
     with ApiClient(configuration) as api_client:
@@ -1236,7 +1238,7 @@ def handle_message(event):
                     messages=[TextMessage(text=text)]
                 )
             )
-@handler.add(PostbackEvent)
+@line_handler.add(PostbackEvent)
 def handle_postbak(event):
     try:
         for i in range(web_driver_len):
@@ -1294,7 +1296,7 @@ def handle_postbak(event):
                             if driver_sheet.cell(i+2,15).value == None:
                                 new_id = driver_user_id
                                 new_name = driver_Sure_name
-                            else:
+                            else:  
                                 id = driver_sheet.cell(i+2,15).value
                                 new_id = id+','+driver_user_id
                                 name = driver_sheet.cell(i+2,16).value
