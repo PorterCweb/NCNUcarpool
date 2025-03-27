@@ -211,7 +211,6 @@ if credentials_str:
     gc = gspread.authorize(credentials)
 else:
     raise ValueError("GOOGLE_CREDENTIALS environment variable not set")
-gc = gspread.service_account(filename = 'token.json')   
 carpool = gc.open_by_url('https://docs.google.com/spreadsheets/d/1q8HKO2NBz1O8UBE7ag9Kq-eNAc114TKzkXyOq32vfSA/edit?gid=1437248658#gid=1437248658')
 driver_sheet = carpool.get_worksheet(0)
 passenger_sheet = carpool.get_worksheet(1)
