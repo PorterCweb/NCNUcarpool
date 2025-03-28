@@ -191,7 +191,6 @@ load_dotenv()
 credentials_str = os.getenv('GOOGLE_CREDENTIALS')
 if credentials_str:
     credentials_dict = json.loads(credentials_str)
-    print(credentials_dict)
 # 使用修正後的字典創建 gspread 客戶端
 gc = gspread.service_account_from_dict(credentials_dict)
 carpool = gc.open_by_url('https://docs.google.com/spreadsheets/d/1q8HKO2NBz1O8UBE7ag9Kq-eNAc114TKzkXyOq32vfSA/edit?gid=1437248658#gid=1437248658')
