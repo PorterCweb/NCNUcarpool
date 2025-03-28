@@ -52,10 +52,9 @@ from linebot.v3.webhooks import (
 ) 
 
 app = Flask(__name__)
-#.env必要
-import os 
+import os
 configuration = Configuration(access_token=os.getenv('CHANNEL_ACCESS_TOKEN'))
-line_handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
+handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -67,7 +66,7 @@ def callback():
     app.logger.info("Request body:  " + body)
     # handle webhook body
     try:
-        line_handler.handle(body, signature)
+        handler.handle(body, signature)
     except InvalidSignatureError:
         app.logger.info("Invalid signature. Please check your channel access token/channel secret.")
         abort(400)
@@ -122,7 +121,7 @@ def get_sheet_time_fordatetime(json_time):
     formatted_time = local_time.strftime('%Y/%#m/%#d')
     return formatted_time
 def get_driver_sheet_case():
-    global web_driver_data, web_driver_len, driver_Sure_id_dict, driver_Sure_name_dict
+    global web_driver_data, web_driver_len, driver_Sure_id_dict, driver_Sure_name_dict, driver_val
     web_driver_data = requests.get(f'{url}?name={driversheet_name}')
     try:
         web_driver_len=len(web_driver_data.json()) #抓取司機表單中有幾筆資料(已藉由更改其App script的程式碼扣除第一列的項目)
@@ -133,14 +132,19 @@ def get_driver_sheet_case():
         driver_Sure_id_dict = {}
         driver_Sure_name_dict = {}
         for i in range(web_driver_len):
-            driver_Sure_id_dict[i] = web_driver_data.json()[i][14]
-            driver_Sure_name_dict[i] = web_driver_data.json()[i][15]
+            driver_Sure_id_dict[i] = web_driver_data.json()[i][15]
+            driver_Sure_name_dict[i] = web_driver_data.json()[i][16]
+            if driver_sheet.cell(i+2,15).value == None:
+                driver_sheet.update_cell(i+2,15,0)
+                driver_val = 0
+            else:
+                driver_val = int(driver_sheet.cell(i+2,15).value)
         print(driver_Sure_id_dict)
         print('司機發起之活動已抓取')
     except:
         print('司機發起之活動尚無資料')   
 def get_passenger_sheet_case():
-    global web_passenger_data, web_passenger_len, passenger_Sure_id_dict, passenger_Sure_name_dict
+    global web_passenger_data, web_passenger_len, passenger_Sure_id_dict, passenger_Sure_name_dict, passenger_val
     web_passenger_data = requests.get(f'{url}?name={passengersheet_name}')
     try:
         web_passenger_len=len(web_passenger_data.json()) #抓取司機表單中有幾筆資料(已藉由更改其App script的程式碼扣除第一列的項目)
@@ -153,6 +157,11 @@ def get_passenger_sheet_case():
         for i in range(web_passenger_len):
             passenger_Sure_id_dict[i] = web_passenger_data.json()[i][13]
             passenger_Sure_name_dict[i] = web_passenger_data.json()[i][14]
+            if passenger_sheet.cell(i+2,13).value == None:
+                passenger_sheet.update_cell(i+2,13,0)
+                passenger_val = 0
+            else:
+                passenger_val = int(passenger_sheet.cell(i+2,13).value)
         print(passenger_Sure_id_dict)
         print('乘客發起之揪團活動已抓取')
     except:
@@ -200,19 +209,8 @@ for i in range(web_passenger_len):
 def get_key(dict, value):
     return [k for k, v in dict.items() if v == value]
 #   獲取 GoogleSheet 的司機、揪團試算表
-from google.oauth2 import service_account  
-# 從環境變數讀取憑證
-credentials_str = os.getenv('GOOGLE_CREDENTIALS')
-if not credentials_str:
-    raise ValueError("GOOGLE_CREDENTIALS environment variable not set")
-
-# 解析 JSON 字串並創建憑證
-credentials_dict = json.loads(credentials_str)
-credentials = service_account.Credentials.from_service_account_info(
-    credentials_dict,
-    scopes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
-)
-gc = gspread.authorize(credentials)
+#       token.json的資料如放在公開伺服器上執行之類的，會遭停用，需到google cloud重新建立金鑰，否則會跳出JWP錯誤
+gc = gspread.service_account(filename = 'token.json')   
 carpool = gc.open_by_url('https://docs.google.com/spreadsheets/d/1q8HKO2NBz1O8UBE7ag9Kq-eNAc114TKzkXyOq32vfSA/edit?gid=1437248658#gid=1437248658')
 driver_sheet = carpool.get_worksheet(0)
 passenger_sheet = carpool.get_worksheet(1)
@@ -229,10 +227,15 @@ data = [
     ['姓名','年齡']]
 worksheet.insert_rows(data,6)
 '''
+# 抓取現在時間
+now_time = datetime.now()
+formatted_now_time = now_time.strftime('%Y/%#m/%#d')
+c_now_time = formatted_now_time.split('/')
 #-------------------------練習------------------------------------------------------------------------------------------------------------------------------------------
 # 訊息事件
 # 傳送postback物件並回傳
-@line_handler.add(MessageEvent, message=TextMessageContent)
+'''
+@handler.add(MessageEvent, message=TextMessageContent)
 def handle_message(event):
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
@@ -253,12 +256,12 @@ def handle_message(event):
                     messages=[template_message]
                 )  
             )
-@line_handler.add(PostbackEvent)
+@handler.add(PostbackEvent)
 def handle_postback(event):
         if event.postback.data == 'postback':
             print('Postback event is triggered!')
 # 傳送訊息
-@line_handler.add(MessageEvent, message = TextMessageContent)
+@handler.add(MessageEvent, message = TextMessageContent)
 def message_text(event):
     with ApiClient(configuration) as api_client: #透過confriguration創造ApiClient物件
         line_bot_api = MessagingApi(api_client)
@@ -302,7 +305,7 @@ def message_text(event):
         #        notificationDisabled=True
         #    )
         #)
-@line_handler.add(MessageEvent, message=TextMessageContent)
+@handler.add(MessageEvent, message=TextMessageContent)
 def handle_message(event):
     text = event.message.text
     with ApiClient(configuration) as api_client:
@@ -643,6 +646,9 @@ def handle_message(event):
                     messages=[FlexMessage(alt_text='詳細說明', contents=FlexContainer.from_json(line_flex_str))]
                 )
             )
+'''
+'''
+ # 分線程
 import queue
 class LineBotTaskQueue:
     def __init__(self):
@@ -682,14 +688,14 @@ def queue_execution(func):
         # 將任務加入佇列
         linebot_task_queue.add_task(task)
     return wrapper
-
+'''
 #---------------藥物-----------------------------------------------------------------------------------------------------------------------------------------------------
 #試算表最後一欄新增'參與者名稱',將每次點擊確定的人紀錄，避免重複計算及新增'預約取消'的功能
 #寄件給發起者郵件內容?
 #表單是否需要LineID、名稱、系級?新增
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 # Tamplate Message
-@line_handler.add(MessageEvent, message = TextMessageContent)
+@handler.add(MessageEvent, message = TextMessageContent)
 def handle_message(event):
     text = event.message.text
     with ApiClient(configuration) as api_client:
@@ -747,20 +753,17 @@ def handle_message(event):
         # Carousel Template 
         elif text =='目前有哪些共乘（已有司機）？':
             if web_driver_len != 0:
-                now_time = datetime.now()
-                formatted_now_time = now_time.strftime('%Y/%#m/%#d')
-                c_now_time = formatted_now_time.split('/')
                 line_flex_json = {
                     "type": "carousel",
                     "contents": []
                 }    
                 for i in range(web_driver_len):
-                    case = get_sheet_time_fordatetime(web_driver_data.json()[i][4])
-                    case_datetime = case.split('/')
-                    date1 = date(int(c_now_time[0]),int(c_now_time[1]),int(c_now_time[2])) 
-                    date2 = date(int(case_datetime[0]),int(case_datetime[1]),int(case_datetime[2]))
-                    if date2>=date1:
-                        if web_driver_data.json()[i][6] != web_driver_data.json()[i][13]:
+                    driver_case = get_sheet_time_fordatetime(web_driver_data.json()[i][3])
+                    driver_case_datetime = driver_case.split('/')
+                    driver_date = date(int(c_now_time[0]),int(c_now_time[1]),int(c_now_time[2])) 
+                    driver_date_due = date(int(driver_case_datetime[0]),int(driver_case_datetime[1]),int(driver_case_datetime[2]))
+                    if driver_date_due>=driver_date:
+                        if web_driver_data.json()[i][14] != web_driver_data.json()[i][5]:
                             web_driver_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -799,7 +802,7 @@ def handle_message(event):
                                         },
                                         {
                                             "type": "text",
-                                            "text": web_driver_data.json()[i][5],
+                                            "text": web_driver_data.json()[i][4],
                                             "color": "#ffffff",
                                             "size": "lg",
                                             "weight": "bold",
@@ -809,7 +812,7 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"出發時間：{get_Sheet_time(web_driver_data.json()[i][4])}",
+                                        "text": f"出發時間：{get_Sheet_time(web_driver_data.json()[i][3])}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "contents": [],
@@ -817,34 +820,41 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"總時程：{time_hrmi(int(web_driver_data.json()[i][7]))}",
+                                        "text": f"總時程：{time_hrmi(int(web_driver_data.json()[i][6]))}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"發起人：{web_driver_data.json()[i][10]}",
+                                        "text": f"發起人：{web_driver_data.json()[i][9]}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"LineID：{web_driver_data.json()[i][11]}",
+                                        "text": f"手機號碼：{web_driver_data.json()[i][13]}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"共乘人數上限：{web_driver_data.json()[i][6]}",
+                                        "text": f"LineID：{web_driver_data.json()[i][10]}",
+                                        "color": "#000000",
+                                        "size": "xs",
+                                        "decoration": "underline"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"共乘人數上限：{web_driver_data.json()[i][5]}",
                                         "color": "#000000",
                                         "size": "xs"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"價格：{web_driver_data.json()[i][12]}",
+                                        "text": f"價格：{web_driver_data.json()[i][11]}",
                                         "color": "#000000",
                                         "size": "xs"
                                     }
@@ -852,7 +862,7 @@ def handle_message(event):
                                     "paddingAll": "20px",
                                     "backgroundColor": "#0367D3",
                                     "spacing": "md",
-                                    "height": "275px",
+                                    "height": "300px",
                                     "paddingTop": "22px"
                                 },
                                 "body": {
@@ -861,14 +871,21 @@ def handle_message(event):
                                     "contents": [
                                     {
                                         "type": "text",
-                                        "text": f"集合地點：{web_driver_data.json()[i][3]}",
+                                        "text": f"活動編號：{web_driver_data.json()[i][17]}",
                                         "margin": "none",
                                         "size": "sm",
                                         "weight": "bold"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"簡介：{web_driver_data.json()[i][9]}",
+                                        "text": f"交通工具：{web_driver_data.json()[i][12]}",
+                                        "margin": "none",
+                                        "size": "sm",
+                                        "weight": "bold"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"簡介：{web_driver_data.json()[i][8]}",
                                         "margin": "xl"
                                     }
                                     ]
@@ -883,7 +900,7 @@ def handle_message(event):
                                         "type": "postback",
                                         "label": "我想共乘!",
                                         "data": f"driver_Num{i}",
-                                        "displayText": f"我想共乘{web_driver_data.json()[i][2]}到{web_driver_data.json()[i][5]}!"
+                                        "displayText": f"我想共乘{web_driver_data.json()[i][2]}到{web_driver_data.json()[i][4]}!"
                                         },
                                         "style": "secondary"
                                     }
@@ -891,7 +908,7 @@ def handle_message(event):
                                 }
                             }
                             # 新增規範
-                            if '上下車地點可討論' in web_driver_data.json()[i][8]:
+                            if '上下車地點可討論' in web_driver_data.json()[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "上下車地點可討論",
@@ -900,8 +917,8 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_driver_data_case['body']['contents'].insert(1,r)
-                            if '自備零錢不找零' in web_driver_data.json()[i][8]:
+                                web_driver_data_case['body']['contents'].insert(2,r)
+                            if '自備零錢不找零' in web_driver_data.json()[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "自備零錢不找零",
@@ -910,8 +927,8 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_driver_data_case['body']['contents'].insert(1,r)
-                            if '接受線上付款 / 轉帳' in web_driver_data.json()[i][8]:
+                                web_driver_data_case['body']['contents'].insert(2,r)
+                            if '接受線上付款 / 轉帳' in web_driver_data.json()[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "接受線上付款 / 轉帳",
@@ -920,8 +937,8 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_driver_data_case['body']['contents'].insert(1,r)
-                            if '禁食' in web_driver_data.json()[i][8]:
+                                web_driver_data_case['body']['contents'].insert(2,r)
+                            if '禁食' in web_driver_data.json()[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "禁食",
@@ -930,8 +947,8 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_driver_data_case['body']['contents'].insert(1,r)
-                            if '※ 人滿才發車' in web_driver_data.json()[i][8]:
+                                web_driver_data_case['body']['contents'].insert(2,r)
+                            if '※ 人滿才發車' in web_driver_data.json()[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "※ 人滿才發車",
@@ -941,7 +958,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_driver_data_case['body']['contents'].insert(1,r)
+                                web_driver_data_case['body']['contents'].insert(2,r)
                             line_flex_json['contents'].append(web_driver_data_case)
                         else:
                             pass
@@ -976,20 +993,17 @@ def handle_message(event):
                 )
         elif text =='目前有哪些共乘（揪團）？':
             if web_passenger_len != 0:
-                now_time = datetime.now()
-                formatted_now_time = now_time.strftime('%Y/%#m/%#d')
-                c_now_time = formatted_now_time.split('/')
                 line_flex_json = {
                     "type": "carousel",
                     "contents": []
                 }
                 for i in range(web_passenger_len):
-                    case = get_sheet_time_fordatetime(web_passenger_data.json()[i][4])
-                    case_datetime = case.split('/')
-                    date1 = date(int(c_now_time[0]),int(c_now_time[1]),int(c_now_time[2])) 
-                    date2 = date(int(case_datetime[0]),int(case_datetime[1]),int(case_datetime[2]))
-                    if date2>=date1: 
-                        if web_passenger_data.json()[i][6] != web_passenger_data.json()[i][12]:
+                    passenger_case = get_sheet_time_fordatetime(web_passenger_data.json()[i][3])
+                    passenger_case_datetime = passenger_case.split('/')
+                    passenger_date = date(int(c_now_time[0]),int(c_now_time[1]),int(c_now_time[2])) 
+                    passenger_date_due = date(int(passenger_case_datetime[0]),int(passenger_case_datetime[1]),int(passenger_case_datetime[2]))
+                    if passenger_date_due>=passenger_date: 
+                        if web_passenger_data.json()[i][12] != web_passenger_data.json()[i][5]:
                             web_passenger_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -1028,7 +1042,7 @@ def handle_message(event):
                                         },
                                         {
                                             "type": "text",
-                                            "text": web_passenger_data.json()[i][5],
+                                            "text": web_passenger_data.json()[i][4],
                                             "color": "#ffffff",
                                             "size": "lg",
                                             "weight": "bold",
@@ -1038,7 +1052,7 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"出發時間：{get_Sheet_time(web_passenger_data.json()[i][4])}",
+                                        "text": f"出發時間：{get_Sheet_time(web_passenger_data.json()[i][3])}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "contents": [],
@@ -1046,28 +1060,28 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"總時程：{time_hrmi(int(web_passenger_data.json()[i][7]))}",
+                                        "text": f"總時程：{time_hrmi(int(web_passenger_data.json()[i][6]))}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"發起人：{web_passenger_data.json()[i][10]}",
+                                        "text": f"發起人：{web_passenger_data.json()[i][9]}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"LineID：{web_passenger_data.json()[i][11]}",
+                                        "text": f"LineID：{web_passenger_data.json()[i][10]}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"共乘人數上限：{web_passenger_data.json()[i][6]}",
+                                        "text": f"共乘人數上限：{web_passenger_data.json()[i][5]}",
                                         "color": "#000000",
                                         "size": "xs"
                                     }
@@ -1084,14 +1098,21 @@ def handle_message(event):
                                     "contents": [
                                     {
                                         "type": "text",
-                                        "text": f"集合地點：{web_passenger_data.json()[i][3]}",
+                                        "text": f"活動編號：{web_passenger_data.json()[i][15]}",
                                         "margin": "none",
                                         "size": "sm",
                                         "weight": "bold"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"簡介：{web_passenger_data.json()[i][9]}",
+                                        "text": f"交通工具：{web_passenger_data.json()[i][2]}",
+                                        "margin": "none",
+                                        "size": "sm",
+                                        "weight": "bold"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"簡介：{web_passenger_data.json()[i][8]}",
                                         "margin": "xl"
                                     }
                                     ]
@@ -1106,15 +1127,15 @@ def handle_message(event):
                                         "type": "postback",
                                         "label": "我想共乘!",
                                         "data": f"passenger_Num{i}",
-                                        "displayText": f"我想共乘{web_passenger_data.json()[i][2]}到{web_passenger_data.json()[i][5]}!"
+                                        "displayText": f"我想共乘{web_passenger_data.json()[i][2]}到{web_passenger_data.json()[i][4]}!"
                                         },
                                         "style": "secondary"
                                     }
                                     ]
                                 }
-                            }
+                                }
                             # 新增規範
-                            if '上下車地點可討論' in web_passenger_data.json()[i][8]:
+                            if '上下車地點可討論' in web_passenger_data.json()[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "上下車地點可討論",
@@ -1124,7 +1145,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(1,r)
-                            if '不聊天' in web_passenger_data.json()[i][8]:
+                            if '不聊天' in web_passenger_data.json()[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "不聊天",
@@ -1134,7 +1155,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(1,r)
-                            if '嚴禁喝酒及抽菸' in web_passenger_data.json()[i][8]:
+                            if '嚴禁喝酒及抽菸' in web_passenger_data.json()[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "嚴禁喝酒及抽菸",
@@ -1144,7 +1165,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(1,r)
-                            if '禁食' in web_passenger_data.json()[i][8]:
+                            if '禁食' in web_passenger_data.json()[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "禁食",
@@ -1154,7 +1175,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(1,r)
-                            if '謝絕寵物' in web_passenger_data.json()[i][8]:
+                            if '謝絕寵物' in web_passenger_data.json()[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "謝絕寵物",
@@ -1164,7 +1185,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(1,r)
-                            if '寵物需裝籠' in web_passenger_data.json()[i][8]:
+                            if '寵物需裝籠' in web_passenger_data.json()[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "寵物需裝籠",
@@ -1174,7 +1195,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(1,r)
-                            if '※ 人滿才發車' in web_passenger_data.json()[i][8]:
+                            if '※ 人滿才發車' in web_passenger_data.json()[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "※ 人滿才發車",
@@ -1224,7 +1245,7 @@ def handle_message(event):
                 if id == user_id:
                     reservation_case = get_key(driver_Sure_id_dict,id)
                     for i in reservation_case:
-                        reservation = f'出發地：{web_driver_data.json()[i][2]}\n目的地：{web_driver_data.json()[i][5]}\n集合地點：{web_driver_data.json()[i][3]}\n出發時間：\n{get_Sheet_time(web_driver_data.json()[i][4])}\n總時程：{time_hrmi(int(web_driver_data.json()[i][7]))}\n發起人：{web_driver_data.json()[i][10]}\nLineID：{web_driver_data.json()[i][11]}\n共乘人數上限：{web_driver_data.json()[i][6]}\n價格：{web_driver_data.json()[i][12]}\n行車規範：\n{web_driver_data.json()[i][8]}\n簡介：{web_driver_data.json()[i][9]}\n'
+                        reservation = f'活動編號：{web_driver_data.json()[i][17]}\n發車地點：{web_driver_data.json()[i][2]}\n目的地：{web_driver_data.json()[i][4]}\n出發時間：\n{get_Sheet_time(web_driver_data.json()[i][3])}\n總時程：{time_hrmi(int(web_driver_data.json()[i][6]))}\n發起人：{web_driver_data.json()[i][9]}\n手機號碼：{web_driver_data.json()[i][13]}\nLineID：{web_driver_data.json()[i][10]}\n共乘人數上限：{web_driver_data.json()[i][5]}\n價格：{web_driver_data.json()[i][11]}\n交通工具：{web_driver_data.json()[i][12]}\n行車規範：\n{web_driver_data.json()[i][7]}\n簡介：{web_driver_data.json()[i][8]}\n'
                         text = text+reservation+'--------------------------------\n'
                     text = '司機預約：\n'+text
                     break       
@@ -1235,7 +1256,7 @@ def handle_message(event):
                     text = text+'乘客（揪團）預約：\n'
                     reservation_case = get_key(passenger_Sure_id_dict,id)
                     for i in reservation_case:
-                        reservation = f'出發地：{web_passenger_data.json()[i][2]}\n目的地：{web_passenger_data.json()[i][5]}\n集合地點：{web_passenger_data.json()[i][3]}\n出發時間：\n{get_Sheet_time(web_passenger_data.json()[i][4])}\n總時程：{time_hrmi(int(web_passenger_data.json()[i][7]))}\n發起人：{web_passenger_data.json()[i][10]}\nLineID：{web_passenger_data.json()[i][11]}\n共乘人數上限：{web_passenger_data.json()[i][6]}\n行車規範：\n{web_passenger_data.json()[i][8]}\n簡介：{web_passenger_data.json()[i][9]}\n'
+                        reservation = f'活動編號：{web_passenger_data.json()[i][15]}發車地點：{web_passenger_data.json()[i][2]}\n目的地：{web_passenger_data.json()[i][4]}\n出發時間：\n{get_Sheet_time(web_passenger_data.json()[i][3])}\n總時程：{time_hrmi(int(web_passenger_data.json()[i][6]))}\n發起人：{web_passenger_data.json()[i][9]}\nLineID：{web_passenger_data.json()[i][10]}\n共乘人數上限：{web_passenger_data.json()[i][5]}\n交通工具：{web_passenger_data.json()[i][11]}行車規範：\n{web_passenger_data.json()[i][7]}\n簡介：{web_passenger_data.json()[i][8]}\n'
                         text = text+reservation+'--------------------------------\n'      
                     break    
                 else:
@@ -1250,39 +1271,50 @@ def handle_message(event):
                     messages=[TextMessage(text=text)]
                 )
             )
-@line_handler.add(PostbackEvent)
+@handler.add(PostbackEvent)
 def handle_postbak(event):
     try:
         for i in range(web_driver_len):
             if event.postback.data == f'driver_Num{i}':
+                driver_case = get_sheet_time_fordatetime(web_driver_data.json()[i][3])
+                driver_case_datetime = driver_case.split('/')
+                driver_date = date(int(c_now_time[0]),int(c_now_time[1]),int(c_now_time[2])) 
+                driver_date_due = date(int(driver_case_datetime[0]),int(driver_case_datetime[1]),int(driver_case_datetime[2]))
                 with ApiClient(configuration) as api_client:
                     line_bot_api = MessagingApi(api_client)
-                    confirm_template = ConfirmTemplate(
-                        text = f'出發地：{web_driver_data.json()[i][2]}\n目的地：{web_driver_data.json()[i][5]}\n集合地點：{web_driver_data.json()[i][3]}\n出發時間：\n{get_Sheet_time(web_driver_data.json()[i][4])}\n總時程：{time_hrmi(int(web_driver_data.json()[i][7]))}\n發起人：{web_driver_data.json()[i][10]}\nLineID：{web_driver_data.json()[i][11]}\n共乘人數上限：{web_driver_data.json()[i][6]}\n價格：{web_driver_data.json()[i][12]}\n行車規範：\n{web_driver_data.json()[i][8]}\n簡介：{web_driver_data.json()[i][9]}\n',
-                        actions=[ #只能放兩個Action
-                            PostbackAction(label='確定搭乘', text='確定!',data=f'driver_Sure{i}'),
-                            MessageAction(label='再考慮', text='再考慮')
-                        ]
-                    )
-                    template_message = TemplateMessage(
-                        alt_text = '是否確認搭乘?',
-                        template = confirm_template
-                    )
-                    line_bot_api.reply_message(
-                        ReplyMessageRequest(
-                            reply_token = event.reply_token,
-                            messages = [template_message]
+                    if driver_date_due>driver_date:
+                        confirm_template = ConfirmTemplate(
+                            text = f'活動編號：{web_driver_data.json()[i][17]}\n發車地點：{web_driver_data.json()[i][2]}\n目的地：{web_driver_data.json()[i][4]}\n出發時間：\n{get_Sheet_time(web_driver_data.json()[i][3])}\n總時程：{time_hrmi(int(web_driver_data.json()[i][6]))}\n發起人：{web_driver_data.json()[i][9]}\n手機號碼：{web_driver_data.json()[i][13]}\nLineID：{web_driver_data.json()[i][10]}\n共乘人數上限：{web_driver_data.json()[i][5]}\n價格：{web_driver_data.json()[i][11]}\n交通工具：{web_driver_data.json()[i][12]}\n行車規範：\n{web_driver_data.json()[i][7]}\n簡介：{web_driver_data.json()[i][8]}\n',
+                            actions=[ #只能放兩個Action
+                                PostbackAction(label='確定搭乘', text='確定!',data=f'driver_Sure{i}'),
+                                MessageAction(label='再考慮', text='再考慮')
+                            ]
                         )
-                    )
+                        template_message = TemplateMessage(
+                            alt_text = '是否確認搭乘?',
+                            template = confirm_template
+                        )
+                        line_bot_api.reply_message(
+                            ReplyMessageRequest(
+                                reply_token = event.reply_token,
+                                messages = [template_message]
+                            )
+                        )
+                    else:
+                        line_bot_api.reply_message( #傳送'已逾期'回復訊息
+                        ReplyMessageRequest(
+                            reply_token=event.reply_token,
+                            messages=[TextMessage(text='報名已經截止囉')] 
+                        )  
+                    )         
             else:
                 pass
             # 使用者在Confirm Template按下確定後，試算表的搭車人數將+1
             if event.postback.data == f'driver_Sure{i}':
                 get_driver_sheet_case()
-                lock = threading.Lock()
                 with ApiClient(configuration) as api_client:
                     line_bot_api = MessagingApi(api_client)
-                    if web_driver_data.json()[i][6] != web_driver_data.json()[i][13]:
+                    if web_driver_data.json()[i][14] != web_driver_data.json()[i][5]:
                         # 獲取使用者 user_ID
                         driver_user_id = event.source.user_id
                         profile = line_bot_api.get_profile(driver_user_id)
@@ -1300,22 +1332,28 @@ def handle_postbak(event):
                         else:
                             pass
                         if driver_user_id != 'Checked':
-                            if driver_sheet.cell(i+2,14).value == None:
+                            line_bot_api.reply_message(
+                                ReplyMessageRequest(
+                                    reply_token = event.reply_token,
+                                    messages = [TextMessage(text='已幫您預約')]
+                                )
+                            )
+                            if driver_sheet.cell(i+2,15).value == None:
                                 val = 0
                             else:
-                                val = int(driver_sheet.cell(i+2,14).value) #因為dict只能start from 0，因此第一個共乘表單會在第0個，而google sheet第一行又是表單的項目，因此第一張表單會是i+1+1列。
-                            driver_sheet.update_cell(i+2,14,val+1)
-                            if driver_sheet.cell(i+2,15).value == None:
+                                val = int(driver_sheet.cell(i+2,15).value) #因為dict只能start from 0，因此第一個共乘表單會在第0個，而google sheet第一行又是表單的項目，因此第一張表單會是i+1+1列。
+                            driver_sheet.update_cell(i+2,15,val+1)
+                            if driver_sheet.cell(i+2,16).value == None:
                                 new_id = driver_user_id
                                 new_name = driver_Sure_name
                             else:  
-                                id = driver_sheet.cell(i+2,15).value
+                                id = driver_sheet.cell(i+2,16).value
                                 new_id = id+','+driver_user_id
-                                name = driver_sheet.cell(i+2,16).value
+                                name = driver_sheet.cell(i+2,17).value
                                 new_name = name+','+driver_Sure_name
-                            driver_sheet.update_cell(i+2,15,new_id) 
-                            driver_sheet.update_cell(i+2,16,new_name)
-                        time.sleep(2)
+                            driver_sheet.update_cell(i+2,16,new_id) 
+                            driver_sheet.update_cell(i+2,17,new_name)
+                        time.sleep(1)
                     else:
                         line_bot_api.reply_message(
                             ReplyMessageRequest(
@@ -1330,24 +1368,35 @@ def handle_postbak(event):
     try:
         for i in range(web_passenger_len):
             if event.postback.data == f'passenger_Num{i}':
+                passenger_case = get_sheet_time_fordatetime(web_passenger_data.json()[i][3])
+                passenger_case_datetime = passenger_case.split('/')
+                passenger_date = date(int(c_now_time[0]),int(c_now_time[1]),int(c_now_time[2])) 
+                passenger_date_due = date(int(passenger_case_datetime[0]),int(passenger_case_datetime[1]),int(passenger_case_datetime[2]))
                 with ApiClient(configuration) as api_client:
                     line_bot_api = MessagingApi(api_client)
-                    confirm_template = ConfirmTemplate(
-                        text = f'出發地：{web_passenger_data.json()[i][2]}\n目的地：{web_passenger_data.json()[i][5]}\n集合地點：{web_passenger_data.json()[i][3]}\n出發時間：\n{get_Sheet_time(web_passenger_data.json()[i][4])}\n總時程：{time_hrmi(int(web_passenger_data.json()[i][7]))}\n發起人：{web_passenger_data.json()[i][10]}\nLineID：{web_passenger_data.json()[i][11]}\n共乘人數上限：{web_passenger_data.json()[i][6]}\n行車規範：\n{web_passenger_data.json()[i][8]}\n簡介：{web_passenger_data.json()[i][9]}\n',
-                        actions=[ #一定只能放兩個Action
-                            PostbackAction(label='確定搭乘', text='確定!', data=f'passenger_Sure{i}'),
-                            MessageAction(label='再考慮', text='再考慮')   
-                        ]
-                    )
-                    template_message = TemplateMessage(
-                        alt_text = '是否確認搭乘?',
-                        template = confirm_template
-                    )
-                    line_bot_api.reply_message(
-                        ReplyMessageRequest(
-                            reply_token = event.reply_token,
-                            messages = [template_message]
+                    if passenger_date_due>passenger_date:
+                        confirm_template = ConfirmTemplate(
+                            text = f'活動編號：{web_passenger_data.json()[i][15]}發車地點：{web_passenger_data.json()[i][2]}\n目的地：{web_passenger_data.json()[i][4]}\n出發時間：\n{get_Sheet_time(web_passenger_data.json()[i][3])}\n總時程：{time_hrmi(int(web_passenger_data.json()[i][6]))}\n發起人：{web_passenger_data.json()[i][9]}\nLineID：{web_passenger_data.json()[i][10]}\n共乘人數上限：{web_passenger_data.json()[i][5]}\n交通工具：{web_passenger_data.json()[i][11]}行車規範：\n{web_passenger_data.json()[i][7]}\n簡介：{web_passenger_data.json()[i][8]}\n',
+                            actions=[ #一定只能放兩個Action
+                                PostbackAction(label='確定搭乘', text='確定!', data=f'passenger_Sure{i}'),
+                                MessageAction(label='再考慮', text='再考慮')   
+                            ]
                         )
+                        template_message = TemplateMessage(
+                            alt_text = '是否確認搭乘?',
+                            template = confirm_template
+                        )
+                        line_bot_api.reply_message(
+                            ReplyMessageRequest(
+                                reply_token = event.reply_token,
+                                messages = [template_message]
+                            )
+                        )
+                    line_bot_api.reply_message( #傳送'已逾期'回復訊息
+                        ReplyMessageRequest(
+                            reply_token=event.reply_token,
+                            messages=[TextMessage(text='報名已經截止囉')] 
+                        )  
                     )
             else:
                 pass
@@ -1356,7 +1405,7 @@ def handle_postbak(event):
                 get_passenger_sheet_case()
                 with ApiClient(configuration) as api_client:
                     line_bot_api = MessagingApi(api_client)
-                    if web_passenger_data.json()[i][6] != web_passenger_data.json()[i][13]:
+                    if web_passenger_data.json()[i][12] != web_passenger_data.json()[i][5]:
                         # 獲取使用者 user_ID  
                         passenger_user_id = event.source.user_id
                         profile = line_bot_api.get_profile(passenger_user_id)
@@ -1375,11 +1424,13 @@ def handle_postbak(event):
                         else:
                             pass
                         if passenger_user_id != 'Checked':
-                            if passenger_sheet.cell(i+2,13).value == None:
-                                val = 0
-                            else:
-                                val = int(passenger_sheet.cell(i+2,13).value) #因為dict只能start from 0，因此第一個共乘表單會在第0個，而google sheet第一行又是表單的項目，因此第一張表單會是i+1+1列。
-                            passenger_sheet.update_cell(i+2,13,val+1)
+                            line_bot_api.reply_message(
+                                ReplyMessageRequest(
+                                    reply_token = event.reply_token,
+                                    messages = [TextMessage(text='已幫您預約')]
+                                )
+                            )
+                            passenger_sheet.update_cell(i+2,13,passenger_val+1) #因為dict只能start from 0，因此第一個共乘表單會在第0個，而google sheet第一行又是表單的項目，因此第一張表單會是i+1+1列。
                             if passenger_sheet.cell(i+2,14).value == None:
                                 new_id = passenger_user_id
                                 new_name = passenger_Sure_name
@@ -1390,6 +1441,7 @@ def handle_postbak(event):
                                 new_name = name+','+passenger_Sure_name
                             passenger_sheet.update_cell(i+2,14,new_id)
                             passenger_sheet.update_cell(i+2,15,new_name)
+                        time.sleep(2)
                     else:
                         line_bot_api.reply_message(
                             ReplyMessageRequest(
@@ -1411,20 +1463,58 @@ def check_project():
     print(f"目前已處理的司機: {web_driver_Sure}")
     print(f"目前已處理的乘客: {web_passenger_Sure}")
     for i in range(web_driver_len):
+        driver_case = get_sheet_time_fordatetime(web_driver_data.json()[i][3])
+        driver_case_datetime = driver_case.split('/')
+        driver_date = date(int(c_now_time[0]),int(c_now_time[1]),int(c_now_time[2])) 
+        driver_date_due = date(int(driver_case_datetime[0]),int(driver_case_datetime[1]),int(driver_case_datetime[2]))
+        print(driver_date)
+        print(driver_date_due)
         if i not in web_driver_Sure:
-            if web_driver_data.json()[i][13]== web_driver_data.json()[i][6]:
+            if driver_date_due == driver_date:
+                # 有人且已滿
+                if '※ 人滿才發車' in web_driver_data.json()[i][7] and driver_val== web_driver_data.json()[i][5]:
+                    # 寄信給發起人，告知結果
+                    name_list = driver_Sure_name_dict.get(i).split(',')
+                    output = ','.join(map(str, name_list))
+                    str1 = '您在 共乘阿穿 發起的活動人數已滿了，活動資訊如下：'
+                    str2 = f'活動編號：{web_driver_data.json()[i][17]}<br>發車地點：{web_driver_data.json()[i][2]}<br>目的地：{web_driver_data.json()[i][4]}<br>出發時間：<br>{get_Sheet_time(web_driver_data.json()[i][3])}<br>總時程：{time_hrmi(int(web_driver_data.json()[i][6]))}<br>發起人：{web_driver_data.json()[i][9]}<br>手機號碼：{web_driver_data.json()[i][13]}<br>LineID：{web_driver_data.json()[i][10]}<br>共乘人數上限：{web_driver_data.json()[i][5]}<br>價格：{web_driver_data.json()[i][11]}<br>交通工具：{web_driver_data.json()[i][12]}<br>行車規範：<br>{web_driver_data.json()[i][7]}<br>簡介：{web_driver_data.json()[i][8]}<br>'
+                    str3 = f'參加者Line名稱:{output}'
+                    str4 = '您在 共乘阿穿 發起的活動人數已滿囉'
+                    # 針對 Linebot 參與的乘客
+                    text = f'您參加的活動成團囉，活動編號為{web_driver_data.json()[i][17]}，記得透過LineID聯繫活動發起人!發起人LineID：{web_driver_data.json()[i][10]}，活動資訊如下：\n活動編號：{web_driver_data.json()[i][17]}\n發車地點：{web_driver_data.json()[i][2]}\n目的地：{web_driver_data.json()[i][4]}\n出發時間：\n{get_Sheet_time(web_driver_data.json()[i][3])}\n總時程：{time_hrmi(int(web_driver_data.json()[i][6]))}\n發起人：{web_driver_data.json()[i][9]}\n手機號碼：{web_driver_data.json()[i][13]}\nLineID：{web_driver_data.json()[i][10]}\n共乘人數上限：{web_driver_data.json()[i][5]}\n價格：{web_driver_data.json()[i][11]}\n交通工具：{web_driver_data.json()[i][12]}\n行車規範：\n{web_driver_data.json()[i][7]}\n簡介：{web_driver_data.json()[i][8]}\n'
+                # 有人且發起者未勾選 ※ 人滿才發車
+                elif '※ 人滿才發車' not in web_driver_data.json()[i][7] and driver_val>0:
+                    # 寄信給發起人，告知結果
+                    name_list = driver_Sure_name_dict.get(i).split(',')
+                    output = ','.join(map(str, name_list))
+                    str1 = '您在 共乘阿穿 發起的活動人數未滿，但您未勾選「人滿才發車」，因此成團喔！活動資訊如下：'
+                    str2 = f'活動編號：{web_driver_data.json()[i][17]}<br>發車地點：{web_driver_data.json()[i][2]}<br>目的地：{web_driver_data.json()[i][4]}<br>出發時間：<br>{get_Sheet_time(web_driver_data.json()[i][3])}<br>總時程：{time_hrmi(int(web_driver_data.json()[i][6]))}<br>發起人：{web_driver_data.json()[i][9]}<br>手機號碼：{web_driver_data.json()[i][13]}<br>LineID：{web_driver_data.json()[i][10]}<br>共乘人數上限：{web_driver_data.json()[i][5]}<br>價格：{web_driver_data.json()[i][11]}<br>交通工具：{web_driver_data.json()[i][12]}<br>行車規範：<br>{web_driver_data.json()[i][7]}<br>簡介：{web_driver_data.json()[i][8]}<br>'
+                    str3 = f'參加者Line名稱:{output}'
+                    str4 = '您在 共乘阿穿 發起的活動人數未滿，但您未勾選「人滿才發車」，因此成團喔！'
+                    # 針對 Linebot 參與的乘客
+                    text = f'您參加的活動成團囉，活動編號為{web_driver_data.json()[i][17]}，記得透過LineID聯繫活動發起人!發起人LineID：{web_driver_data.json()[i][10]}，活動資訊如下：\n活動編號：{web_driver_data.json()[i][17]}\n發車地點：{web_driver_data.json()[i][2]}\n目的地：{web_driver_data.json()[i][4]}\n出發時間：\n{get_Sheet_time(web_driver_data.json()[i][3])}\n總時程：{time_hrmi(int(web_driver_data.json()[i][6]))}\n發起人：{web_driver_data.json()[i][9]}\n手機號碼：{web_driver_data.json()[i][13]}\nLineID：{web_driver_data.json()[i][10]}\n共乘人數上限：{web_driver_data.json()[i][5]}\n價格：{web_driver_data.json()[i][11]}\n交通工具：{web_driver_data.json()[i][12]}\n行車規範：\n{web_driver_data.json()[i][7]}\n簡介：{web_driver_data.json()[i][8]}\n'
+                # 未成團
+                else:
+                    # 寄信給發起人，告知結果
+                    str1 = f'您在 共乘阿穿 發起的活動人數未滿，活動編號為{web_driver_data.json()[i][17]}，因此未發車。'
+                    str2 = '活動資訊如下：'
+                    str3 = f'活動編號：{web_driver_data.json()[i][17]}<br>發車地點：{web_driver_data.json()[i][2]}<br>目的地：{web_driver_data.json()[i][4]}<br>出發時間：<br>{get_Sheet_time(web_driver_data.json()[i][3])}<br>總時程：{time_hrmi(int(web_driver_data.json()[i][6]))}<br>發起人：{web_driver_data.json()[i][9]}<br>手機號碼：{web_driver_data.json()[i][13]}<br>LineID：{web_driver_data.json()[i][10]}<br>共乘人數上限：{web_driver_data.json()[i][5]}<br>價格：{web_driver_data.json()[i][11]}<br>交通工具：{web_driver_data.json()[i][12]}<br>行車規範：<br>{web_driver_data.json()[i][7]}<br>簡介：{web_driver_data.json()[i][8]}<br>'
+                    str4 = '您在 共乘阿穿 發起的活動人數未滿'
+                    # 針對 Linebot 參與的乘客
+                    text = f'您參與的共乘活動因人數未滿而不發車喔!活動編號為{web_driver_data.json()[i][17]}'
+                # 寄信給發起人
                 name_list = driver_Sure_name_dict.get(i).split(',')
                 output = ','.join(map(str, name_list))
                 html =f'''
-                <h1>暨大共乘</h1>
-                <div>您在NCNUcarpool發起的活動人數已滿了，活動資訊如下：</div>
-                <div>出發地：{web_driver_data.json()[i][2]}<br>目的地：{web_driver_data.json()[i][5]}<br>集合地點：{web_driver_data.json()[i][3]}<br>出發時間：<br>{get_Sheet_time(web_driver_data.json()[i][4])}<br>總時程：{time_hrmi(int(web_driver_data.json()[i][7]))}<br>發起人：{web_driver_data.json()[i][10]}<br>LineID：{web_driver_data.json()[i][11]}<br>共乘人數上限：{web_driver_data.json()[i][6]}<br>價格：{web_driver_data.json()[i][12]}<br>行車規範：<br>{web_driver_data.json()[i][8]}<br>簡介：{web_driver_data.json()[i][9]}<br></div>
-                <div>參加者Line名稱:{output}<div>
+                <h1>共乘阿穿</h1>
+                <div>{str1}</div>
+                <div>{str2}<div>
+                <div>{str3}<div>
                 '''
                 mail = MIMEText(html, 'html', 'utf-8')   # plain 換成 html，就能寄送 HTML 格式的信件
-                mail['Subject']='您在 NCNUcarpool 發起的活動人數已滿囉'
-                mail['From']='NCNUcarpool'
-                mail['To']= web_driver_data.json()[0][1]
+                mail['Subject']= f'{str4}'
+                mail['From']='adf'
+                mail['To']= web_driver_data.json()[i][1]
                 try:
                     smtp = smtplib.SMTP('smtp.gmail.com', 587)
                     smtp.ehlo()
@@ -1437,9 +1527,9 @@ def check_project():
                     web_driver_Sure.add(i)
                     print(f"司機 {i} 已標記為處理完成")
                 except Exception as e:
-                    print(f"發送郵件時出錯: {e}")
+                    print(f"發送郵件時出錯: {e}")              
                 # 當活動人數已滿的時候，向活動參與者發送提醒（告知可發車及聯繫發起人）
-                driver_Sure = web_driver_data.json()[i][14]
+                driver_Sure = web_driver_data.json()[i][15]
                 driver_Sure_list = driver_Sure.split('/')
                 for r in driver_Sure_list:
                     #   注意前方要有 Bearer
@@ -1448,29 +1538,65 @@ def check_project():
                         'to':f'{r}',
                         'messages':[{
                                 'type': 'text',
-                                'text': '您參加的活動人數已滿囉，記得透過LineID聯繫活動發起人!'
+                                'text': text
                             }]
                         }
                     # 向指定網址發送 request
                     req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
                     # 印出得到的結果
                     print(req.text)
-
+            else:
+                pass
     for i in range(web_passenger_len):
+        passenger_case = get_sheet_time_fordatetime(web_passenger_data.json()[i][3])
+        passenger_case_datetime = passenger_case.split('/')
+        passenger_date = date(int(c_now_time[0]),int(c_now_time[1]),int(c_now_time[2])) 
+        passenger_date_due = date(int(passenger_case_datetime[0]),int(passenger_case_datetime[1]),int(passenger_case_datetime[2]))
         if i not in web_passenger_Sure :
-            if web_passenger_data.json()[i][12] == web_passenger_data.json()[i][6]:
+            if passenger_date_due == passenger_date:
+                # 有人且已滿
+                if '※ 人滿才發車' in web_passenger_data.json()[i][7] and passenger_val== web_passenger_data.json()[i][5]:
+                    name_list = passenger_Sure_name_dict.get(i).split(',')
+                    output = ','.join(map(str, name_list))
+                    str1 = '您在 共乘阿穿 發起的活動人數已滿了，活動資訊如下：'
+                    str2 = f'活動編號：{web_passenger_data.json()[i][15]}<br>發車地點：{web_passenger_data.json()[i][2]}<br>目的地：{web_passenger_data.json()[i][4]}\n出發時間：<br>{get_Sheet_time(web_passenger_data.json()[i][3])}<br>總時程：{time_hrmi(int(web_passenger_data.json()[i][6]))}<br>發起人：{web_passenger_data.json()[i][9]}<br>LineID：{web_passenger_data.json()[i][10]}<br>共乘人數上限：{web_passenger_data.json()[i][5]}<br>交通工具：{web_passenger_data.json()[i][11]}行車規範：<br>{web_passenger_data.json()[i][7]}\n簡介：{web_passenger_data.json()[i][8]}<br>'
+                    str3 = f'參加者Line名稱:{output}'
+                    str4 = '您在 共乘阿穿 發起的活動人數已滿囉'
+                    # 針對 Linebot 參與的乘客
+                    text = f'您參加的活動成團囉，活動編號為{web_passenger_data.json()[i][15]}，記得透過LineID聯繫活動發起人!發起人LineID：{web_passenger_data.json()[i][10]}，活動資訊如下：活動編號：{web_passenger_data.json()[i][15]}發車地點：{web_passenger_data.json()[i][2]}\n目的地：{web_passenger_data.json()[i][4]}\n出發時間：\n{get_Sheet_time(web_passenger_data.json()[i][3])}\n總時程：{time_hrmi(int(web_passenger_data.json()[i][6]))}\n發起人：{web_passenger_data.json()[i][9]}\nLineID：{web_passenger_data.json()[i][10]}\n共乘人數上限：{web_passenger_data.json()[i][5]}\n交通工具：{web_passenger_data.json()[i][11]}行車規範：\n{web_passenger_data.json()[i][7]}\n簡介：{web_passenger_data.json()[i][8]}\n'                
+                # 有人且發起者未勾選 ※ 人滿才發車
+                elif '※ 人滿才發車' not in web_passenger_data.json()[i][7] and passenger_val>0:
+                    # 寄信給發起人，告知結果
+                    name_list = passenger_Sure_name_dict.get(i).split(',')
+                    output = ','.join(map(str, name_list))
+                    str1 = '您在 共乘阿穿 發起的活動人數未滿，但您未勾選「人滿才發車」，因此成團喔！活動資訊如下：'
+                    str2 = f'活動編號：{web_passenger_data.json()[i][15]}<br>發車地點：{web_passenger_data.json()[i][2]}<br>目的地：{web_passenger_data.json()[i][4]}\n出發時間：<br>{get_Sheet_time(web_passenger_data.json()[i][3])}<br>總時程：{time_hrmi(int(web_passenger_data.json()[i][6]))}<br>發起人：{web_passenger_data.json()[i][9]}<br>LineID：{web_passenger_data.json()[i][10]}<br>共乘人數上限：{web_passenger_data.json()[i][5]}<br>交通工具：{web_passenger_data.json()[i][11]}行車規範：<br>{web_passenger_data.json()[i][7]}\n簡介：{web_passenger_data.json()[i][8]}<br>'
+                    str3 = f'參加者Line名稱:{output}'
+                    str4 = '您在 共乘阿穿 發起的活動人數未滿，但您未勾選「人滿才發車」，因此成團喔！'
+                    # 針對 Linebot 參與的乘客
+                    text = f'您參加的活動成團囉，活動編號為{web_passenger_data.json()[i][15]}，記得透過LineID聯繫活動發起人!發起人LineID：{web_passenger_data.json()[i][10]}，活動資訊如下：活動編號：{web_passenger_data.json()[i][15]}發車地點：{web_passenger_data.json()[i][2]}\n目的地：{web_passenger_data.json()[i][4]}\n出發時間：\n{get_Sheet_time(web_passenger_data.json()[i][3])}\n總時程：{time_hrmi(int(web_passenger_data.json()[i][6]))}\n發起人：{web_passenger_data.json()[i][9]}\nLineID：{web_passenger_data.json()[i][10]}\n共乘人數上限：{web_passenger_data.json()[i][5]}\n交通工具：{web_passenger_data.json()[i][11]}行車規範：\n{web_passenger_data.json()[i][7]}\n簡介：{web_passenger_data.json()[i][8]}\n'
+                # 未成團
+                else:
+                    # 寄信給發起人，告知結果
+                    str1 = f'您在 共乘阿穿 發起的活動人數未滿，活動編號為{web_passenger_data.json()[i][15]}，因此未發車。'
+                    str2 = '活動資訊如下：'
+                    str3 = f'活動編號：{web_passenger_data.json()[i][15]}<br>發車地點：{web_passenger_data.json()[i][2]}<br>目的地：{web_passenger_data.json()[i][4]}\n出發時間：<br>{get_Sheet_time(web_passenger_data.json()[i][3])}<br>總時程：{time_hrmi(int(web_passenger_data.json()[i][6]))}<br>發起人：{web_passenger_data.json()[i][9]}<br>LineID：{web_passenger_data.json()[i][10]}<br>共乘人數上限：{web_passenger_data.json()[i][5]}<br>交通工具：{web_passenger_data.json()[i][11]}行車規範：<br>{web_passenger_data.json()[i][7]}\n簡介：{web_passenger_data.json()[i][8]}<br>'
+                    str4 = '您在 共乘阿穿 發起的活動人數未滿'
+                    # 針對 Linebot 參與的乘客
+                    text = f'您參與的共乘活動因人數未滿而不發車喔!活動編號為{web_driver_data.json()[i][15]}'
+                # 寄信給發起人
                 name_list = passenger_Sure_name_dict.get(i).split(',')
                 output = ','.join(map(str, name_list))
                 html =f'''
-                <h1>暨大共乘</h1>
-                <div>您在NCNUcarpool發起的活動人數已滿了，活動資訊如下：</div>
-                <div>出發地：出發地：{web_passenger_data.json()[i][2]}<br>目的地：{web_passenger_data.json()[i][5]}<br>集合地點：{web_passenger_data.json()[i][3]}<br>出發時間：<br>{get_Sheet_time(web_passenger_data.json()[i][4])}<br>總時程：{time_hrmi(int(web_passenger_data.json()[i][7]))}<br>發起人：{web_passenger_data.json()[i][10]}<br>LineID：{web_passenger_data.json()[i][11]}<br>共乘人數上限：{web_passenger_data.json()[i][6]}<br>行車規範：<br>{web_passenger_data.json()[i][8]}<br>簡介：{web_passenger_data.json()[i][9]}<br></div>
-                <div>參加者Line名稱:{output}<div>
+                <h1>共乘阿穿</h1>
+                <div>{str1}</div>
+                <div>{str2}<div>
+                <div>{str3}<div>
                 '''
                 mail = MIMEText(html, 'html', 'utf-8')   # plain 換成 html，就能寄送 HTML 格式的信件
-                mail['Subject']='您在 NCNUcarpool 發起的活動人數已滿囉'
-                mail['From']='NCNUcarpool'
-                mail['To']= web_passenger_data.json()[0][1]
+                mail['Subject']= str4
+                mail['From']='adf'
+                mail['To']= web_passenger_data.json()[i][1]
                 try:
                     smtp = smtplib.SMTP('smtp.gmail.com', 587)
                     smtp.ehlo()
@@ -1480,10 +1606,10 @@ def check_project():
                     print(status)
                     smtp.quit()
                     # 將此索引添加到已處理集合中
-                    web_passenger_Sure.add(i)
-                    print(f"乘客 {i} 已標記為處理完成")
+                    web_driver_Sure.add(i)
+                    print(f"司機 {i} 已標記為處理完成")
                 except Exception as e:
-                    print(f"發送郵件時出錯: {e}")
+                    print(f"發送郵件時出錯: {e}")              
                 # 當活動人數已滿的時候，向活動參與者發送提醒（告知可發車及聯繫發起人）
                 passenger_Sure = web_passenger_data.json()[i][13]
                 passenger_Sure_list = passenger_Sure.split('/')
@@ -1494,13 +1620,15 @@ def check_project():
                         'to':f'{r}',
                         'messages':[{
                                 'type': 'text',
-                                'text': '您參加的活動人數已滿囉，記得透過LineID聯繫活動發起人!'
+                                'text': text
                             }]
                         }
                     # 向指定網址發送 request
                     req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
                     # 印出得到的結果
                     print(req.text)
+            else:
+                pass
                 
 #   每隔3秒檢查試算表內容，若人數達上限即通知活動發起者人數已滿
 def run_scheduler():
@@ -1513,3 +1641,5 @@ schedule.every(7).seconds.do(check_project)
 scheduler_thread = threading.Thread(target=run_scheduler)
 scheduler_thread.daemon = True 
 scheduler_thread.start()
+
+
