@@ -910,7 +910,8 @@ def handle_postbak(event):
     except NameError:
         pass
 if __name__ == "__main__":
-    app.run()
+    port = int(os.environ.get("PORT", 5000))  # Vercel 使用 PORT 環境變數
+    app.run(host="0.0.0.0", port=port)
 # 初始化追踪字典，為每個索引設置False
 web_driver_Sure = set()
 web_passenger_Sure = set()
@@ -1097,3 +1098,5 @@ schedule.every(5).minutes.do(check_project)
 scheduler_thread = threading.Thread(target=run_scheduler)
 scheduler_thread.daemon = True 
 scheduler_thread.start()
+
+
