@@ -50,11 +50,10 @@ from linebot.v3.webhooks import (
     PostbackEvent,
     TextMessageContent
 ) 
-
-app = Flask(__name__)
 import os
+app = Flask(__name__)
 configuration = Configuration(access_token=os.getenv('CHANNEL_ACCESS_TOKEN'))
-handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
+line_handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -66,7 +65,7 @@ def callback():
     app.logger.info("Request body:  " + body)
     # handle webhook body
     try:
-        handler.handle(body, signature)
+        line_handler.handle(body, signature)
     except InvalidSignatureError:
         app.logger.info("Invalid signature. Please check your channel access token/channel secret.")
         abort(400)
@@ -203,7 +202,7 @@ now_time = datetime.now()
 formatted_now_time = now_time.strftime('%Y/%#m/%#d')
 c_now_time = formatted_now_time.split('/')
 # Tamplate Message
-@handler.add(MessageEvent, message = TextMessageContent)
+@line_handler.add(MessageEvent, message = TextMessageContent)
 def handle_message(event):
     text = event.message.text
     with ApiClient(configuration) as api_client:
@@ -729,7 +728,7 @@ def handle_message(event):
                     messages=[TextMessage(text=text)]
                 )
             )
-@handler.add(PostbackEvent)
+@line_handler.add(PostbackEvent)
 def handle_postbak(event):
     try:
         for i in range(web_driver_len):
@@ -1099,5 +1098,3 @@ schedule.every(5).minutes.do(check_project)
 scheduler_thread = threading.Thread(target=run_scheduler)
 scheduler_thread.daemon = True 
 scheduler_thread.start()
-
-
