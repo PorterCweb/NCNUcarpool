@@ -172,8 +172,8 @@ def run_scheduler():
     while a:
         schedule.run_pending()
         time.sleep(0.1)
-schedule.every(1).seconds.do(get_driver_sheet_case)
-schedule.every(1).seconds.do(get_passenger_sheet_case)
+schedule.every(2).seconds.do(get_driver_sheet_case)
+schedule.every(2).seconds.do(get_passenger_sheet_case)
 scheduler_thread_case = threading.Thread(target=run_scheduler)
 scheduler_thread_case.daemon = True  # 主程式結束此也結束
 scheduler_thread_case.start()
@@ -217,7 +217,7 @@ import gspread
 from dotenv import load_dotenv
 load_dotenv()
 # 從環境變數讀取 JSON 字串，否則env只能傳入string，且env檔須調整為單行。
-credentials_str = os.getenv("GOOGLE_CREDENTIALS")
+credentials_str = os.getenv('GOOGLE_CREDENTIALS')
 if credentials_str:
     credentials_dict = json.loads(credentials_str)
     print(credentials_dict)
