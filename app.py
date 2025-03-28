@@ -198,19 +198,6 @@ gc = gspread.service_account_from_dict(credentials_dict)
 carpool = gc.open_by_url('https://docs.google.com/spreadsheets/d/1q8HKO2NBz1O8UBE7ag9Kq-eNAc114TKzkXyOq32vfSA/edit?gid=1437248658#gid=1437248658')
 driver_sheet = carpool.get_worksheet(0)
 passenger_sheet = carpool.get_worksheet(1)
-''' 載入google sheet的方式
-使用 service_account 函數載入 JSON 格式的API token文件
-gc = gspread.service_account(filename = 'token.json')
-打開 Goole sheets 文件
-sh = gc.open_by_url('google sheet')
-sh = gc.open('/public/write_sheet')
-選擇要操作的工作表
-worksheet = sh.get_worksheet(0)
-準備要輸入的數據
-data = [
-    ['姓名','年齡']]
-worksheet.insert_rows(data,6)
-'''
 # 抓取現在時間
 now_time = datetime.now()
 formatted_now_time = now_time.strftime('%Y/%#m/%#d')
