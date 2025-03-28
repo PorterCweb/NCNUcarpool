@@ -1108,7 +1108,7 @@ def run_scheduler():
     while a:
         schedule.run_pending()
         time.sleep(0.1)  
-schedule.every(5).minute.do(check_project)
+schedule.every(5).minutes.do(check_project)
 scheduler_thread = threading.Thread(target=run_scheduler)
 scheduler_thread.daemon = True 
 scheduler_thread.start()
