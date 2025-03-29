@@ -201,21 +201,16 @@ def check_project():
                     print(f"發送郵件時出錯: {e}")    
                 # 當活動人數已滿的時候，向活動參與者發送提醒（告知可發車及聯繫發起人）
                 driver_Sure = driver_sheet[i][15]
-                driver_Sure_list = driver_Sure.split('/')
+                driver_Sure_list = driver_Sure.split(',')
                 for r in driver_Sure_list:
-                    #   注意前方要有 Bearer
-                    headers = {'Authorization':'Bearer UlaItdkkQW33Qln6YyLrLsLDo83MhILpEzQbtmQGiyk6Y6XbxGQ+sr0jjJb4TX8QhUTn3ZHim0LbFpyQ09SR/dEI09B30r4exhTcGJE+68Jbcyp75Ze3mvv2U9bF+G77dVSGKrdZcuQ5E7M8eJ6OFwdB04t89/1O/w1cDnyilFU=','Content-Type':'application/json'}
-                    body = {
-                        'to':f'{r}',
-                        'messages':[{
-                                'type': 'text',
-                                'text': driver_text
-                            }]
-                        }
-                    # 向指定網址發送 request
-                    req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
-                    # 印出得到的結果
-                    print(req.text)        
+                    with ApiClient(configuration) as api_client:
+                        line_bot_api = MessagingApi(api_client)
+                        line_bot_api.push_message(
+                            PushMessageRequest(
+                                to=r,
+                                messages=[TextMessage(text=driver_text)]
+                            )
+                        )  
             else:
                 pass
         else:
@@ -281,24 +276,19 @@ def check_project():
                     web_passenger_Sure.add(i)
                     print(f"乘客 {i} 已標記為處理完成")
                 except Exception as e:
-                    print(f"發送郵件時出錯: {e}")            
+                    print(f"發送郵件時出錯: {e}")           
                 # 當活動人數已滿的時候，向活動參與者發送提醒（告知可發車及聯繫發起人）
                 passenger_Sure = passenger_sheet[i][13]
-                passenger_Sure_list = passenger_Sure.split('/')
+                passenger_Sure_list = passenger_Sure.split(',')
                 for r in passenger_Sure_list:
-                    #   注意前方要有 Bearer
-                    headers = {'Authorization':'Bearer UlaItdkkQW33Qln6YyLrLsLDo83MhILpEzQbtmQGiyk6Y6XbxGQ+sr0jjJb4TX8QhUTn3ZHim0LbFpyQ09SR/dEI09B30r4exhTcGJE+68Jbcyp75Ze3mvv2U9bF+G77dVSGKrdZcuQ5E7M8eJ6OFwdB04t89/1O/w1cDnyilFU=','Content-Type':'application/json'}
-                    body = {
-                        'to':f'{r}',
-                        'messages':[{
-                                'type': 'text',
-                                'text': passenger_text
-                            }]
-                        }
-                    # 向指定網址發送 request
-                    req = requests.request('POST', 'https://api.line.me/v2/bot/message/push',headers=headers,data=json.dumps(body).encode('utf-8'))
-                    # 印出得到的結果
-                    print(req.text)
+                    with ApiClient(configuration) as api_client:
+                        line_bot_api = MessagingApi(api_client)
+                        line_bot_api.push_message(
+                            PushMessageRequest(
+                                to=r,
+                                messages=[TextMessage(text=passenger_text)]
+                            )
+                        )
             else:
                 pass
         else:
@@ -322,8 +312,8 @@ def get_driver_sheet_case():
                 driver_val = 0
             else:
                 driver_val = int(driver_sheet_id.cell(i+1,15).value)
-        print(driver_Sure_id_dict)
         print('司機發起之活動已抓取')
+        print(driver_Sure_id_dict)
     except:
         print('司機發起之活動尚無資料')   
 def get_passenger_sheet_case():
@@ -345,8 +335,8 @@ def get_passenger_sheet_case():
                 passenger_val = 0
             else:
                 passenger_val = int(passenger_sheet_id.cell(i+1,13).value)
-        print(passenger_Sure_id_dict)
         print('乘客發起之揪團活動已抓取')
+        print(passenger_Sure_id_dict)
     except:
         print('乘客發起之揪團活動尚無資料')
 #   每隔3秒檢查試算表內容，若人數達上限即通知活動發起者人數已滿
@@ -356,7 +346,7 @@ def run_scheduler():
     while a:
         schedule.run_pending()
         time.sleep(0.1)  
-schedule.every(30).minutes.do(check_project)
+schedule.every(16).seconds.do(check_project)
 schedule.every(10).seconds.do(get_driver_sheet_case)
 schedule.every(10).seconds.do(get_passenger_sheet_case)
 scheduler_thread_case = threading.Thread(target=run_scheduler)
@@ -871,16 +861,19 @@ def handle_message(event):
             # 獲取使用者 user_ID 
             user_id = event.source.user_id
             text = ''
+            print(1)
+            print(driver_Sure_id_dict)
             for id in driver_Sure_id_dict.values():
                 if id == user_id:
                     reservation_case = get_key(driver_Sure_id_dict,id)
                     for i in reservation_case:
                         reservation = f'活動編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：{driver_sheet[i][8]}\n'
                         text = text+reservation+'--------------------------------\n'
-                    text = '司機預約：\n'+text
-                    break       
+                    text = '司機預約：\n'+text       
                 else:
-                    pass      
+                    pass
+                print(2)
+            print(passenger_Sure_id_dict)      
             for id in passenger_Sure_id_dict.values():
                 if id == user_id:
                     text = text+'乘客（揪團）預約：\n'
@@ -888,7 +881,6 @@ def handle_message(event):
                     for i in reservation_case:
                         reservation = f'活動編號：{passenger_sheet[i][15]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
                         text = text+reservation+'--------------------------------\n'      
-                    break    
                 else:
                     pass    
             if text == '':
