@@ -373,7 +373,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_driver_data_case['body']['contents'].insert(2,r)
+                                web_driver_data_case['body']['contents'].insert(3,r)
                             if '自備零錢不找零' in web_driver_data.json()[i][7]:
                                 r = {
                                             "type": "text",
@@ -383,7 +383,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_driver_data_case['body']['contents'].insert(2,r)
+                                web_driver_data_case['body']['contents'].insert(3,r)
                             if '接受線上付款 / 轉帳' in web_driver_data.json()[i][7]:
                                 r = {
                                             "type": "text",
@@ -393,7 +393,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_driver_data_case['body']['contents'].insert(2,r)
+                                web_driver_data_case['body']['contents'].insert(3,r)
                             if '禁食' in web_driver_data.json()[i][7]:
                                 r = {
                                             "type": "text",
@@ -414,7 +414,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_driver_data_case['body']['contents'].insert(2,r)
+                                web_driver_data_case['body']['contents'].insert(3,r)
                             line_flex_json['contents'].append(web_driver_data_case)
                         else:
                             pass
@@ -600,7 +600,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(1,r)
+                                web_passenger_data_case['body']['contents'].insert(3,r)
                             if '不聊天' in web_passenger_data.json()[i][7]:
                                 r = {
                                             "type": "text",
@@ -610,7 +610,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(1,r)
+                                web_passenger_data_case['body']['contents'].insert(3,r)
                             if '嚴禁喝酒及抽菸' in web_passenger_data.json()[i][7]:
                                 r = {
                                             "type": "text",
@@ -620,7 +620,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(1,r)
+                                web_passenger_data_case['body']['contents'].insert(3,r)
                             if '禁食' in web_passenger_data.json()[i][7]:
                                 r = {
                                             "type": "text",
@@ -630,7 +630,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(1,r)
+                                web_passenger_data_case['body']['contents'].insert(3,r)
                             if '謝絕寵物' in web_passenger_data.json()[i][7]:
                                 r = {
                                             "type": "text",
@@ -640,7 +640,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(1,r)
+                                web_passenger_data_case['body']['contents'].insert(3,r)
                             if '寵物需裝籠' in web_passenger_data.json()[i][7]:
                                 r = {
                                             "type": "text",
@@ -650,7 +650,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(1,r)
+                                web_passenger_data_case['body']['contents'].insert(3,r)
                             if '※ 人滿才發車' in web_passenger_data.json()[i][7]:
                                 r = {
                                             "type": "text",
@@ -661,7 +661,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(1,r)
+                                web_passenger_data_case['body']['contents'].insert(3,r)
                             line_flex_json['contents'].append(web_passenger_data_case)   
                         else:
                             pass
@@ -809,7 +809,7 @@ def handle_postbak(event):
                                 new_name = name+','+driver_Sure_name
                             driver_sheet.update_cell(i+2,16,new_id) 
                             driver_sheet.update_cell(i+2,17,new_name)
-                        time.sleep(1)
+                        time.sleep()
                     else:
                         line_bot_api.reply_message(
                             ReplyMessageRequest(
@@ -910,8 +910,7 @@ def handle_postbak(event):
     except NameError:
         pass
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Vercel 使用 PORT 環境變數
-    app.run(host="0.0.0.0", port=port)
+    app.run()
 # 初始化追踪字典，為每個索引設置False
 web_driver_Sure = set()
 web_passenger_Sure = set()
