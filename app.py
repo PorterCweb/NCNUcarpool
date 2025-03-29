@@ -191,7 +191,7 @@ def check_project():
                     smtp = smtplib.SMTP('smtp.gmail.com', 587)
                     smtp.ehlo()
                     smtp.starttls()
-                    smtp.login('ncnucarpool@gmail.com','jrab omvk bkql rruu')
+                    smtp.login('ncnucarpool@gmail.com',os.getenv('GMAIL_PASSWORD'))
                     status = smtp.send_message(mail)
                     smtp.quit()
                     # 將此索引添加到已處理集合中
@@ -274,7 +274,7 @@ def check_project():
                     smtp = smtplib.SMTP('smtp.gmail.com', 587)
                     smtp.ehlo()
                     smtp.starttls()
-                    smtp.login('ncnucarpool@gmail.com','jrab omvk bkql rruu')
+                    smtp.login('ncnucarpool@gmail.com',os.getenv('GMAIL_PASSWORD'))
                     status = smtp.send_message(mail)
                     smtp.quit()
                     # 將此索引添加到已處理集合中
