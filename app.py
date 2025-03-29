@@ -712,7 +712,7 @@ def handle_message(event):
                     text = text+'乘客（揪團）預約：\n'
                     reservation_case = get_key(passenger_Sure_id_dict,id)
                     for i in reservation_case:
-                        reservation = f'活動編號：{web_passenger_data.json()[i][15]}發車地點：{web_passenger_data.json()[i][2]}\n目的地：{web_passenger_data.json()[i][4]}\n出發時間：\n{get_Sheet_time(web_passenger_data.json()[i][3])}\n總時程：{time_hrmi(int(web_passenger_data.json()[i][6]))}\n發起人：{web_passenger_data.json()[i][9]}\nLineID：{web_passenger_data.json()[i][10]}\n共乘人數上限：{web_passenger_data.json()[i][5]}\n交通工具：{web_passenger_data.json()[i][11]}行車規範：\n{web_passenger_data.json()[i][7]}\n簡介：{web_passenger_data.json()[i][8]}\n'
+                        reservation = f'活動編號：{web_passenger_data.json()[i][15]}\n發車地點：{web_passenger_data.json()[i][2]}\n目的地：{web_passenger_data.json()[i][4]}\n出發時間：\n{get_Sheet_time(web_passenger_data.json()[i][3])}\n總時程：{time_hrmi(int(web_passenger_data.json()[i][6]))}\n發起人：{web_passenger_data.json()[i][9]}\nLineID：{web_passenger_data.json()[i][10]}\n共乘人數上限：{web_passenger_data.json()[i][5]}\n交通工具：{web_passenger_data.json()[i][11]}行車規範：\n{web_passenger_data.json()[i][7]}\n簡介：{web_passenger_data.json()[i][8]}\n'
                         text = text+reservation+'--------------------------------\n'      
                     break    
                 else:
