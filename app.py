@@ -110,8 +110,15 @@ def parse_custom_time(time_str):
     datetime_str = f"{date_part} {time_part} {ampm_en}"
     return datetime.strptime(datetime_str, "%Y/%m/%d %I:%M:%S %p")
 # 獲得dict內的value
-def get_key(dict, value):
-    return [k for k, v in dict.items() if v == value]
+dict= {1: 'Ufdd0787ca7bc63b64665cdb9a95fd477,Ufdd0787ca7bc63b64665cdb9a95fd477', 2: ''}
+def get_key(dict, target):
+    number_list = []
+    for i in range(len(dict)):
+        if str(target) in dict[i+1]:
+            number_list.append(i+1)
+        else:
+            pass
+    return(number_list)
 #   token.json的資料如放在公開伺服器上執行之類的，會遭停用，需到google cloud重新建立金鑰，否則會跳出JWP錯誤
 import tempfile
 import os
@@ -861,28 +868,22 @@ def handle_message(event):
             # 獲取使用者 user_ID 
             user_id = event.source.user_id
             text = ''
-            print(1)
-            print(driver_Sure_id_dict)
-            for id in driver_Sure_id_dict.values():
-                if id == user_id:
-                    reservation_case = get_key(driver_Sure_id_dict,id)
-                    for i in reservation_case:
-                        reservation = f'活動編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：{driver_sheet[i][8]}\n'
-                        text = text+reservation+'--------------------------------\n'
-                    text = '司機預約：\n'+text       
-                else:
-                    pass
-                print(2)
-            print(passenger_Sure_id_dict)      
-            for id in passenger_Sure_id_dict.values():
-                if id == user_id:
-                    text = text+'乘客（揪團）預約：\n'
-                    reservation_case = get_key(passenger_Sure_id_dict,id)
-                    for i in reservation_case:
-                        reservation = f'活動編號：{passenger_sheet[i][15]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
-                        text = text+reservation+'--------------------------------\n'      
-                else:
-                    pass    
+            if user_id in str(driver_Sure_id_dict.values()): # dict_value type 不能用 str in 的判斷式
+                reservation_case = get_key(driver_Sure_id_dict,str(user_id))
+                for i in reservation_case:
+                    reservation = f'活動編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：{driver_sheet[i][8]}\n'
+                    text = text+reservation+'--------------------------------\n'
+                text = '司機預約：\n'+text       
+            else:
+                pass   
+            if user_id in str(passenger_Sure_id_dict.values()): # dict_value type 不能用 str in 的判斷式
+                text = text+'乘客（揪團）預約：\n'
+                reservation_case = get_key(passenger_Sure_id_dict,str(user_id))
+                for i in reservation_case:
+                    reservation = f'活動編號：{passenger_sheet[i][15]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
+                    text = text+reservation+'--------------------------------\n'      
+            else:
+                pass    
             if text == '':
                 text = '您尚未預約任何活動'
             else:
