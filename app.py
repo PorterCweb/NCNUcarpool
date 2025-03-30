@@ -602,7 +602,7 @@ def handle_message(event):
                     line_bot_api.reply_message( #傳送'目前司機發起之活動預約人數皆已滿'回復訊息
                         ReplyMessageRequest(
                             reply_token=event.reply_token,
-                            messages=[TextMessage(text='目前司機發起之活動預約人數皆已滿')] 
+                            messages=[TextMessage(text='目前司機發起之活動預約人數皆已滿，或是逾期。')] 
                         )  
                     )
             else:
@@ -852,7 +852,7 @@ def handle_message(event):
                     line_bot_api.reply_message( #傳送'目前乘客發起之揪團活動預約人數皆已滿'回復訊息
                         ReplyMessageRequest(
                             reply_token=event.reply_token,
-                            messages=[TextMessage(text='目前乘客發起之揪團活動預約人數皆已滿')] 
+                            messages=[TextMessage(text='目前乘客發起之揪團活動預約人數皆已滿，或是逾期')] 
                         )  
                     )
             else:
@@ -863,27 +863,45 @@ def handle_message(event):
                     )  
                 )                
         elif text == '我的預約':
-            get_driver_sheet_case()
-            get_passenger_sheet_case()
             # 獲取使用者 user_ID 
             user_id = event.source.user_id
             text = ''
+            now_datetime = datetime.now()
+            now_date = now_datetime.strftime("%Y-%m-%d")
             if user_id in str(driver_Sure_id_dict.values()): # dict_value type 不能用 str in 的判斷式
+                driver_text = ''
                 reservation_case = get_key(driver_Sure_id_dict,str(user_id))
                 for i in reservation_case:
-                    reservation = f'活動編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：{driver_sheet[i][8]}\n'
-                    text = text+reservation+'--------------------------------\n'
-                text = '司機預約：\n'+text       
+                    driver_case_datetime = parse_custom_time(driver_sheet[i][3])
+                    driver_case_date = driver_case_datetime.strftime("%Y-%m-%d")
+                    if driver_case_date >= now_date:
+                        reservation = f'活動編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：{driver_sheet[i][8]}\n'
+                        driver_text = driver_text+reservation+'--------------------------------\n'
+                    else:
+                        pass
+            else:
+                pass
+            if driver_text != '':
+                text = '司機預約：\n'+driver_text      
             else:
                 pass   
             if user_id in str(passenger_Sure_id_dict.values()): # dict_value type 不能用 str in 的判斷式
-                text = text+'乘客（揪團）預約：\n'
+                passenger_text = text+'乘客（揪團）預約：\n'
                 reservation_case = get_key(passenger_Sure_id_dict,str(user_id))
                 for i in reservation_case:
-                    reservation = f'活動編號：{passenger_sheet[i][15]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
-                    text = text+reservation+'--------------------------------\n'      
+                    passenger_case_datetime = parse_custom_time(passenger_sheet[i][3])
+                    passenger_case_date = passenger_case_datetime.strftime("%Y-%m-%d")
+                    if passenger_case_date>= now_date:
+                        reservation = f'活動編號：{passenger_sheet[i][15]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
+                        passenger_text = passenger_text+reservation+'--------------------------------\n'    
+                    else:
+                        pass 
             else:
-                pass    
+                pass
+            if passenger_text!= text+'乘客（揪團）預約：\n':
+                text = text + passenger_text
+            else:
+                pass   
             if text == '':
                 text = '您尚未預約任何活動'
             else:
