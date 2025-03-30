@@ -1031,6 +1031,11 @@ def handle_postbak(event):
                                         messages = [TextMessage(text='已幫您預約')]
                                     )
                                 )
+                                try :
+                                    int(driver_sheet[i][14])
+                                    pass
+                                except ValueError:
+                                    driver_sheet[i][14]=0
                                 driver_sheet_id.update_cell(i+1,15,int(driver_sheet[i][14])+1)
                                 if driver_sheet_id.cell(i+1,16).value == None:
                                     new_id = driver_user_id
@@ -1119,6 +1124,10 @@ def handle_postbak(event):
                                         messages = [TextMessage(text='已幫您預約')]
                                     )
                                 )
+                                try :
+                                    int(passenger_sheet[i][13])
+                                except ValueError:
+                                    passenger_sheet[i][13]=0
                                 passenger_sheet_id.update_cell(i+1,14,int(passenger_sheet[i][13])+1) #因為dict只能start from 0，因此第一個共乘表單會在第0個，而google sheet第一行又是表單的項目，因此第一張表單會是i+1+1列。
                                 if passenger_sheet_id.cell(i+1,15).value == None:
                                     new_id = passenger_user_id
