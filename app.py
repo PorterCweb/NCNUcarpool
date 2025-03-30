@@ -535,7 +535,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_driver_data_case['body']['contents'].insert(3,r)
+                                web_driver_data_case['body']['contents'].insert(2,r)
                             if '自備零錢不找零' in driver_sheet[i][7]:
                                 r = {
                                             "type": "text",
@@ -545,7 +545,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_driver_data_case['body']['contents'].insert(3,r)
+                                web_driver_data_case['body']['contents'].insert(2,r)
                             if '接受線上付款 / 轉帳' in driver_sheet[i][7]:
                                 r = {
                                             "type": "text",
@@ -555,7 +555,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_driver_data_case['body']['contents'].insert(3,r)
+                                web_driver_data_case['body']['contents'].insert(2,r)
                             if '禁食' in driver_sheet[i][7]:
                                 r = {
                                             "type": "text",
@@ -576,7 +576,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_driver_data_case['body']['contents'].insert(3,r)
+                                web_driver_data_case['body']['contents'].insert(2,r)
                             line_flex_json['contents'].append(web_driver_data_case)
                         else:
                             pass
@@ -770,7 +770,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(3,r)
+                                web_passenger_data_case['body']['contents'].insert(2,r)
                             if '不聊天' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
@@ -780,7 +780,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(3,r)
+                                web_passenger_data_case['body']['contents'].insert(2,r)
                             if '嚴禁喝酒及抽菸' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
@@ -790,7 +790,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(3,r)
+                                web_passenger_data_case['body']['contents'].insert(2,r)
                             if '禁食' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
@@ -810,7 +810,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(3,r)
+                                web_passenger_data_case['body']['contents'].insert(2,r)
                             if '寵物需裝籠' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
@@ -820,7 +820,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(3,r)
+                                web_passenger_data_case['body']['contents'].insert(2,r)
                             if '※ 人滿才發車' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
@@ -831,7 +831,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(3,r)
+                                web_passenger_data_case['body']['contents'].insert(2,r)
                             if '已有司機' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
@@ -842,7 +842,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(3,r)
+                                web_passenger_data_case['body']['contents'].insert(2,r)
                             if '尚未有司機（徵求司機！）' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
@@ -853,7 +853,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(3,r)    
+                                web_passenger_data_case['body']['contents'].insert(2,r)    
                             if '叫車分攤費用' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
@@ -864,7 +864,7 @@ def handle_message(event):
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(3,r) 
+                                web_passenger_data_case['body']['contents'].insert(2,r) 
                             line_flex_json['contents'].append(web_passenger_data_case)   
                         else:
                             pass
