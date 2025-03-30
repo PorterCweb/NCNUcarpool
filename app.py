@@ -374,7 +374,6 @@ def handle_message(event):
                     driver_case_date = driver_case_datetime.strftime("%Y-%m-%d")
                     now_datetime = datetime.now()
                     now_date = now_datetime.strftime("%Y-%m-%d")
-                    intime_list = []
                     if driver_case_date>=now_date:
                         try :
                             int(driver_sheet[i][14])
@@ -382,7 +381,6 @@ def handle_message(event):
                         except ValueError:
                             driver_sheet[i][14]=0
                         if int(driver_sheet[i][14]) < int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
-                            intime_list.append(i)
                             web_driver_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -627,14 +625,12 @@ def handle_message(event):
                     passenger_case_date = passenger_case_datetime.strftime("%Y-%m-%d")
                     now_datetime = datetime.now()
                     now_date = now_datetime.strftime("%Y-%m-%d")
-                    intime_list = []
                     if passenger_case_date>=now_date:
                         try :
                             int(passenger_sheet[i][13])
                         except ValueError:
                             passenger_sheet[i][13]=0
                         if int(passenger_sheet[i][13]) < int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
-                            intime_list.append(i)
                             web_passenger_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -888,14 +884,7 @@ def handle_message(event):
                             pass
                     else:
                         pass
-                if intime_list== []:
-                    line_bot_api.reply_message( # 傳送'目前尚無司機發起共乘活動'回復訊息
-                        ReplyMessageRequest(
-                            reply_token=event.reply_token,
-                            messages=[TextMessage(text='目前尚無司機發起共乘活動')] 
-                        )  
-                    )
-                elif line_flex_json != {
+                if line_flex_json != {
                     "type": "carousel",
                     "contents": []
                 }:
