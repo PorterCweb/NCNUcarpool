@@ -375,7 +375,12 @@ def handle_message(event):
                     now_datetime = datetime.now()
                     now_date = now_datetime.strftime("%Y-%m-%d")
                     if driver_case_date>=now_date:
-                        if int(driver_sheet[i][14]) < int(driver_sheet[i][5]):
+                        try :
+                            int(driver_sheet[i][14])
+                            pass
+                        except ValueError:
+                            driver_sheet[i][14]=0
+                        if int(driver_sheet[i][14]) < int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
                             web_driver_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -621,7 +626,11 @@ def handle_message(event):
                     now_datetime = datetime.now()
                     now_date = now_datetime.strftime("%Y-%m-%d")
                     if passenger_case_date>=now_date:
-                        if int(passenger_sheet[i][13]) < int(passenger_sheet[i][5]) or int(passenger_sheet[i][13]) == 0:
+                        try :
+                            int(passenger_sheet[i][13])
+                        except ValueError:
+                            passenger_sheet[i][13]=0
+                        if int(passenger_sheet[i][13]) < int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
                             print(passenger_sheet[i])
                             web_passenger_data_case={
                                 "type": "bubble",
