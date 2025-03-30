@@ -313,10 +313,9 @@ def get_driver_sheet_case():
         for i in range(1,web_driver_len):
             driver_Sure_id_dict[i] = driver_sheet[i][15]
             driver_Sure_name_dict[i] = driver_sheet[i][16]
-            if driver_sheet_id.cell(i+1,15).value == None:
+            if driver_sheet_id.cell(i+1,18).value == None:
                 driver_sheet_id.update_cell(i+1,15,0)
-            else:
-                pass
+                driver_sheet_id.update_cell(i+1,18,i+1)
         print('司機發起之活動已抓取')
         print(driver_Sure_id_dict)
     except:
@@ -335,8 +334,9 @@ def get_passenger_sheet_case():
         for i in range(1,web_passenger_len):
             passenger_Sure_id_dict[i] = passenger_sheet[i][13]
             passenger_Sure_name_dict[i] = passenger_sheet[i][14]
-            if passenger_sheet_id.cell(i+1,13).value == None:
+            if passenger_sheet_id.cell(i+1,16).value == None:
                 passenger_sheet_id.update_cell(i+1,13,0)
+                passenger_sheet_id.update_cell(i+1,16,i+1)
             else:
                 pass
         print('乘客發起之揪團活動已抓取')
