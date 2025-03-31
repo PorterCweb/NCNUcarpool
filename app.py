@@ -860,7 +860,7 @@ def handle_message(event):
                             if '尚未有司機（徵求司機！）' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
-                                            "text": "已有司機",
+                                            "text": "尚未有司機（徵求司機！）",
                                             "size": "sm",
                                             "margin": "none",
                                             "color": "#ff5551",
@@ -871,7 +871,7 @@ def handle_message(event):
                             if '叫車分攤費用' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
-                                            "text": "已有司機",
+                                            "text": "叫車分攤費用",
                                             "size": "sm",
                                             "margin": "none",
                                             "color": "#ff5551",
