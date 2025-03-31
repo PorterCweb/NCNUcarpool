@@ -351,8 +351,8 @@ def run_scheduler():
         schedule.run_pending()
         time.sleep(0.1)  
 schedule.every(30).minutes.do(check_project)
-schedule.every(10).seconds.do(get_driver_sheet_case)
-schedule.every(10).seconds.do(get_passenger_sheet_case)
+schedule.every(30).seconds.do(get_driver_sheet_case)
+schedule.every(30).seconds.do(get_passenger_sheet_case)
 scheduler_thread_case = threading.Thread(target=run_scheduler)
 scheduler_thread_case.daemon = True  # 主程式結束此也結束
 scheduler_thread_case.start()
