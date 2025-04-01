@@ -206,17 +206,20 @@ def check_project():
                 except Exception as e:
                     print(f"發送郵件時出錯: {e}")    
                 # 當活動人數已滿的時候，向活動參與者發送提醒（告知可發車及聯繫發起人）
-                driver_Sure = driver_sheet[i][15]
-                driver_Sure_list = driver_Sure.split(',')
-                for r in driver_Sure_list:
-                    with ApiClient(configuration) as api_client:
-                        line_bot_api = MessagingApi(api_client)
-                        line_bot_api.push_message(
-                            PushMessageRequest(
-                                to=r,
-                                messages=[TextMessage(text=driver_text)]
-                            )
-                        )  
+                try:
+                    driver_Sure = driver_sheet[i][15]
+                    driver_Sure_list = driver_Sure.split(',')
+                    for r in driver_Sure_list:
+                        with ApiClient(configuration) as api_client:
+                            line_bot_api = MessagingApi(api_client)
+                            line_bot_api.push_message(
+                                PushMessageRequest(
+                                    to=r,
+                                    messages=[TextMessage(text=driver_text)]
+                                )
+                            )  
+                except:
+                    pass
             else:
                 pass
         else:
@@ -284,17 +287,20 @@ def check_project():
                 except Exception as e:
                     print(f"發送郵件時出錯: {e}")           
                 # 當活動人數已滿的時候，向活動參與者發送提醒（告知可發車及聯繫發起人）
-                passenger_Sure = passenger_sheet[i][14]
-                passenger_Sure_list = passenger_Sure.split(',')
-                for r in passenger_Sure_list:
-                    with ApiClient(configuration) as api_client:
-                        line_bot_api = MessagingApi(api_client)
-                        line_bot_api.push_message(
-                            PushMessageRequest(
-                                to=r,
-                                messages=[TextMessage(text=passenger_text)]
+                try:
+                    passenger_Sure = passenger_sheet[i][14]
+                    passenger_Sure_list = passenger_Sure.split(',')
+                    for r in passenger_Sure_list:
+                        with ApiClient(configuration) as api_client:
+                            line_bot_api = MessagingApi(api_client)
+                            line_bot_api.push_message(
+                                PushMessageRequest(
+                                    to=r,
+                                    messages=[TextMessage(text=passenger_text)]
+                                )
                             )
-                        )
+                except:
+                    pass
             else:
                 pass
         else:
