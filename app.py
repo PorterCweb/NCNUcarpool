@@ -1063,7 +1063,7 @@ def handle_postbak(event):
                                 line_bot_api.reply_message(
                                     ReplyMessageRequest(
                                         reply_token = event.reply_token,
-                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[i][10]}，車牌及型號：{driver_sheet[i][18]}')]
+                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!\n發起人LineID：{driver_sheet[i][10]}\n車牌及型號：{driver_sheet[i][18]}')]
                                     )
                                 )
                                 try :
@@ -1156,7 +1156,7 @@ def handle_postbak(event):
                                 line_bot_api.reply_message(
                                     ReplyMessageRequest(
                                         reply_token = event.reply_token,
-                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!發起人LineID：{passenger_sheet[i][10]}')]
+                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!\n發起人LineID：{passenger_sheet[i][10]}')]
                                     )
                                 )
                                 try :
