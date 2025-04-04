@@ -577,6 +577,36 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_driver_data_case['body']['contents'].insert(2,r)
+                            if '不聊天' in driver_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "不聊天",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_driver_data_case['body']['contents'].insert(2,r)
+                            if '寵物需裝籠' in driver_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "寵物需裝籠",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_driver_data_case['body']['contents'].insert(2,r)
+                            if '謝絕寵物' in driver_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "謝絕寵物",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_driver_data_case['body']['contents'].insert(2,r)
                             if '※ 人滿才發車' in driver_sheet[i][7]:
                                 r = {
                                             "type": "text",
@@ -841,17 +871,6 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '※ 人滿才發車' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "※ 人滿才發車",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "color": "#ff5551",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
                             if '已有司機' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
@@ -885,7 +904,18 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(2,r) 
-                            line_flex_json['contents'].append(web_passenger_data_case)   
+                            if '※ 人滿才發車' in passenger_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "※ 人滿才發車",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "color": "#ff5551",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_passenger_data_case['body']['contents'].insert(2,r)
+                                line_flex_json['contents'].append(web_passenger_data_case)   
                         else:
                             pass
                     else:
@@ -1033,7 +1063,7 @@ def handle_postbak(event):
                                 line_bot_api.reply_message(
                                     ReplyMessageRequest(
                                         reply_token = event.reply_token,
-                                        messages = [TextMessage(text='已幫您預約')]
+                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[i][10]}，車牌及型號：{driver_sheet[i][18]}')]
                                     )
                                 )
                                 try :
@@ -1126,7 +1156,7 @@ def handle_postbak(event):
                                 line_bot_api.reply_message(
                                     ReplyMessageRequest(
                                         reply_token = event.reply_token,
-                                        messages = [TextMessage(text='已幫您預約')]
+                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!發起人LineID：{passenger_sheet[i][10]}')]
                                     )
                                 )
                                 try :
