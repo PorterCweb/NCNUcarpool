@@ -921,7 +921,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(2,r)
-                                line_flex_json['contents'].append(web_passenger_data_case)   
+                            line_flex_json['contents'].append(web_passenger_data_case)   
                         else:
                             pass
                     else:
