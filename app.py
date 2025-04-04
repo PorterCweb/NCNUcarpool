@@ -236,11 +236,11 @@ def check_project():
                     name_list = passenger_Sure_name_dict.get(i).split(',')
                     output = '、'.join(map(str, name_list))
                     str1 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數已滿了，活動資訊如下：'
-                    str2 = f'共乘編號：{passenger_sheet[i][16]}<br>發車地點：{passenger_sheet[i][2]}<br>目的地：{passenger_sheet[i][4]}<br>出發時間：<br>{passenger_sheet[i][3]}<br>總時程：{time_hrmi(int(passenger_sheet[i][6]))}<br>發起人：{passenger_sheet[i][9]}<br>手機號碼：{passenger_sheet[i][12]}<br>LineID：{passenger_sheet[i][10]}<br>共乘人數上限：{passenger_sheet[i][5]}<br>交通工具：{passenger_sheet[i][11]}行車規範：<br>{passenger_sheet[i][7]}\n簡介：\n{passenger_sheet[i][8]}<br>'
+                    str2 = f'共乘編號：{passenger_sheet[i][16]}<br>發車地點：{passenger_sheet[i][2]}<br>目的地：{passenger_sheet[i][4]}<br>出發時間：<br>{passenger_sheet[i][3]}<br>總時程：{time_hrmi(int(passenger_sheet[i][6]))}<br>發起人：{passenger_sheet[i][9]}<br>手機號碼：{passenger_sheet[i][12]}<br>LineID：{passenger_sheet[i][10]}<br>共乘人數上限：{passenger_sheet[i][5]}<br>交通工具：{passenger_sheet[i][11]}<br>行車規範：<br>{passenger_sheet[i][7]}\n簡介：\n{passenger_sheet[i][8]}<br>'
                     str3 = f'參與者Line名稱:{output}'
                     str4 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數已滿囉'
                     # 針對 Linebot 參與的乘客
-                    passenger_text = f'您參加的（乘客揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{passenger_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
+                    passenger_text = f'您參加的（乘客揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{passenger_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
                 # 有人且發起者未勾選 ※ 人滿才發車
                 elif '※ 人滿才發車' not in passenger_sheet[i][7] and int(passenger_sheet[i][13])>0:
                     # 寄信給發起人，告知結果
@@ -986,7 +986,7 @@ def handle_message(event):
                     passenger_case_launchdatetime = parse_custom_time(passenger_sheet[i][0])
                     passenger_case_launchdate = passenger_case_launchdatetime.strftime("%Y-%m-%d")
                     if passenger_case_date >= now_date or passenger_case_launchdate == now_date:
-                        reservation = f'共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
+                        reservation = f'共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
                         passenger_text = passenger_text+reservation+'--------------------------------\n'    
                     else:
                         pass 
@@ -1118,7 +1118,7 @@ def handle_postbak(event):
                     line_bot_api = MessagingApi(api_client)
                     if passenger_case_date > now_date or passenger_case_launchdate == now_date:
                         confirm_template = ConfirmTemplate(
-                            text = f'共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][12]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n',
+                            text = f'共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n',
                             actions=[ #一定只能放兩個Action
                                 PostbackAction(label='確定搭乘', text='確定!', data=f'passenger_Sure{i}'),
                                 MessageAction(label='再考慮', text='再考慮')   
