@@ -362,7 +362,8 @@ schedule.every(10).minutes.do(check_project)
 schedule.every(20).seconds.do(get_driver_sheet_case)
 schedule.every(20).seconds.do(get_passenger_sheet_case)
 scheduler_thread_case = threading.Thread(target=run_scheduler)
-scheduler_thread_case.daemon = True  # 主程式結束此也結束
+# 20250418有可能運行期間出現問題後(任何)，就會永久結束，需要伺服器重啟才能再執行，因此不使用。
+# scheduler_thread_case.daemon = True 主程式結束此也結束
 scheduler_thread_case.start()
 # Tamplate Message
 @line_handler.add(MessageEvent, message = TextMessageContent)
