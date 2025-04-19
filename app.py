@@ -139,7 +139,7 @@ web_driver_Sure = set()
 web_passenger_Sure = set()
 from tenacity import retry, stop_after_attempt, retry_if_exception_type, wait_fixed
 def check_project():    
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(25), retry=retry_if_exception_type(gspread.exceptions.APIError))
+    @retry(stop=stop_after_attempt(3), wait=wait_fixed(60), retry=retry_if_exception_type(gspread.exceptions.APIError))
     def check_project_s():
         global web_driver_Sure, web_passenger_Sure
         print(f"目前已處理的司機: {web_driver_Sure}")
