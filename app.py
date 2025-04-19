@@ -109,7 +109,6 @@ def parse_custom_time(time_str):
     datetime_str = f"{date_part} {time_part} {ampm_en}"
     return datetime.strptime(datetime_str, "%Y/%m/%d %I:%M:%S %p")
 # 獲得dict內的value
-dict= {1: 'Ufdd0787ca7bc63b64665cdb9a95fd477,Ufdd0787ca7bc63b64665cdb9a95fd477', 2: ''}
 def get_key(dict, target):
     number_list = []
     for i in range(len(dict)):
@@ -118,7 +117,7 @@ def get_key(dict, target):
         else:
             pass
     return(number_list)
-#   token.json的資料如放在公開伺服器上執行之類的，會遭停用，需到google cloud重新建立金鑰，否則會跳出JWP錯誤
+# token.json的資料如放在公開伺服器上執行之類的，會遭停用，需到google cloud重新建立金鑰，否則會跳出JWP錯誤
 import tempfile
 import os
 from dotenv import load_dotenv
@@ -138,219 +137,233 @@ passenger_sheet = passenger_sheet_id.get_all_values()
 # 初始化追踪字典，為每個索引設置False
 web_driver_Sure = set()
 web_passenger_Sure = set()
-def check_project():
-    global web_driver_Sure, web_passenger_Sure
-    print(f"目前已處理的司機: {web_driver_Sure}")
-    print(f"目前已處理的乘客: {web_passenger_Sure}")
-    for i in range(1,web_driver_len):
-        driver_case_datetime = parse_custom_time(driver_sheet[i][3])
-        driver_case_date = driver_case_datetime.strftime("%Y-%m-%d")
-        now_datetime = datetime.now()
-        now_date = now_datetime.strftime("%Y-%m-%d")
-        if i not in web_driver_Sure:
-            if driver_case_date == now_date:
-                # 有人且已滿
-                if int(driver_sheet[i][14])== int(driver_sheet[i][5]):
-                    # 寄信給發起人，告知結果
-                    name_list = driver_Sure_name_dict.get(i).split(',')
-                    output = '、'.join(map(str, name_list))
-                    str1 = '您在 共乘阿穿 發起的（有司機）共乘活動人數已滿了，活動資訊如下：'
-                    str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：<br>{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>價格：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：<br>{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
-                    str3 = f'參與者Line名稱:{output}'
-                    str4 = '您在 共乘阿穿 發起的（有司機）共乘活動人數已滿囉'
-                    # 針對 Linebot 參與的乘客
-                    driver_text = f'您參加的（有司機）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：\n{driver_sheet[i][8]}\n'
-                # 有人且發起者未勾選 ※ 人滿才發車
-                elif '※ 人滿才發車' not in driver_sheet[i][7] and int(driver_sheet[i][14])>0:
-                    # 寄信給發起人，告知結果
-                    name_list = driver_Sure_name_dict.get(i).split(',')
-                    output = '、'.join(map(str, name_list))
-                    str1 = '您在 共乘阿穿 發起的（司機揪團）共乘活動人數未滿，但您未勾選「人滿才發車」，因此成團喔！活動資訊如下：'
-                    str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：<br>{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>價格：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：<br>{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
-                    str3 = f'參與者Line名稱:{output}'
-                    str4 = '您在 共乘阿穿 發起的（司機揪團）共乘活動人數未滿，但您未勾選「人滿才發車」，因此成團喔！'
-                    # 針對 Linebot 參與的乘客
-                    driver_text = f'您參加的（司機揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：{driver_sheet[i][7]}\n簡介：\n{driver_sheet[i][8]}\n'
-                # 未成團
-                else:
-                    # 寄信給發起人，告知結果
-                    str1 = f'您在 共乘阿穿 發起的（司機揪團）共乘活動人數未滿，共乘編號為{driver_sheet[i][17]}，因此未發車。活動資訊如下：'
-                    str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：<br>{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>價格：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：<br>{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
-                    str3 = ''
-                    str4 = '您在 共乘阿穿 發起的（司機揪團）共乘活動人數未滿'
-                    # 針對 Linebot 參與的乘客
-                    driver_text = f'您參與的（司機揪團）共乘活動因人數未滿而不發車喔!共乘編號為{driver_sheet[i][17]}'
-                # 寄信給發起人
-                name_list = driver_Sure_name_dict.get(i).split(',')
-                output = ','.join(map(str, name_list))
-                html =f'''
-                <h1 style="color:black">共乘阿穿</h1>
-                <div style="color:black">{str1}</div>
-                <div style="color:black">{str2}<div>
-                <div style="color:black">{str3}<div>
-                '''
-                mail = MIMEText(html, 'html', 'utf-8')   # plain 換成 html，就能寄送 HTML 格式的信件
-                mail['Subject']= f'{str4}'
-                mail['From']='adf'
-                mail['To']= driver_sheet[i][1]
-                try:
-                    smtp = smtplib.SMTP('smtp.gmail.com', 587)
-                    smtp.ehlo()
-                    smtp.starttls()
-                    smtp.login('ncnucarpool@gmail.com',os.getenv('GMAIL_PASSWORD'))
-                    status = smtp.send_message(mail)
-                    smtp.quit()
-                    # 將此索引添加到已處理集合中
-                    web_driver_Sure.add(i)
-                    print(f"司機 {i} 已標記為處理完成")
-                except Exception as e:
-                    print(f"發送郵件時出錯: {e}")    
-                # 當活動人數已滿的時候，向活動參與者發送提醒（告知可發車及聯繫發起人）
-                try:
-                    driver_Sure = driver_sheet[i][15]
-                    driver_Sure_list = driver_Sure.split(',')
-                    for r in driver_Sure_list:
-                        with ApiClient(configuration) as api_client:
-                            line_bot_api = MessagingApi(api_client)
-                            line_bot_api.push_message(
-                                PushMessageRequest(
-                                    to=r,
-                                    messages=[TextMessage(text=driver_text)]
-                                )
-                            )  
-                except:
-                    pass
-            else:
-                pass
-        else:
-            pass
-    for i in range(1,web_passenger_len):
-        passenger_case_datetime = parse_custom_time(passenger_sheet[i][3])
-        passenger_case_date = passenger_case_datetime.strftime("%Y-%m-%d")
-        now_datetime = datetime.now()
-        now_date = now_datetime.strftime("%Y-%m-%d")
-        if i not in web_passenger_Sure :
-            if passenger_case_date == now_date:
-                # 有人且已滿
-                if int(passenger_sheet[i][13])== int(passenger_sheet[i][5]):
-                    name_list = passenger_Sure_name_dict.get(i).split(',')
-                    output = '、'.join(map(str, name_list))
-                    str1 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數已滿了，活動資訊如下：'
-                    str2 = f'共乘編號：{passenger_sheet[i][16]}<br>發車地點：{passenger_sheet[i][2]}<br>目的地：{passenger_sheet[i][4]}<br>出發時間：<br>{passenger_sheet[i][3]}<br>總時程：{time_hrmi(int(passenger_sheet[i][6]))}<br>發起人：{passenger_sheet[i][9]}<br>手機號碼：{passenger_sheet[i][12]}<br>LineID：{passenger_sheet[i][10]}<br>共乘人數上限：{passenger_sheet[i][5]}<br>交通工具：{passenger_sheet[i][11]}<br>行車規範：<br>{passenger_sheet[i][7]}\n簡介：\n{passenger_sheet[i][8]}<br>'
-                    str3 = f'參與者Line名稱:{output}'
-                    str4 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數已滿囉'
-                    # 針對 Linebot 參與的乘客
-                    passenger_text = f'您參加的（乘客揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{passenger_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
-                # 有人且發起者未勾選 ※ 人滿才發車
-                elif '※ 人滿才發車' not in passenger_sheet[i][7] and int(passenger_sheet[i][13])>0:
-                    # 寄信給發起人，告知結果
-                    name_list = passenger_Sure_name_dict.get(i).split(',')
-                    output = '、'.join(map(str, name_list))
-                    str1 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數未滿，但您未勾選「人滿才發車」，因此成團喔！活動資訊如下：'
-                    str2 = f'共乘編號：{passenger_sheet[i][16]}<br>發車地點：{passenger_sheet[i][2]}<br>目的地：{passenger_sheet[i][4]}<br>出發時間：<br>{passenger_sheet[i][3]}<br>總時程：{time_hrmi(int(passenger_sheet[i][6]))}<br>發起人：{passenger_sheet[i][9]}<br>手機號碼：{passenger_sheet[i][12]}<br>LineID：{passenger_sheet[i][10]}<br>共乘人數上限：{passenger_sheet[i][5]}<br>交通工具：{passenger_sheet[i][11]}<br>行車規範：<br>{passenger_sheet[i][7]}\n簡介：<br>{passenger_sheet[i][8]}<br>'
-                    str3 = f'參與者Line名稱:{output}'
-                    str4 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數未滿，但您未勾選「人滿才發車」，因此成團喔！'
-                    # 針對 Linebot 參與的乘客
-                    passenger_text = f'您參加的（乘客揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{passenger_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
-                # 未成團
-                else:
-                    # 寄信給發起人，告知結果    
-                    str1 = f'您在 共乘阿穿 發起的（乘客揪團）共乘活動人數未滿，共乘編號為{passenger_sheet[i][16]}，因此未發車。活動資訊如下：'
-                    str2 = f'共乘編號：{passenger_sheet[i][16]}<br>發車地點：{passenger_sheet[i][2]}<br>目的地：{passenger_sheet[i][4]}<ber>出發時間：<br>{passenger_sheet[i][3]}<br>總時程：{time_hrmi(int(passenger_sheet[i][6]))}<br>發起人：{passenger_sheet[i][9]}<br>手機號碼：{passenger_sheet[i][12]}<br>LineID：{passenger_sheet[i][10]}<br>共乘人數上限：{passenger_sheet[i][5]}<br>交通工具：{passenger_sheet[i][11]}<br>行車規範：<br>{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}<br>'
-                    str3 = ''
-                    str4 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數未滿'
-                    # 針對 Linebot 參與的乘客
-                    passenger_text = f'您參與的（乘客揪團）共乘活動因人數未滿而不發車喔!共乘編號為{passenger_sheet[i][16]}'
-                # 寄信給發起人
-                name_list = passenger_Sure_name_dict.get(i).split(',')
-                output = ','.join(map(str, name_list))
-                html =f'''
-                <h1 style="color:black">共乘阿穿</h1>
-                <div style="color:black">{str1}</div>
-                <div style="color:black">{str2}<div>
-                <div style="color:black">{str3}<div>
-                '''
-                mail = MIMEText(html, 'html', 'utf-8')   # plain 換成 html，就能寄送 HTML 格式的信件
-                mail['Subject']= str4
-                mail['From']='adf'
-                mail['To']= passenger_sheet[i][1]
-                try:
-                    smtp = smtplib.SMTP('smtp.gmail.com', 587)
-                    smtp.ehlo()
-                    smtp.starttls()
-                    smtp.login('ncnucarpool@gmail.com',os.getenv('GMAIL_PASSWORD'))
-                    status = smtp.send_message(mail)
-                    smtp.quit()
-                    # 將此索引添加到已處理集合中
-                    web_passenger_Sure.add(i)
-                    print(f"乘客 {i} 已標記為處理完成")
-                except Exception as e:
-                    print(f"發送郵件時出錯: {e}")           
-                # 當活動人數已滿的時候，向活動參與者發送提醒（告知可發車及聯繫發起人）
-                try:
-                    passenger_Sure = passenger_sheet[i][14]
-                    passenger_Sure_list = passenger_Sure.split(',')
-                    for r in passenger_Sure_list:
-                        with ApiClient(configuration) as api_client:
-                            line_bot_api = MessagingApi(api_client)
-                            line_bot_api.push_message(
-                                PushMessageRequest(
-                                    to=r,
-                                    messages=[TextMessage(text=passenger_text)]
-                                )
-                            )
-                except:
-                    pass
-            else:
-                pass
-        else:
-            pass
-def get_driver_sheet_case():
-    global driver_sheet, web_driver_len, driver_Sure_id_dict, driver_Sure_name_dict
-    driver_sheet = driver_sheet_id.get_all_values()
-    try:
-        web_driver_len=len(driver_sheet) #抓取司機表單中有幾筆資料(已藉由更改其App script的程式碼扣除第一列的項目)
-    except requests.exceptions.JSONDecodeError:
-        web_driver_len = 0
-    try:
-        # 設定一個司機發起的活動dict容納確定參與的使用者
-        driver_Sure_id_dict = {}
-        driver_Sure_name_dict = {}
+from tenacity import retry, stop_after_attempt, retry_if_exception_type, wait_fixed
+def check_project():    
+    @retry(stop=stop_after_attempt(3), wait=wait_fixed(25), retry=retry_if_exception_type(gspread.exceptions.APIError))
+    def check_project_s():
+        global web_driver_Sure, web_passenger_Sure
+        print(f"目前已處理的司機: {web_driver_Sure}")
+        print(f"目前已處理的乘客: {web_passenger_Sure}")
         for i in range(1,web_driver_len):
-            driver_Sure_id_dict[i] = driver_sheet[i][15]
-            driver_Sure_name_dict[i] = driver_sheet[i][16]
-            if driver_sheet_id.cell(i+1,18).value == None:
-                driver_sheet_id.update_cell(i+1,15,0)
-                driver_sheet_id.update_cell(i+1,18,i+1)
+            driver_case_datetime = parse_custom_time(driver_sheet[i][3])
+            driver_case_date = driver_case_datetime.strftime("%Y-%m-%d")
+            now_datetime = datetime.now()
+            now_date = now_datetime.strftime("%Y-%m-%d")
+            if i not in web_driver_Sure:
+                if driver_case_date == now_date:
+                    # 有人且已滿
+                    if int(driver_sheet[i][14])== int(driver_sheet[i][5]):
+                        # 寄信給發起人，告知結果
+                        name_list = driver_Sure_name_dict.get(i).split(',')
+                        output = '、'.join(map(str, name_list))
+                        str1 = '您在 共乘阿穿 發起的（有司機）共乘活動人數已滿了，活動資訊如下：'
+                        str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：<br>{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>價格：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：<br>{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
+                        str3 = f'參與者Line名稱:{output}'
+                        str4 = '您在 共乘阿穿 發起的（有司機）共乘活動人數已滿囉'
+                        # 針對 Linebot 參與的乘客
+                        driver_text = f'您參加的（有司機）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：\n{driver_sheet[i][8]}\n'
+                    # 有人且發起者未勾選 ※ 人滿才發車
+                    elif '※ 人滿才發車' not in driver_sheet[i][7] and int(driver_sheet[i][14])>0:
+                        # 寄信給發起人，告知結果
+                        name_list = driver_Sure_name_dict.get(i).split(',')
+                        output = '、'.join(map(str, name_list))
+                        str1 = '您在 共乘阿穿 發起的（司機揪團）共乘活動人數未滿，但您未勾選「人滿才發車」，因此成團喔！活動資訊如下：'
+                        str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：<br>{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>價格：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：<br>{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
+                        str3 = f'參與者Line名稱:{output}'
+                        str4 = '您在 共乘阿穿 發起的（司機揪團）共乘活動人數未滿，但您未勾選「人滿才發車」，因此成團喔！'
+                        # 針對 Linebot 參與的乘客
+                        driver_text = f'您參加的（司機揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：{driver_sheet[i][7]}\n簡介：\n{driver_sheet[i][8]}\n'
+                    # 未成團
+                    else:
+                        # 寄信給發起人，告知結果
+                        str1 = f'您在 共乘阿穿 發起的（司機揪團）共乘活動人數未滿，共乘編號為{driver_sheet[i][17]}，因此未發車。活動資訊如下：'
+                        str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：<br>{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>價格：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：<br>{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
+                        str3 = ''
+                        str4 = '您在 共乘阿穿 發起的（司機揪團）共乘活動人數未滿'
+                        # 針對 Linebot 參與的乘客
+                        driver_text = f'您參與的（司機揪團）共乘活動因人數未滿而不發車喔!共乘編號為{driver_sheet[i][17]}'
+                    # 寄信給發起人
+                    name_list = driver_Sure_name_dict.get(i).split(',')
+                    output = ','.join(map(str, name_list))
+                    html =f'''
+                    <h1 style="color:black">共乘阿穿</h1>
+                    <div style="color:black">{str1}</div>
+                    <div style="color:black">{str2}<div>
+                    <div style="color:black">{str3}<div>
+                    '''
+                    mail = MIMEText(html, 'html', 'utf-8')   # plain 換成 html，就能寄送 HTML 格式的信件
+                    mail['Subject']= f'{str4}'
+                    mail['From']='adf'
+                    mail['To']= driver_sheet[i][1]
+                    try:
+                        smtp = smtplib.SMTP('smtp.gmail.com', 587)
+                        smtp.ehlo()
+                        smtp.starttls()
+                        smtp.login('ncnucarpool@gmail.com',os.getenv('GMAIL_PASSWORD'))
+                        status = smtp.send_message(mail)
+                        smtp.quit()
+                        # 將此索引添加到已處理集合中
+                        web_driver_Sure.add(i)
+                        print(f"司機 {i} 已標記為處理完成")
+                    except Exception as e:
+                        print(f"發送郵件時出錯: {e}")    
+                    # 當活動人數已滿的時候，向活動參與者發送提醒（告知可發車及聯繫發起人）
+                    try:
+                        driver_Sure = driver_sheet[i][15]
+                        driver_Sure_list = driver_Sure.split(',')
+                        for r in driver_Sure_list:
+                            with ApiClient(configuration) as api_client:
+                                line_bot_api = MessagingApi(api_client)
+                                line_bot_api.push_message(
+                                    PushMessageRequest(
+                                        to=r,
+                                        messages=[TextMessage(text=driver_text)]
+                                    )
+                                )  
+                    except:
+                        pass
+                else:
+                    pass
             else:
                 pass
-        print('司機發起之活動已抓取')
-        print(driver_Sure_id_dict)
-    except:
-        print('司機發起之活動尚無資料')   
-def get_passenger_sheet_case():
-    global passenger_sheet, web_passenger_len, passenger_Sure_id_dict, passenger_Sure_name_dict
-    passenger_sheet = passenger_sheet_id.get_all_values()
-    try:
-        web_passenger_len=len(passenger_sheet) #抓取司機表單中有幾筆資料(已藉由更改其App script的程式碼扣除第一列的項目)
-    except requests.exceptions.JSONDecodeError:
-        web_passenger_len = 0
-    try:
-        # 設定一個揪團的dict容納確定參與的使用者
-        passenger_Sure_id_dict = {}
-        passenger_Sure_name_dict = {}
         for i in range(1,web_passenger_len):
-            passenger_Sure_id_dict[i] = passenger_sheet[i][14]
-            passenger_Sure_name_dict[i] = passenger_sheet[i][15]
-            if passenger_sheet_id.cell(i+1,17).value == None:
-                passenger_sheet_id.update_cell(i+1,14,0)
-                passenger_sheet_id.update_cell(i+1,17,i+1)
+            passenger_case_datetime = parse_custom_time(passenger_sheet[i][3])
+            passenger_case_date = passenger_case_datetime.strftime("%Y-%m-%d")
+            now_datetime = datetime.now()
+            now_date = now_datetime.strftime("%Y-%m-%d")
+            if i not in web_passenger_Sure :
+                if passenger_case_date == now_date:
+                    # 有人且已滿
+                    if int(passenger_sheet[i][13])== int(passenger_sheet[i][5]):
+                        name_list = passenger_Sure_name_dict.get(i).split(',')
+                        output = '、'.join(map(str, name_list))
+                        str1 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數已滿了，活動資訊如下：'
+                        str2 = f'共乘編號：{passenger_sheet[i][16]}<br>發車地點：{passenger_sheet[i][2]}<br>目的地：{passenger_sheet[i][4]}<br>出發時間：<br>{passenger_sheet[i][3]}<br>總時程：{time_hrmi(int(passenger_sheet[i][6]))}<br>發起人：{passenger_sheet[i][9]}<br>手機號碼：{passenger_sheet[i][12]}<br>LineID：{passenger_sheet[i][10]}<br>共乘人數上限：{passenger_sheet[i][5]}<br>交通工具：{passenger_sheet[i][11]}<br>行車規範：<br>{passenger_sheet[i][7]}\n簡介：\n{passenger_sheet[i][8]}<br>'
+                        str3 = f'參與者Line名稱:{output}'
+                        str4 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數已滿囉'
+                        # 針對 Linebot 參與的乘客
+                        passenger_text = f'您參加的（乘客揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{passenger_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
+                    # 有人且發起者未勾選 ※ 人滿才發車
+                    elif '※ 人滿才發車' not in passenger_sheet[i][7] and int(passenger_sheet[i][13])>0:
+                        # 寄信給發起人，告知結果
+                        name_list = passenger_Sure_name_dict.get(i).split(',')
+                        output = '、'.join(map(str, name_list))
+                        str1 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數未滿，但您未勾選「人滿才發車」，因此成團喔！活動資訊如下：'
+                        str2 = f'共乘編號：{passenger_sheet[i][16]}<br>發車地點：{passenger_sheet[i][2]}<br>目的地：{passenger_sheet[i][4]}<br>出發時間：<br>{passenger_sheet[i][3]}<br>總時程：{time_hrmi(int(passenger_sheet[i][6]))}<br>發起人：{passenger_sheet[i][9]}<br>手機號碼：{passenger_sheet[i][12]}<br>LineID：{passenger_sheet[i][10]}<br>共乘人數上限：{passenger_sheet[i][5]}<br>交通工具：{passenger_sheet[i][11]}<br>行車規範：<br>{passenger_sheet[i][7]}\n簡介：<br>{passenger_sheet[i][8]}<br>'
+                        str3 = f'參與者Line名稱:{output}'
+                        str4 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數未滿，但您未勾選「人滿才發車」，因此成團喔！'
+                        # 針對 Linebot 參與的乘客
+                        passenger_text = f'您參加的（乘客揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{passenger_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
+                    # 未成團
+                    else:
+                        # 寄信給發起人，告知結果    
+                        str1 = f'您在 共乘阿穿 發起的（乘客揪團）共乘活動人數未滿，共乘編號為{passenger_sheet[i][16]}，因此未發車。活動資訊如下：'
+                        str2 = f'共乘編號：{passenger_sheet[i][16]}<br>發車地點：{passenger_sheet[i][2]}<br>目的地：{passenger_sheet[i][4]}<ber>出發時間：<br>{passenger_sheet[i][3]}<br>總時程：{time_hrmi(int(passenger_sheet[i][6]))}<br>發起人：{passenger_sheet[i][9]}<br>手機號碼：{passenger_sheet[i][12]}<br>LineID：{passenger_sheet[i][10]}<br>共乘人數上限：{passenger_sheet[i][5]}<br>交通工具：{passenger_sheet[i][11]}<br>行車規範：<br>{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}<br>'
+                        str3 = ''
+                        str4 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數未滿'
+                        # 針對 Linebot 參與的乘客
+                        passenger_text = f'您參與的（乘客揪團）共乘活動因人數未滿而不發車喔!共乘編號為{passenger_sheet[i][16]}'
+                    # 寄信給發起人
+                    name_list = passenger_Sure_name_dict.get(i).split(',')
+                    output = ','.join(map(str, name_list))
+                    html =f'''
+                    <h1 style="color:black">共乘阿穿</h1>
+                    <div style="color:black">{str1}</div>
+                    <div style="color:black">{str2}<div>
+                    <div style="color:black">{str3}<div>
+                    '''
+                    mail = MIMEText(html, 'html', 'utf-8')   # plain 換成 html，就能寄送 HTML 格式的信件
+                    mail['Subject']= str4
+                    mail['From']='adf'
+                    mail['To']= passenger_sheet[i][1]
+                    try:
+                        smtp = smtplib.SMTP('smtp.gmail.com', 587)
+                        smtp.ehlo()
+                        smtp.starttls()
+                        smtp.login('ncnucarpool@gmail.com',os.getenv('GMAIL_PASSWORD'))
+                        status = smtp.send_message(mail)
+                        smtp.quit()
+                        # 將此索引添加到已處理集合中
+                        web_passenger_Sure.add(i)
+                        print(f"乘客 {i} 已標記為處理完成")
+                    except Exception as e:
+                        print(f"發送郵件時出錯: {e}")           
+                    # 當活動人數已滿的時候，向活動參與者發送提醒（告知可發車及聯繫發起人）
+                    try:
+                        passenger_Sure = passenger_sheet[i][14]
+                        passenger_Sure_list = passenger_Sure.split(',')
+                        for r in passenger_Sure_list:
+                            with ApiClient(configuration) as api_client:
+                                line_bot_api = MessagingApi(api_client)
+                                line_bot_api.push_message(
+                                    PushMessageRequest(
+                                        to=r,
+                                        messages=[TextMessage(text=passenger_text)]
+                                    )
+                                )
+                    except:
+                        pass
+                else:
+                    pass
             else:
                 pass
-        print('乘客發起之揪團活動已抓取')
-        print(passenger_Sure_id_dict)
-    except:
-        print('乘客發起之揪團活動尚無資料')
+        raise gspread.exceptions.APIError("API問題")
+    check_project_s()
+
+def get_driver_sheet_case():
+    @retry(stop=stop_after_attempt(3), wait=wait_fixed(30), retry=retry_if_exception_type(gspread.exceptions.APIError))
+    def get_driver_sheet_sheet_case_s():
+        global driver_sheet, web_driver_len, driver_Sure_id_dict, driver_Sure_name_dict
+        driver_sheet = driver_sheet_id.get_all_values()
+        try:
+            web_driver_len=len(driver_sheet) #抓取司機表單中有幾筆資料(已藉由更改其App script的程式碼扣除第一列的項目)
+        except requests.exceptions.JSONDecodeError:
+            web_driver_len = 0
+        try:
+            # 設定一個司機發起的活動dict容納確定參與的使用者
+            driver_Sure_id_dict = {}
+            driver_Sure_name_dict = {}
+            for i in range(1,web_driver_len):
+                driver_Sure_id_dict[i] = driver_sheet[i][15]
+                driver_Sure_name_dict[i] = driver_sheet[i][16]
+                if driver_sheet_id.cell(i+1,18).value == None:
+                    driver_sheet_id.update_cell(i+1,15,0)
+                    driver_sheet_id.update_cell(i+1,18,i+1)
+                else:
+                    pass
+            print('司機發起之活動已抓取')
+            print(driver_Sure_id_dict)
+        except:
+            print('司機發起之活動尚無資料')   
+        raise gspread.exceptions.APIError("API問題")
+    get_driver_sheet_sheet_case_s()
+def get_passenger_sheet_case():
+    @retry(stop=stop_after_attempt(3), wait=wait_fixed(30), retry=retry_if_exception_type(gspread.exceptions.APIError))
+    def get_passenger_sheet_case_s():
+        global passenger_sheet, web_passenger_len, passenger_Sure_id_dict, passenger_Sure_name_dict
+        passenger_sheet = passenger_sheet_id.get_all_values()
+        try:
+            web_passenger_len=len(passenger_sheet) #抓取司機表單中有幾筆資料(已藉由更改其App script的程式碼扣除第一列的項目)
+        except requests.exceptions.JSONDecodeError:
+            web_passenger_len = 0
+        try:
+            # 設定一個揪團的dict容納確定參與的使用者
+            passenger_Sure_id_dict = {}
+            passenger_Sure_name_dict = {}
+            for i in range(1,web_passenger_len):
+                passenger_Sure_id_dict[i] = passenger_sheet[i][14]
+                passenger_Sure_name_dict[i] = passenger_sheet[i][15]
+                if passenger_sheet_id.cell(i+1,17).value == None:
+                    passenger_sheet_id.update_cell(i+1,14,0)
+                    passenger_sheet_id.update_cell(i+1,17,i+1)
+                else:
+                    pass
+            print('乘客發起之揪團活動已抓取')
+            print(passenger_Sure_id_dict)
+        except:
+            print('乘客發起之揪團活動尚無資料')
+        raise gspread.exceptions.APIError("API問題")
+    get_passenger_sheet_case_s()
 #   每隔3秒檢查試算表內容，若人數達上限即通知活動發起者人數已滿
 def run_scheduler():
     global a
@@ -365,6 +378,7 @@ scheduler_thread_case = threading.Thread(target=run_scheduler)
 # 20250418有可能運行期間出現問題後(任何)，就會永久結束，需要伺服器重啟才能再執行，因此不使用。
 # scheduler_thread_case.daemon = True 主程式結束此也結束
 scheduler_thread_case.start()
+
 # Tamplate Message
 @line_handler.add(MessageEvent, message = TextMessageContent)
 def handle_message(event):
