@@ -307,9 +307,7 @@ def check_project():
                     pass
             else:
                 pass
-        raise gspread.exceptions.APIError("API問題")
     check_project_s()
-
 def get_driver_sheet_case():
     @retry(stop=stop_after_attempt(3), wait=wait_fixed(30), retry=retry_if_exception_type(gspread.exceptions.APIError))
     def get_driver_sheet_sheet_case_s():
@@ -335,7 +333,6 @@ def get_driver_sheet_case():
             print(driver_Sure_id_dict)
         except:
             print('司機發起之活動尚無資料')   
-        raise gspread.exceptions.APIError("API問題")
     get_driver_sheet_sheet_case_s()
 def get_passenger_sheet_case():
     @retry(stop=stop_after_attempt(3), wait=wait_fixed(30), retry=retry_if_exception_type(gspread.exceptions.APIError))
@@ -362,7 +359,6 @@ def get_passenger_sheet_case():
             print(passenger_Sure_id_dict)
         except:
             print('乘客發起之揪團活動尚無資料')
-        raise gspread.exceptions.APIError("API問題")
     get_passenger_sheet_case_s()
 #   每隔3秒檢查試算表內容，若人數達上限即通知活動發起者人數已滿
 def run_scheduler():
