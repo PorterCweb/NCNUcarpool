@@ -768,7 +768,7 @@ def handle_message(event):
                                     "paddingAll": "20px",
                                     "backgroundColor": "#0367D3",
                                     "spacing": "md",
-                                    "height": "240px",
+                                    "height": "265px",
                                     "paddingTop": "22px"
                                 },
                                 "body": {
