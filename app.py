@@ -401,7 +401,7 @@ def handle_message(event):
                             pass
                         except ValueError:
                             driver_sheet[i][14]=0
-                        if int(driver_sheet[i][14]) < int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
+                        if int(driver_sheet[i][14]) <= int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
                             web_driver_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -669,7 +669,7 @@ def handle_message(event):
                             int(passenger_sheet[i][13])
                         except ValueError:
                             passenger_sheet[i][13]=0
-                        if int(passenger_sheet[i][13]) < int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
+                        if int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
                             web_passenger_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -768,7 +768,7 @@ def handle_message(event):
                                     "paddingAll": "20px",
                                     "backgroundColor": "#0367D3",
                                     "spacing": "md",
-                                    "height": "270px",
+                                    "height": "275px",
                                     "paddingTop": "22px"
                                 },
                                 "body": {
@@ -950,8 +950,6 @@ def handle_message(event):
                     )  
                 )                
         elif text == '我的預約':
-            get_driver_sheet_case()
-            get_passenger_sheet_case()
             # 獲取使用者 user_ID 
             user_id = event.source.user_id
             text = ''
@@ -1100,6 +1098,7 @@ def handle_postbak(event):
                                     messages = [TextMessage(text='此活動人數已滿')]
                                 )
                             )
+                    get_driver_sheet_case()
             else:
                 pass
             if event.postback.data == f'driver_adjust{i}':
@@ -1130,6 +1129,7 @@ def handle_postbak(event):
                                 messages = [TextMessage(text='您尚未預定此活動')]
                             )
                         )
+                    get_driver_sheet_case()
     except NameError:
         pass
     try:
@@ -1222,6 +1222,7 @@ def handle_postbak(event):
                                     messages = [TextMessage(text='此活動人數已滿')]
                                 )
                             )
+                    get_passenger_sheet_case()
             if event.postback.data == f'passenger_adjust{i}':
                 get_passenger_sheet_case()
                 with passenger_lock:
@@ -1250,6 +1251,7 @@ def handle_postbak(event):
                                 messages = [TextMessage(text='您尚未預定此活動')]
                             )
                         )
+                    get_passenger_sheet_case()
             else:
                 pass
     except NameError:
