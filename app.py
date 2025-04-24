@@ -131,9 +131,6 @@ gc = gspread.service_account_from_dict(credentials_dict)
 carpool = gc.open_by_url('https://docs.google.com/spreadsheets/d/1q8HKO2NBz1O8UBE7ag9Kq-eNAc114TKzkXyOq32vfSA/edit?gid=1437248658#gid=1437248658')
 driver_sheet_id = carpool.get_worksheet(0)
 passenger_sheet_id = carpool.get_worksheet(1)
-# 獲取 GoogleSheet 的司機、揪團試算表，並讓其變list
-driver_sheet = driver_sheet_id.get_all_values()
-passenger_sheet = passenger_sheet_id.get_all_values()
 # 初始化追踪字典，為每個索引設置False
 web_driver_Sure = set()
 web_passenger_Sure = set()
