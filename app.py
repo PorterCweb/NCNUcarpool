@@ -1080,12 +1080,6 @@ def handle_postbak(event):
                             # 獲取使用者名稱    
                             driver_Sure_name=profile.display_name           
                             #-----------------------------------------------------
-                            line_bot_api.push_message(
-                                PushMessageRequest(
-                                    to=driver_user_id,
-                                    messages=[TextMessage(text='請稍後～')]
-                                )
-                            )
                             if driver_user_id in target_row[15]:
                                 driver_user_id = 'Checked'
                                 line_bot_api.reply_message(
