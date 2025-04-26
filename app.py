@@ -321,7 +321,7 @@ def get_driver_sheet_case():
             for i in range(1,web_driver_len):
                 driver_Sure_id_dict[i] = driver_sheet[i][15]
                 driver_Sure_name_dict[i] = driver_sheet[i][16]
-                if driver_sheet[i][17] == None:
+                if driver_sheet[i][17] == '':
                     driver_sheet_id.batch_update([
                         {
                             'range': f'O{i+1}',
@@ -354,10 +354,10 @@ def get_passenger_sheet_case():
             for i in range(1,web_passenger_len):
                 passenger_Sure_id_dict[i] = passenger_sheet[i][14]
                 passenger_Sure_name_dict[i] = passenger_sheet[i][15]
-                if passenger_sheet[i][16] == None:
+                if passenger_sheet[i][16] == '':
                     passenger_sheet_id.batch_update([
                         {
-                            'range': f'N    {i+1}',
+                            'range': f'N{i+1}',
                             'values': [[0]]
                         },
                         {
