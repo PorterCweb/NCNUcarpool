@@ -1028,9 +1028,9 @@ def handle_postbak(event):
                 now_date = now_datetime.strftime("%Y-%m-%d")
                 with ApiClient(configuration) as api_client:
                     line_bot_api = MessagingApi(api_client)
-                    if driver_case_date>now_date or driver_case_launchdate == now_date:
+                    if driver_case_date > now_date or driver_case_launchdate == now_date:
                         confirm_template = ConfirmTemplate(
-                            text = f'共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：{driver_sheet[i][8]}\n',
+                            text = f'共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人（司機）：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：{driver_sheet[i][8]}\n',
                             actions=[ #只能放兩個Action
                                 PostbackAction(label='確定搭乘', text='確定!',data=f'driver_Sure{i}'),
                                 MessageAction(label='再考慮', text='再考慮')
