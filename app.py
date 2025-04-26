@@ -136,7 +136,7 @@ web_driver_Sure = set()
 web_passenger_Sure = set()
 from tenacity import retry, stop_after_attempt, retry_if_exception_type, wait_fixed
 def check_project():    
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(60), retry=retry_if_exception_type(gspread.exceptions.APIError))
+    @retry(stop=stop_after_attempt(1), wait=wait_fixed(75), retry=retry_if_exception_type(gspread.exceptions.APIError))
     def check_project_s():
         global web_driver_Sure, web_passenger_Sure
         print(f"目前已處理的司機: {web_driver_Sure}")
@@ -254,7 +254,7 @@ def check_project():
                     # 未成團
                     else:
                         # 寄信給發起人，告知結果    
-                        str1 = f'您在 共乘阿穿 發起的（乘客揪團）共乘活動人數未滿，共乘編號為{passenger_sheet[i][16]}，因此未發車。活動資訊如下：'
+                        str1 = f'您在 共乘阿穿 發起的（乘客揪團）共乘活動人數未滿或是無人預定，共乘編號為{passenger_sheet[i][16]}，因此未發車。活動資訊如下：'
                         str2 = f'共乘編號：{passenger_sheet[i][16]}<br>發車地點：{passenger_sheet[i][2]}<br>目的地：{passenger_sheet[i][4]}<ber>出發時間：<br>{passenger_sheet[i][3]}<br>總時程：{time_hrmi(int(passenger_sheet[i][6]))}<br>發起人：{passenger_sheet[i][9]}<br>手機號碼：{passenger_sheet[i][12]}<br>LineID：{passenger_sheet[i][10]}<br>共乘人數上限：{passenger_sheet[i][5]}<br>交通工具：{passenger_sheet[i][11]}<br>行車規範：<br>{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}<br>'
                         str3 = ''
                         str4 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數未滿'
@@ -306,7 +306,7 @@ def check_project():
                 pass
     check_project_s()
 def get_driver_sheet_case():
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(30), retry=retry_if_exception_type(gspread.exceptions.APIError))
+    @retry(stop=stop_after_attempt(1), wait=wait_fixed(75), retry=retry_if_exception_type(gspread.exceptions.APIError))
     def get_driver_sheet_sheet_case_s():
         global driver_sheet, web_driver_len, driver_Sure_id_dict, driver_Sure_name_dict
         driver_sheet = driver_sheet_id.get_all_values()
@@ -321,18 +321,25 @@ def get_driver_sheet_case():
             for i in range(1,web_driver_len):
                 driver_Sure_id_dict[i] = driver_sheet[i][15]
                 driver_Sure_name_dict[i] = driver_sheet[i][16]
-                if driver_sheet_id.cell(i+1,18).value == None:
-                    driver_sheet_id.update_cell(i+1,15,0)
-                    driver_sheet_id.update_cell(i+1,18,i+1)
+                if driver_sheet[i][17] == None:
+                    driver_sheet_id.batch_update([
+                        {
+                            'range': f'O{i+1}',
+                            'values': [[0]]
+                        },
+                        {
+                            'range': f'R{i+1}',
+                            'values': [[i+1]]
+                        }
+                    ])
                 else:
                     pass
             print('司機發起之活動已抓取')
-            print(driver_Sure_id_dict)
         except:
             print('司機發起之活動尚無資料')   
     get_driver_sheet_sheet_case_s()
 def get_passenger_sheet_case():
-    @retry(stop=stop_after_attempt(3), wait=wait_fixed(30), retry=retry_if_exception_type(gspread.exceptions.APIError))
+    @retry(stop=stop_after_attempt(1), wait=wait_fixed(75), retry=retry_if_exception_type(gspread.exceptions.APIError))
     def get_passenger_sheet_case_s():
         global passenger_sheet, web_passenger_len, passenger_Sure_id_dict, passenger_Sure_name_dict
         passenger_sheet = passenger_sheet_id.get_all_values()
@@ -347,13 +354,20 @@ def get_passenger_sheet_case():
             for i in range(1,web_passenger_len):
                 passenger_Sure_id_dict[i] = passenger_sheet[i][14]
                 passenger_Sure_name_dict[i] = passenger_sheet[i][15]
-                if passenger_sheet_id.cell(i+1,17).value == None:
-                    passenger_sheet_id.update_cell(i+1,14,0)
-                    passenger_sheet_id.update_cell(i+1,17,i+1)
+                if passenger_sheet[i][16] == None:
+                    passenger_sheet_id.batch_update([
+                        {
+                            'range': f'N    {i+1}',
+                            'values': [[0]]
+                        },
+                        {
+                            'range': f'Q{i+1}',
+                            'values': [[i+1]]
+                        }
+                    ])
                 else:
                     pass
             print('乘客發起之揪團活動已抓取')
-            print(passenger_Sure_id_dict)
         except:
             print('乘客發起之揪團活動尚無資料')
     get_passenger_sheet_case_s()
@@ -364,13 +378,14 @@ def run_scheduler():
     while a:
         schedule.run_pending()
         time.sleep(0.1)  
-schedule.every(10).minutes.do(check_project)
+schedule.every(15).minutes.do(check_project)
 schedule.every(1).minutes.do(get_driver_sheet_case)
 schedule.every(1).minutes.do(get_passenger_sheet_case)
 scheduler_thread_case = threading.Thread(target=run_scheduler)
 # 20250418有可能運行期間出現問題後(任何)，就會永久結束，需要伺服器重啟才能再執行，因此不使用。
 # scheduler_thread_case.daemon = True 主程式結束此也結束
 scheduler_thread_case.start()
+
 # Tamplate Message
 @line_handler.add(MessageEvent, message = TextMessageContent)
 def handle_message(event):
@@ -397,7 +412,7 @@ def handle_message(event):
                             pass
                         except ValueError:
                             driver_sheet[i][14]=0
-                        if int(driver_sheet[i][14]) < int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
+                        if int(driver_sheet[i][14]) <= int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
                             web_driver_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -461,21 +476,7 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"發起人：{driver_sheet[i][9]}",
-                                        "color": "#000000",
-                                        "size": "xs",
-                                        "decoration": "underline"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"手機號碼：{driver_sheet[i][13]}",
-                                        "color": "#000000",
-                                        "size": "xs",
-                                        "decoration": "underline"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"LineID：{driver_sheet[i][10]}",
+                                        "text": f"發起人（司機）：{driver_sheet[i][9]}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
@@ -502,7 +503,7 @@ def handle_message(event):
                                     "paddingAll": "20px",
                                     "backgroundColor": "#0367D3",
                                     "spacing": "md",
-                                    "height": "300px",
+                                    "height": "265px",
                                     "paddingTop": "22px"
                                 },
                                 "body": {
@@ -538,9 +539,9 @@ def handle_message(event):
                                         "type": "button",
                                         "action": {
                                         "type": "postback",
-                                        "label": "我想共乘!",
+                                        "label": "查看詳細資訊！",
                                         "data": f"driver_Num{i}",
-                                        "displayText": f"我想共乘{driver_sheet[i][2]}到{driver_sheet[i][4]}!"
+                                        "displayText": f"{driver_sheet[i][2]}到{driver_sheet[i][4]}的共乘資訊"
                                         },
                                         "style": "secondary"
                                     }
@@ -679,7 +680,12 @@ def handle_message(event):
                             int(passenger_sheet[i][13])
                         except ValueError:
                             passenger_sheet[i][13]=0
-                        if int(passenger_sheet[i][13]) < int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
+                        if passenger_sheet[i][18] == '':
+                            passenger_driver = '無'
+                        else:
+                            passenger_driver = passenger_sheet[i][18]
+                            pass
+                        if int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
                             web_passenger_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -750,6 +756,12 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
+                                        "text": f"司機：{passenger_driver}",
+                                        "color": "#000000",
+                                        "size": "xs"
+                                    },
+                                    {
+                                        "type": "text",
                                         "text": f"手機號碼：{passenger_sheet[i][12]}",
                                         "color": "#000000",
                                         "size": "xs",
@@ -778,7 +790,7 @@ def handle_message(event):
                                     "paddingAll": "20px",
                                     "backgroundColor": "#0367D3",
                                     "spacing": "md",
-                                    "height": "275px",
+                                    "height": "300px",
                                     "paddingTop": "22px"
                                 },
                                 "body": {
@@ -814,9 +826,9 @@ def handle_message(event):
                                         "type": "button",
                                         "action": {
                                         "type": "postback",
-                                        "label": "我想共乘!",
+                                        "label": "查看詳細資訊！",
                                         "data": f"passenger_Num{i}",
-                                        "displayText": f"我想共乘{passenger_sheet[i][2]}到{passenger_sheet[i][4]}!"
+                                        "displayText": f"{passenger_sheet[i][2]}到{passenger_sheet[i][4]}的共乘資訊"
                                         },
                                         "style": "secondary"
                                     }
@@ -974,7 +986,7 @@ def handle_message(event):
                     driver_case_launchdatetime = parse_custom_time(driver_sheet[i][0])
                     driver_case_launchdate = driver_case_launchdatetime.strftime("%Y-%m-%d")
                     if driver_case_date >= now_date or driver_case_launchdate == now_date:
-                        reservation = f'共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：{driver_sheet[i][8]}\n'
+                        reservation = f'共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人（司機）：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：{driver_sheet[i][8]}\n'
                         driver_text = driver_text+reservation+'--------------------------------\n'
                     else:
                         pass
@@ -1013,8 +1025,8 @@ def handle_message(event):
                     messages=[TextMessage(text=text)]
                 )
             )
-driver_sure_lock = threading.Lock()
-passenger_sure_lock = threading.Lock()
+driver_lock = threading.Lock()
+passenger_lock = threading.Lock()
 @line_handler.add(PostbackEvent)
 def handle_postbak(event):
     try:
@@ -1030,14 +1042,14 @@ def handle_postbak(event):
                     line_bot_api = MessagingApi(api_client)
                     if driver_case_date > now_date or driver_case_launchdate == now_date:
                         confirm_template = ConfirmTemplate(
-                            text = f'共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人（司機）：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：{driver_sheet[i][8]}\n',
+                            text = f'共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人（司機）：{driver_sheet[i][9]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：{driver_sheet[i][8]}\n',
                             actions=[ #只能放兩個Action
-                                PostbackAction(label='確定搭乘', text='確定!',data=f'driver_Sure{i}'),
+                                PostbackAction(label='我想共乘！', text='我想共乘！', data=f'driver_Sure{i}'),
                                 MessageAction(label='再考慮', text='再考慮')
                             ]
                         )
                         template_message = TemplateMessage(
-                            alt_text = '是否確認搭乘?',
+                            alt_text = f'從{driver_sheet[i][2]}到{driver_sheet[i][4]}的詳細資訊',
                             template = confirm_template
                         )
                         line_bot_api.reply_message(
@@ -1050,25 +1062,31 @@ def handle_postbak(event):
                         line_bot_api.reply_message( #傳送'已逾期'回復訊息
                         ReplyMessageRequest(
                             reply_token=event.reply_token,
-                            messages=[TextMessage(text='報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。')] 
+                            messages=[TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n發起人（司機）LineID：{driver_sheet[i][10]}\n手機號碼：{driver_sheet[i][13]}')] 
                         )  
                     )         
             else:
                 pass
             # 使用者在Confirm Template按下確定後，試算表的搭車人數將+1
             if event.postback.data == f'driver_Sure{i}':
-                with driver_sure_lock:
-                    get_driver_sheet_case()
+                target_row = driver_sheet_id.row_values(i+1)
+                with driver_lock:
                     with ApiClient(configuration) as api_client:
                         line_bot_api = MessagingApi(api_client)
-                        if int(driver_sheet[i][14]) != driver_sheet[i][5]:
+                        if int(target_row[14]) != target_row[5]:
                             # 獲取使用者 user_ID
                             driver_user_id = event.source.user_id
                             profile = line_bot_api.get_profile(driver_user_id)
-                            # 獲取使用者名稱
+                            # 獲取使用者名稱    
                             driver_Sure_name=profile.display_name           
                             #-----------------------------------------------------
-                            if driver_user_id in driver_Sure_id_dict[i]:
+                            line_bot_api.push_message(
+                                PushMessageRequest(
+                                    to=driver_user_id,
+                                    messages=[TextMessage(text='請稍後～')]
+                                )
+                            )
+                            if driver_user_id in target_row[15]:
                                 driver_user_id = 'Checked'
                                 line_bot_api.reply_message(
                                     ReplyMessageRequest(
@@ -1082,25 +1100,23 @@ def handle_postbak(event):
                                 line_bot_api.reply_message(
                                     ReplyMessageRequest(
                                         reply_token = event.reply_token,
-                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!\n發起人LineID：{driver_sheet[i][10]}\n車牌及型號：{driver_sheet[i][18]}')]
+                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!\n發起人（司機）LineID：{driver_sheet[i][10]}\n車牌及型號：{driver_sheet[i][18]}')]
                                     )
                                 )
                                 try :
-                                    int(driver_sheet[i][14])
+                                    int(target_row[14])
                                     pass
                                 except ValueError:
-                                    driver_sheet[i][14]=0
-                                driver_sheet_id.update_cell(i+1,15,int(driver_sheet[i][14])+1)
-                                if driver_sheet_id.cell(i+1,16).value == None:
+                                    target_row[14]=0
+                                if target_row[15] == '':
                                     new_id = driver_user_id
                                     new_name = driver_Sure_name
                                 else:  
-                                    id = driver_sheet_id.cell(i+1,16).value
+                                    id = target_row[15]
                                     new_id = id+','+driver_user_id
-                                    name = driver_sheet_id.cell(i+1,17).value
+                                    name = target_row[16]
                                     new_name = name+','+driver_Sure_name
-                                driver_sheet_id.update_cell(i+1,16,new_id) 
-                                driver_sheet_id.update_cell(i+1,17,new_name)
+                                driver_sheet_id.update(f'N{i+1}:T{i+1}', [[int(target_row[14])+1, new_id, new_name]])
                         else:
                             line_bot_api.reply_message(
                                 ReplyMessageRequest(
@@ -1121,18 +1137,22 @@ def handle_postbak(event):
                 passenger_case_launchdate = passenger_case_launchdatetime.strftime("%Y-%m-%d")
                 now_datetime = datetime.now()
                 now_date = now_datetime.strftime("%Y-%m-%d")
+                if passenger_sheet[i][18] == '':
+                    passenger_driver = '無'
+                else:
+                    passenger_driver = passenger_sheet[i][18]
                 with ApiClient(configuration) as api_client:
                     line_bot_api = MessagingApi(api_client)
                     if passenger_case_date > now_date or passenger_case_launchdate == now_date:
                         confirm_template = ConfirmTemplate(
-                            text = f'共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n',
+                            text = f'共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n司機：{passenger_driver}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n',
                             actions=[ #一定只能放兩個Action
-                                PostbackAction(label='確定搭乘', text='確定!', data=f'passenger_Sure{i}'),
-                                MessageAction(label='再考慮', text='再考慮')   
+                                PostbackAction(label='我要共乘！', text='我要共乘！', data=f'passenger_Sure{i}'),
+                                PostbackAction(label='我想當司機！', text='我想當司機！', data=f'passenger_bedriver{i}')   
                             ]
                         )
                         template_message = TemplateMessage(
-                            alt_text = '是否確認搭乘?',
+                            alt_text = f'從{passenger_sheet[i][2]}到{passenger_sheet[i][4]}的詳細資訊',
                             template = confirm_template
                         )
                         line_bot_api.reply_message(
@@ -1141,28 +1161,28 @@ def handle_postbak(event):
                                 messages = [template_message]
                             )
                         )
-                    line_bot_api.reply_message( #傳送'已逾期'回復訊息
-                        ReplyMessageRequest(
-                            reply_token=event.reply_token,
-                            messages=[TextMessage(text='報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。')] 
-                        )  
-                    )
+                    else:
+                        line_bot_api.reply_message( #傳送'已逾期'回復訊息
+                            ReplyMessageRequest(
+                                reply_token=event.reply_token,
+                                messages=[TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n發起人LineID：{passenger_sheet[i][10]}\n手機號碼：{passenger_sheet[i][12]}')] 
+                            )  
+                        )
             else:
                 pass
-            # 使用者在Confirm Template按下確定後，試算表的搭車人數將+1
             if event.postback.data == f'passenger_Sure{i}':
-                with passenger_sure_lock:
-                    get_passenger_sheet_case()
+                target_row = passenger_sheet_id.row_values(i+1)
+                with passenger_lock:
                     with ApiClient(configuration) as api_client:
                         line_bot_api = MessagingApi(api_client)
-                        if passenger_sheet[i][13] != passenger_sheet[i][5]:
+                        if target_row[13] != target_row[5]:
                             # 獲取使用者 user_ID  
                             passenger_user_id = event.source.user_id
                             profile = line_bot_api.get_profile(passenger_user_id)
                             # 獲取使用者名稱
                             passenger_Sure_name=profile.display_name
                             #-----------------------------------------------------
-                            if passenger_user_id in passenger_Sure_id_dict[i]:
+                            if passenger_user_id in target_row[14]:
                                 passenger_user_id = 'Checked'
                                 line_bot_api.reply_message(
                                     ReplyMessageRequest(
@@ -1177,24 +1197,22 @@ def handle_postbak(event):
                                 line_bot_api.reply_message(
                                     ReplyMessageRequest(
                                         reply_token = event.reply_token,
-                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!\n發起人LineID：{passenger_sheet[i][10]}')]
+                                        messages = [TextMessage(text=f'已幫您預約為乘客，記得透過LineID聯繫活動發起人!\n發起人LineID：{passenger_sheet[i][10]}')]
                                     )
                                 )
                                 try :
-                                    int(passenger_sheet[i][13])
+                                    int(target_row[13])
                                 except ValueError:
-                                    passenger_sheet[i][13]=0
-                                passenger_sheet_id.update_cell(i+1,14,int(passenger_sheet[i][13])+1) #因為dict只能start from 0，因此第一個共乘表單會在第0個，而google sheet第一行又是表單的項目，因此第一張表單會是i+1+1列。
-                                if passenger_sheet_id.cell(i+1,15).value == None:
+                                    target_row[13]=0
+                                if target_row[14] == '':
                                     new_id = passenger_user_id
                                     new_name = passenger_Sure_name
                                 else:
-                                    id = passenger_sheet_id.cell(i+1,15).value
+                                    id = target_row[14]
                                     new_id = id+','+passenger_user_id
-                                    name = passenger_sheet_id.cell(i+1,16).value
+                                    name = target_row[15]
                                     new_name = name+','+passenger_Sure_name
-                                passenger_sheet_id.update_cell(i+1,15,new_id)
-                                passenger_sheet_id.update_cell(i+1,16,new_name)
+                                passenger_sheet_id.update(f'N{i+1}:P{i+1}', [[int(target_row[13])+1, new_id, new_name]])
                         else:
                             line_bot_api.reply_message(
                                 ReplyMessageRequest(
@@ -1202,11 +1220,36 @@ def handle_postbak(event):
                                     messages = [TextMessage(text='此活動人數已滿')]
                                 )
                             )
+            if event.postback.data == f'passenger_bedriver{i}':  
+                target_row = passenger_sheet_id.row_values(i+1)
+                with passenger_lock:
+                    with ApiClient(configuration) as api_client:
+                        line_bot_api = MessagingApi(api_client)
+                        # 獲取使用者 user_ID
+                        passenger_user_id = event.source.user_id
+                        profile = line_bot_api.get_profile(passenger_user_id)
+                        # 獲取使用者名稱        
+                        passenger_Sure_name=profile.display_name
+                        if target_row[18] == '':
+                            line_bot_api.reply_message(
+                                ReplyMessageRequest(
+                                    reply_token = event.reply_token,
+                                    messages = [TextMessage(text=f'已幫您預約為司機，記得透過LineID聯繫活動發起人!\n發起人LineID：{target_row[10]}')]
+                                )
+                            )
+                            passenger_sheet_id.update(f'S{i+1}:T{i+1}', [[passenger_Sure_name, passenger_user_id]])            
+                        else:
+                            line_bot_api.reply_message(
+                                ReplyMessageRequest(
+                                    reply_token = event.reply_token,
+                                    messages = [TextMessage(text='此活動已有司機囉！')]
+                                )
+                            )
             else:
                 pass
     except NameError:
         pass
-    
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))  # 從環境變數 PORT 獲取埠位，預設為 10000
     app.run(host="0.0.0.0", port=port)
