@@ -306,7 +306,7 @@ def check_project():
                 pass
     check_project_s()
 def get_driver_sheet_case():
-    @retry(stop=stop_after_attempt(1), wait=wait_fixed(75), retry=retry_if_exception_type(gspread.exceptions.APIError))
+    @retry(stop=stop_after_attempt(2), wait=wait_fixed(60), retry=retry_if_exception_type(gspread.exceptions.APIError))
     def get_driver_sheet_sheet_case_s():
         global driver_sheet, web_driver_len, driver_Sure_id_dict, driver_Sure_name_dict
         driver_sheet = driver_sheet_id.get_all_values()
@@ -339,7 +339,7 @@ def get_driver_sheet_case():
             print('司機發起之活動尚無資料')   
     get_driver_sheet_sheet_case_s()
 def get_passenger_sheet_case():
-    @retry(stop=stop_after_attempt(1), wait=wait_fixed(75), retry=retry_if_exception_type(gspread.exceptions.APIError))
+    @retry(stop=stop_after_attempt(2), wait=wait_fixed(60), retry=retry_if_exception_type(gspread.exceptions.APIError))
     def get_passenger_sheet_case_s():
         global passenger_sheet, web_passenger_len, passenger_Sure_id_dict, passenger_Sure_name_dict
         passenger_sheet = passenger_sheet_id.get_all_values()
@@ -379,8 +379,8 @@ def run_scheduler():
         schedule.run_pending()
         time.sleep(0.1)  
 schedule.every(15).minutes.do(check_project)
-schedule.every(15).seconds.do(get_driver_sheet_case)
-schedule.every(15).seconds.do(get_passenger_sheet_case)
+schedule.every(30).seconds.do(get_driver_sheet_case)
+schedule.every(30).seconds.do(get_passenger_sheet_case)
 scheduler_thread_case = threading.Thread(target=run_scheduler)
 # 20250418有可能運行期間出現問題後(任何)，就會永久結束，需要伺服器重啟才能再執行，因此不使用。
 # scheduler_thread_case.daemon = True 主程式結束此也結束
