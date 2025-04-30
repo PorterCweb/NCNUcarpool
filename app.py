@@ -1108,7 +1108,7 @@ def handle_postbak(event):
                                     new_id = id+','+driver_user_id
                                     name = target_row[16]
                                     new_name = name+','+driver_Sure_name
-                                driver_sheet_id.update(f'N{i+1}:T{i+1}', [[int(target_row[14])+1, new_id, new_name]])
+                                driver_sheet_id.update(f'O{i+1}:Q{i+1}', [[int(target_row[14])+1, new_id, new_name]])
                             else:
                                 pass                        
                         else:
