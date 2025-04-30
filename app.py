@@ -1038,6 +1038,8 @@ def handle_postbak(event):
                 driver_case_launchdate = driver_case_launchdatetime.strftime("%Y-%m-%d")
                 now_datetime = datetime.now()
                 now_date = now_datetime.strftime("%Y-%m-%d")
+                # 獲取使用者 user_ID
+                driver_user_id = event.source.user_id
                 with ApiClient(configuration) as api_client:
                     line_bot_api = MessagingApi(api_client)
                     if driver_case_date > now_date or driver_case_launchdate == now_date:
@@ -1045,56 +1047,52 @@ def handle_postbak(event):
                             text = f'共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人（司機）：{driver_sheet[i][9]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：{driver_sheet[i][8]}\n',
                             actions=[ #只能放兩個Action
                                 PostbackAction(label='我想共乘！', text='我想共乘！', data=f'driver_Sure{i}'),
-                                MessageAction(label='再考慮', text='再考慮')
+                                PostbackAction(label='司機聯絡資訊', text='司機聯絡資訊', data = f'driver_info{i}')
                             ]
                         )
                         template_message = TemplateMessage(
                             alt_text = f'從{driver_sheet[i][2]}到{driver_sheet[i][4]}的詳細資訊',
                             template = confirm_template
                         )
-                        line_bot_api.reply_message(
-                            ReplyMessageRequest(
-                                reply_token = event.reply_token,
+                        line_bot_api.push_message(
+                            PushMessageRequest(
+                                to=driver_user_id,
                                 messages = [template_message]
                             )
-                        )
+                        ) 
                     else:
-                        line_bot_api.reply_message( #傳送'已逾期'回復訊息
-                        ReplyMessageRequest(
-                            reply_token=event.reply_token,
-                            messages=[TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n發起人（司機）LineID：{driver_sheet[i][10]}\n手機號碼：{driver_sheet[i][13]}')] 
-                        )  
-                    )         
-            else:
-                pass
+                        line_bot_api.push_message(
+                            PushMessageRequest(
+                                to=driver_user_id,
+                                messages = [TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n發起人（司機）LineID：{driver_sheet[i][10]}\n手機號碼：{driver_sheet[i][13]}')]
+                            )
+                        )        
             # 使用者在Confirm Template按下確定後，試算表的搭車人數將+1
-            if event.postback.data == f'driver_Sure{i}':
+            elif event.postback.data == f'driver_Sure{i}':
                 target_row = driver_sheet_id.row_values(i+1)
                 with driver_lock:
                     with ApiClient(configuration) as api_client:
                         line_bot_api = MessagingApi(api_client)
+                        # 獲取使用者 user_ID
+                        driver_user_id = event.source.user_id
                         if int(target_row[14]) != target_row[5]:
-                            # 獲取使用者 user_ID
-                            driver_user_id = event.source.user_id
                             profile = line_bot_api.get_profile(driver_user_id)
                             # 獲取使用者名稱    
                             driver_Sure_name=profile.display_name           
                             #-----------------------------------------------------
                             if driver_user_id in target_row[15]:
                                 driver_user_id = 'Checked'
-                                line_bot_api.reply_message(
-                                    ReplyMessageRequest(
-                                        reply_token = event.reply_token,
+                                line_bot_api.push_message(
+                                    PushMessageRequest(
+                                        to=driver_user_id,
                                         messages = [TextMessage(text='您已預約')]
                                     )
                                 )
-                            else:
-                                pass
-                            if driver_user_id != 'Checked':
-                                line_bot_api.reply_message(
-                                    ReplyMessageRequest(
-                                        reply_token = event.reply_token,
-                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!\n發起人（司機）LineID：{driver_sheet[i][10]}\n車牌及型號：{driver_sheet[i][18]}')]
+                            elif driver_user_id != 'Checked':
+                                line_bot_api.push_message(
+                                    PushMessageRequest(
+                                        to=driver_user_id,
+                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!\n發起人（司機）LineID：{target_row[10]}\n車牌及型號：{target_row[18]}')]
                                     )
                                 )
                                 try :
@@ -1111,13 +1109,26 @@ def handle_postbak(event):
                                     name = target_row[16]
                                     new_name = name+','+driver_Sure_name
                                 driver_sheet_id.update(f'N{i+1}:T{i+1}', [[int(target_row[14])+1, new_id, new_name]])
+                            else:
+                                pass                        
                         else:
-                            line_bot_api.reply_message(
-                                ReplyMessageRequest(
-                                    reply_token = event.reply_token,
+                            line_bot_api.push_message(
+                                PushMessageRequest(
+                                    to=driver_user_id,
                                     messages = [TextMessage(text='此活動人數已滿')]
                                 )
                             )
+            elif event.postback.data == f'driver_info{i}':
+                target_row = driver_sheet_id.row_values(i+1)
+                with driver_lock:
+                    with ApiClient(configuration) as api_client:
+                        line_bot_api = MessagingApi(api_client)
+                        line_bot_api.push_message(
+                            PushMessageRequest(
+                                to=driver_user_id,
+                                messages = [TextMessage(text=f'LineID：{target_row[10]}\n電話號碼：{target_row[13]}')]
+                            )
+                        )
             else:
                 pass
     except NameError:
@@ -1131,6 +1142,8 @@ def handle_postbak(event):
                 passenger_case_launchdate = passenger_case_launchdatetime.strftime("%Y-%m-%d")
                 now_datetime = datetime.now()
                 now_date = now_datetime.strftime("%Y-%m-%d")
+                # 獲取使用者 user_ID  
+                passenger_user_id = event.source.user_id
                 if passenger_sheet[i][18] == '':
                     passenger_driver = '無'
                 else:
@@ -1149,18 +1162,18 @@ def handle_postbak(event):
                             alt_text = f'從{passenger_sheet[i][2]}到{passenger_sheet[i][4]}的詳細資訊',
                             template = confirm_template
                         )
-                        line_bot_api.reply_message(
-                            ReplyMessageRequest(
-                                reply_token = event.reply_token,
+                        line_bot_api.push_message(
+                            PushMessageRequest(
+                                to=passenger_user_id,
                                 messages = [template_message]
                             )
                         )
                     else:
-                        line_bot_api.reply_message( #傳送'已逾期'回復訊息
-                            ReplyMessageRequest(
-                                reply_token=event.reply_token,
-                                messages=[TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n發起人LineID：{passenger_sheet[i][10]}\n手機號碼：{passenger_sheet[i][12]}')] 
-                            )  
+                        line_bot_api.push_message(
+                            PushMessageRequest(
+                                to=passenger_user_id,
+                                messages = [TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n發起人LineID：{passenger_sheet[i][10]}\n手機號碼：{passenger_sheet[i][12]}')]
+                            )
                         )
             else:
                 pass
@@ -1169,18 +1182,18 @@ def handle_postbak(event):
                 with passenger_lock:
                     with ApiClient(configuration) as api_client:
                         line_bot_api = MessagingApi(api_client)
+                        # 獲取使用者 user_ID  
+                        passenger_user_id = event.source.user_id
                         if target_row[13] != target_row[5]:
-                            # 獲取使用者 user_ID  
-                            passenger_user_id = event.source.user_id
                             profile = line_bot_api.get_profile(passenger_user_id)
                             # 獲取使用者名稱
                             passenger_Sure_name=profile.display_name
                             #-----------------------------------------------------
                             if passenger_user_id in target_row[14]:
                                 passenger_user_id = 'Checked'
-                                line_bot_api.reply_message(
-                                    ReplyMessageRequest(
-                                        reply_token = event.reply_token,
+                                line_bot_api.push_message(
+                                    PushMessageRequest(
+                                        to=passenger_user_id,
                                         messages = [TextMessage(text='您已預約')]
                                     )
                                 )
@@ -1188,10 +1201,10 @@ def handle_postbak(event):
                             else:
                                 pass
                             if passenger_user_id != 'Checked':
-                                line_bot_api.reply_message(
-                                    ReplyMessageRequest(
-                                        reply_token = event.reply_token,
-                                        messages = [TextMessage(text=f'已幫您預約為乘客，記得透過LineID聯繫活動發起人!\n發起人LineID：{passenger_sheet[i][10]}')]
+                                line_bot_api.push_message(
+                                    PushMessageRequest(
+                                        to=passenger_user_id,
+                                        messages = [TextMessage(text=f'已幫您預約為乘客，記得透過LineID聯繫活動發起人!\n發起人LineID：{target_row[10]}')]
                                     )
                                 )
                                 try :
@@ -1208,10 +1221,10 @@ def handle_postbak(event):
                                     new_name = name+','+passenger_Sure_name
                                 passenger_sheet_id.update(f'N{i+1}:P{i+1}', [[int(target_row[13])+1, new_id, new_name]])
                         else:
-                            line_bot_api.reply_message(
-                                ReplyMessageRequest(
-                                    reply_token = event.reply_token,
-                                    messages = [TextMessage(text='此活動人數已滿')]
+                            line_bot_api.push_message(
+                                PushMessageRequest(
+                                    to=passenger_user_id,
+                                    messages=[TextMessage(text='此活動人數已滿')]
                                 )
                             )
             if event.postback.data == f'passenger_bedriver{i}':  
@@ -1225,17 +1238,17 @@ def handle_postbak(event):
                         # 獲取使用者名稱        
                         passenger_Sure_name=profile.display_name
                         if target_row[18] == '':
-                            line_bot_api.reply_message(
-                                ReplyMessageRequest(
-                                    reply_token = event.reply_token,
+                            line_bot_api.push_message(
+                                PushMessageRequest(
+                                    to=passenger_user_id,
                                     messages = [TextMessage(text=f'已幫您預約為司機，記得透過LineID聯繫活動發起人!\n發起人LineID：{target_row[10]}')]
                                 )
                             )
                             passenger_sheet_id.update(f'S{i+1}:T{i+1}', [[passenger_Sure_name, passenger_user_id]])            
                         else:
-                            line_bot_api.reply_message(
-                                ReplyMessageRequest(
-                                    reply_token = event.reply_token,
+                            line_bot_api.push_message(
+                                PushMessageRequest(
+                                    to=passenger_user_id,
                                     messages = [TextMessage(text='此活動已有司機囉！')]
                                 )
                             )
