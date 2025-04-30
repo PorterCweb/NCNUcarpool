@@ -1120,15 +1120,16 @@ def handle_postbak(event):
                             )
             elif event.postback.data == f'driver_info{i}':
                 target_row = driver_sheet_id.row_values(i+1)
-                with driver_lock:
-                    with ApiClient(configuration) as api_client:
-                        line_bot_api = MessagingApi(api_client)
-                        line_bot_api.push_message(
-                            PushMessageRequest(
-                                to=driver_user_id,
-                                messages = [TextMessage(text=f'LineID：{target_row[10]}\n電話號碼：{target_row[13]}')]
-                            )
+                with ApiClient(configuration) as api_client:
+                    line_bot_api = MessagingApi(api_client)
+                    # 獲取使用者 user_ID
+                    driver_user_id = event.source.user_id
+                    line_bot_api.push_message(
+                        PushMessageRequest(
+                            to=driver_user_id,
+                            messages = [TextMessage(text=f'LineID：{target_row[10]}\n電話號碼：{target_row[13]}')]
                         )
+                    )
             else:
                 pass
     except NameError:
