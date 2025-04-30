@@ -1127,7 +1127,7 @@ def handle_postbak(event):
                     line_bot_api.push_message(
                         PushMessageRequest(
                             to=driver_user_id,
-                            messages = [TextMessage(text=f'LineID：{target_row[10]}\n電話號碼：{target_row[13]}')]
+                            messages = [TextMessage(text=f'LineID：{target_row[10]}\n電話號碼：{target_row[13]}\n聯絡後仍要記得預約喔！後續搭乘問題都會依照實際預約者為先。')]
                         )
                     )
             else:
