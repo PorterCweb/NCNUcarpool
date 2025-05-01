@@ -1598,7 +1598,7 @@ def handle_postbak(event):
                     line_bot_api = MessagingApi(api_client)
                     if driver_case_date > now_date or driver_case_launchdate == now_date:
                         confirm_template = ConfirmTemplate(
-                            text = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘價格：{driver_sheet[i][11]}\n🚗司機暱稱：{driver_sheet[i][9]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n',
+                            text = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘價格：{driver_sheet[i][11]}\n🚗司機資訊：\n{driver_sheet[i][9]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n',
                             actions=[ #只能放兩個Action
                                 PostbackAction(label='我想共乘！', text='我想共乘！', data=f'driver_Sure{i}'),
                                 PostbackAction(label='司機聯絡資訊', text='司機聯絡資訊', data = f'driver_info{i}')
