@@ -308,7 +308,7 @@ def check_project():
 def get_driver_sheet_case():
     @retry(stop=stop_after_attempt(2), wait=wait_fixed(60), retry=retry_if_exception_type(gspread.exceptions.APIError))
     def get_driver_sheet_sheet_case_s():
-        global driver_sheet, web_driver_len, driver_Sure_id_dict, driver_Sure_name_dict
+        global driver_sheet, web_driver_len, driver_Sure_id_dict, driver_Sure_name_dict, New_driver_update
         driver_sheet = driver_sheet_id.get_all_values()
         try:
             web_driver_len=len(driver_sheet) #抓取司機表單中有幾筆資料(已藉由更改其App script的程式碼扣除第一列的項目)
@@ -318,10 +318,12 @@ def get_driver_sheet_case():
             # 設定一個司機發起的活動dict容納確定參與的使用者
             driver_Sure_id_dict = {}
             driver_Sure_name_dict = {}
+            New_driver_update = ''
             for i in range(1,web_driver_len):
                 driver_Sure_id_dict[i] = driver_sheet[i][15]
                 driver_Sure_name_dict[i] = driver_sheet[i][16]
-                if driver_sheet[i][17] == '':
+                if driver_sheet[i][14] == '':
+                    New_driver_update = 'New_update'
                     driver_sheet_id.batch_update([
                         {
                             'range': f'O{i+1}',
@@ -332,16 +334,271 @@ def get_driver_sheet_case():
                             'values': [[i+1]]
                         }
                     ])
+                    driver_sheet[i][14] = 0
+                    driver_sheet[i][17] = i+1
                 else:
                     pass
+            if New_driver_update == 'New_update':
+                line_flex_json = {
+                        "type": "carousel",
+                        "contents": []
+                    }    
+                for i in range(1,web_driver_len):
+                    driver_case_launchdatetime = parse_custom_time(driver_sheet[i][0])
+                    driver_case_launchdate = driver_case_launchdatetime.strftime("%Y-%m-%d")
+                    now_datetime = datetime.now()
+                    now_date = now_datetime.strftime("%Y-%m-%d")
+                    # 獲取使用者 user_ID
+                    if driver_case_launchdate == now_date:
+                        try :
+                            int(driver_sheet[i][14])
+                            pass
+                        except ValueError:
+                            driver_sheet[i][14]=0
+                        if int(driver_sheet[i][14]) <= int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
+                            web_driver_data_case={
+                                "type": "bubble",
+                                "size": "mega",
+                                "header": {
+                                    "type": "box",
+                                    "layout": "vertical",
+                                    "contents": [
+                                    {
+                                        "type": "box",
+                                        "layout": "vertical",
+                                        "contents": [
+                                        {
+                                            "type": "text",
+                                            "text": "FROM",
+                                            "color": "#ffffff66",
+                                            "size": "xxs"
+                                        },
+                                        {
+                                            "type": "text",
+                                            "text": driver_sheet[i][2],
+                                            "color": "#ffffff",
+                                            "size": "lg",
+                                            "weight": "bold"
+                                        }
+                                        ]
+                                    },
+                                    {
+                                        "type": "box",
+                                        "layout": "vertical",
+                                        "contents": [
+                                        {
+                                            "type": "text",
+                                            "text": "TO",
+                                            "color": "#ffffff66",
+                                            "size": "xxs"
+                                        },
+                                        {
+                                            "type": "text",
+                                            "text": driver_sheet[i][4],
+                                            "color": "#ffffff",
+                                            "size": "lg",
+                                            "weight": "bold",
+                                            "margin": "none"
+                                        }
+                                        ]
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"出發時間：{driver_sheet[i][3]}",
+                                        "color": "#000000",
+                                        "size": "xs",
+                                        "contents": [],
+                                        "decoration": "underline"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"總時程：{time_hrmi(int(driver_sheet[i][6]))}",
+                                        "color": "#000000",
+                                        "size": "xs",
+                                        "decoration": "underline"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"發起人（司機）：{driver_sheet[i][9]}",
+                                        "color": "#000000",
+                                        "size": "xs",
+                                        "decoration": "underline"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"共乘人數上限：{driver_sheet[i][5]}",
+                                        "color": "#000000",
+                                        "size": "xs"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"價格：{driver_sheet[i][11]}",
+                                        "color": "#000000",
+                                        "size": "xs"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"當前預約人數：{int(driver_sheet[i][14])}",
+                                        "color": "#000000",
+                                        "size": "xs"
+                                    }
+                                    ],
+                                    "paddingAll": "20px",
+                                    "backgroundColor": "#0367D3",
+                                    "spacing": "md",
+                                    "height": "265px",
+                                    "paddingTop": "22px"
+                                },
+                                "body": {
+                                    "type": "box",
+                                    "layout": "vertical",
+                                    "contents": [
+                                    {
+                                        "type": "text",
+                                        "text": f"共乘編號：{driver_sheet[i][17]}",
+                                        "margin": "none",
+                                        "size": "sm",
+                                        "weight": "bold"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"交通工具：{driver_sheet[i][12]}",
+                                        "margin": "none",
+                                        "size": "sm",
+                                        "weight": "bold"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"簡介：{driver_sheet[i][8]}",
+                                        "margin": "xl"
+                                    }
+                                    ]
+                                },
+                                "footer": {
+                                    "type": "box",
+                                    "layout": "vertical",
+                                    "contents": [
+                                    {
+                                        "type": "button",
+                                        "action": {
+                                        "type": "postback",
+                                        "label": "查看詳細資訊",
+                                        "data": f"driver_Num{i}",
+                                        "displayText": f"{driver_sheet[i][2]}到{driver_sheet[i][4]}的共乘資訊"
+                                        },
+                                        "style": "secondary"
+                                    }
+                                    ]
+                                }
+                            }
+                            # 新增規範
+                            if '上下車地點可討論' in driver_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "上下車地點可討論",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_driver_data_case['body']['contents'].insert(2,r)
+                            if '自備零錢不找零' in driver_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "自備零錢不找零",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_driver_data_case['body']['contents'].insert(2,r)
+                            if '接受線上付款 / 轉帳' in driver_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "接受線上付款 / 轉帳",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_driver_data_case['body']['contents'].insert(2,r)
+                            if '禁食' in driver_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "禁食",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_driver_data_case['body']['contents'].insert(2,r)
+                            if '不聊天' in driver_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "不聊天",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_driver_data_case['body']['contents'].insert(2,r)
+                            if '寵物需裝籠' in driver_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "寵物需裝籠",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_driver_data_case['body']['contents'].insert(2,r)
+                            if '謝絕寵物' in driver_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "謝絕寵物",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_driver_data_case['body']['contents'].insert(2,r)
+                            if '※ 人滿才發車' in driver_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "※ 人滿才發車",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "color": "#ff5551",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_driver_data_case['body']['contents'].insert(2,r)
+                            line_flex_json['contents'].append(web_driver_data_case)
+                        else:
+                            pass
+                    else:
+                        pass     
+                line_flex_str = json.dumps(line_flex_json) #改成字串格式
+                with ApiClient(configuration) as api_client:
+                    line_bot_api = MessagingApi(api_client)
+                    line_bot_api.broadcast(
+                        BroadcastRequest(
+                            messages=[
+                                TextMessage(text='🔔【共乘資訊推播】阿穿幫你找好司機啦～趕快來查看今日司機最新的共乘資訊吧！'),
+                                FlexMessage(alt_text='最新共乘資訊', contents=FlexContainer.from_json(line_flex_str))]
+                        )
+                    )          
+                New_driver_update = 'done'
+            else:
+                pass
             print('司機發起之活動已抓取')
         except:
-            print('司機發起之活動尚無資料')   
+            print('司機發起之活動尚無資料')
     get_driver_sheet_sheet_case_s()
 def get_passenger_sheet_case():
     @retry(stop=stop_after_attempt(2), wait=wait_fixed(60), retry=retry_if_exception_type(gspread.exceptions.APIError))
     def get_passenger_sheet_case_s():
-        global passenger_sheet, web_passenger_len, passenger_Sure_id_dict, passenger_Sure_name_dict
+        global passenger_sheet, web_passenger_len, passenger_Sure_id_dict, passenger_Sure_name_dict, New_passenger_update
         passenger_sheet = passenger_sheet_id.get_all_values()
         try:
             web_passenger_len=len(passenger_sheet) #抓取司機表單中有幾筆資料(已藉由更改其App script的程式碼扣除第一列的項目)
@@ -354,7 +611,7 @@ def get_passenger_sheet_case():
             for i in range(1,web_passenger_len):
                 passenger_Sure_id_dict[i] = passenger_sheet[i][14]
                 passenger_Sure_name_dict[i] = passenger_sheet[i][15]
-                if passenger_sheet[i][16] == '':
+                if passenger_sheet[i][13] == '':
                     passenger_sheet_id.batch_update([
                         {
                             'range': f'N{i+1}',
@@ -365,6 +622,8 @@ def get_passenger_sheet_case():
                             'values': [[i+1]]
                         }
                     ])
+                    passenger_sheet[i][13] = 0
+                    passenger_sheet[i][16] = i+1
                 else:
                     pass
             print('乘客發起之揪團活動已抓取')
@@ -661,7 +920,7 @@ def handle_message(event):
                         reply_token=event.reply_token,
                         messages=[TextMessage(text='目前尚無司機發起共乘活動')] 
                     )  
-                )
+                ) 
         elif text =='目前有哪些共乘（揪團）？':
             if web_passenger_len != 1:
                 line_flex_json = {
