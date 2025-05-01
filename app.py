@@ -1080,7 +1080,7 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"簡介：{driver_sheet[i][8]}",
+                                        "text": f"備註：{driver_sheet[i][8]}",
                                         "margin": "xl"
                                     }
                                     ]
@@ -1296,7 +1296,7 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"總時程：{time_hrmi(int(passenger_sheet[i][6]))}",
+                                        "text": f"預估時程：{time_hrmi(int(passenger_sheet[i][6]))}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
@@ -1367,7 +1367,7 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"簡介：{passenger_sheet[i][8]}",
+                                        "text": f"備註：{passenger_sheet[i][8]}",
                                         "margin": "xl"
                                     }
                                     ]
@@ -1707,7 +1707,7 @@ def handle_postbak(event):
                     line_bot_api = MessagingApi(api_client)
                     if passenger_case_date > now_date or passenger_case_launchdate == now_date:
                         confirm_template = ConfirmTemplate(
-                            text = f'共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n司機：{passenger_driver}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n',
+                            text = f'📎共乘編號：{passenger_sheet[i][16]}\n📍出發地點：{passenger_sheet[i][2]}\n📍目的地點：{passenger_sheet[i][4]}\n🕒出發時間：\n{passenger_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(passenger_sheet[i][6]))}\n#️⃣共乘上限：{passenger_sheet[i][5]} 人\n✨發起人：{passenger_sheet[i][9]}\n🚗司機資訊：\n{passenger_driver}\n🛞交通工具：{passenger_sheet[i][11]}\n❗️行車規範：\n{passenger_sheet[i][7]}\n💬備註：\n{passenger_sheet[i][8]}\n',
                             actions=[ #一定只能放兩個Action
                                 PostbackAction(label='我要共乘！', text='我要共乘！', data=f'passenger_Sure{i}'),
                                 PostbackAction(label='我想當司機！', text='我想當司機！', data=f'passenger_bedriver{i}')   
