@@ -323,7 +323,7 @@ def get_driver_sheet_case():
                 driver_Sure_id_dict[i] = driver_sheet[i][15]
                 driver_Sure_name_dict[i] = driver_sheet[i][16]
                 if driver_sheet[i][14] == '':
-                    New_driver_update = 'New_update'
+                    New_driver_update = 'New_driver_update'
                     driver_sheet_id.batch_update([
                         {
                             'range': f'O{i+1}',
@@ -338,7 +338,7 @@ def get_driver_sheet_case():
                     driver_sheet[i][17] = i+1
                 else:
                     pass
-            if New_driver_update == 'New_update':
+            if New_driver_update == 'New_driver_update':
                 line_flex_json = {
                         "type": "carousel",
                         "contents": []
@@ -584,11 +584,11 @@ def get_driver_sheet_case():
                     line_bot_api.broadcast(
                         BroadcastRequest(
                             messages=[
-                                TextMessage(text='🔔【共乘資訊推播】阿穿幫你找好司機啦～趕快來查看今日司機最新的共乘資訊吧！'),
+                                TextMessage(text='🔔【共乘資訊推播】阿穿幫你找好司機啦～趕快來查看今日司機發起的最新共乘資訊吧！'),
                                 FlexMessage(alt_text='最新共乘資訊', contents=FlexContainer.from_json(line_flex_str))]
                         )
                     )          
-                New_driver_update = 'done'
+                New_driver_update = 'New_driver_done'
             else:
                 pass
             print('司機發起之活動已抓取')
@@ -608,10 +608,12 @@ def get_passenger_sheet_case():
             # 設定一個揪團的dict容納確定參與的使用者
             passenger_Sure_id_dict = {}
             passenger_Sure_name_dict = {}
+            New_passenger_update = ''
             for i in range(1,web_passenger_len):
                 passenger_Sure_id_dict[i] = passenger_sheet[i][14]
                 passenger_Sure_name_dict[i] = passenger_sheet[i][15]
                 if passenger_sheet[i][13] == '':
+                    New_passenger_update = 'New_passenger_update'
                     passenger_sheet_id.batch_update([
                         {
                             'range': f'N{i+1}',
@@ -626,6 +628,299 @@ def get_passenger_sheet_case():
                     passenger_sheet[i][16] = i+1
                 else:
                     pass
+            if New_passenger_update == 'New_passenger_update':
+                line_flex_json = {
+                    "type": "carousel",
+                    "contents": []
+                }
+                for i in range(1,web_passenger_len):
+                    passenger_case_launchdatetime = parse_custom_time(passenger_sheet[i][0])
+                    passenger_case_launchdate = passenger_case_launchdatetime.strftime("%Y-%m-%d")
+                    now_datetime = datetime.now()
+                    now_date = now_datetime.strftime("%Y-%m-%d")
+                    if passenger_case_launchdate == now_date:
+                        try :
+                            int(passenger_sheet[i][13])
+                        except ValueError:
+                            passenger_sheet[i][13]=0
+                        if passenger_sheet[i][18] == '':
+                            passenger_driver = '無'
+                        else:
+                            passenger_driver = passenger_sheet[i][18]
+                            pass
+                        if int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
+                            web_passenger_data_case={
+                                "type": "bubble",
+                                "size": "mega",
+                                "header": {
+                                    "type": "box",
+                                    "layout": "vertical",
+                                    "contents": [
+                                    {
+                                        "type": "box",
+                                        "layout": "vertical",
+                                        "contents": [
+                                        {
+                                            "type": "text",
+                                            "text": "FROM",
+                                            "color": "#ffffff66",
+                                            "size": "xxs"
+                                        },
+                                        {
+                                            "type": "text",
+                                            "text": passenger_sheet[i][2],
+                                            "color": "#ffffff",
+                                            "size": "lg",
+                                            "weight": "bold"
+                                        }
+                                        ]
+                                    },
+                                    {
+                                        "type": "box",
+                                        "layout": "vertical",
+                                        "contents": [
+                                        {
+                                            "type": "text",
+                                            "text": "TO",
+                                            "color": "#ffffff66",
+                                            "size": "xxs"
+                                        },
+                                        {
+                                            "type": "text",
+                                            "text": passenger_sheet[i][4],
+                                            "color": "#ffffff",
+                                            "size": "lg",
+                                            "weight": "bold",
+                                            "margin": "none"
+                                        }
+                                        ]
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"出發時間：{passenger_sheet[i][3]}",
+                                        "color": "#000000",
+                                        "size": "xs",
+                                        "contents": [],
+                                        "decoration": "underline"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"總時程：{time_hrmi(int(passenger_sheet[i][6]))}",
+                                        "color": "#000000",
+                                        "size": "xs",
+                                        "decoration": "underline"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"發起人：{passenger_sheet[i][9]}",
+                                        "color": "#000000",
+                                        "size": "xs",
+                                        "decoration": "underline"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"司機：{passenger_driver}",
+                                        "color": "#000000",
+                                        "size": "xs"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"手機號碼：{passenger_sheet[i][12]}",
+                                        "color": "#000000",
+                                        "size": "xs",
+                                        "decoration": "underline"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"LineID：{passenger_sheet[i][10]}",
+                                        "color": "#000000",
+                                        "size": "xs",
+                                        "decoration": "underline"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"共乘人數上限：{passenger_sheet[i][5]}",
+                                        "color": "#000000",
+                                        "size": "xs"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"當前預約人數：{int(passenger_sheet[i][13])}",
+                                        "color": "#000000",
+                                        "size": "xs"
+                                    }
+                                    ],
+                                    "paddingAll": "20px",
+                                    "backgroundColor": "#0367D3",
+                                    "spacing": "md",
+                                    "height": "300px",
+                                    "paddingTop": "22px"
+                                },
+                                "body": {
+                                    "type": "box",
+                                    "layout": "vertical",
+                                    "contents": [
+                                    {
+                                        "type": "text",
+                                        "text": f"共乘編號：{passenger_sheet[i][16]}",
+                                        "margin": "none",
+                                        "size": "sm",
+                                        "weight": "bold"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"交通工具：{passenger_sheet[i][11]}",
+                                        "margin": "none",
+                                        "size": "sm",
+                                        "weight": "bold"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"簡介：{passenger_sheet[i][8]}",
+                                        "margin": "xl"
+                                    }
+                                    ]
+                                },
+                                "footer": {
+                                    "type": "box",
+                                    "layout": "vertical",
+                                    "contents": [
+                                    {
+                                        "type": "button",
+                                        "action": {
+                                        "type": "postback",
+                                        "label": "查看詳細資訊",
+                                        "data": f"passenger_Num{i}",
+                                        "displayText": f"{passenger_sheet[i][2]}到{passenger_sheet[i][4]}的共乘資訊"
+                                        },
+                                        "style": "secondary"
+                                    }
+                                    ]
+                                }
+                                }
+                            # 新增規範
+                            if '上下車地點可討論' in passenger_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "上下車地點可討論",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_passenger_data_case['body']['contents'].insert(2,r)
+                            if '不聊天' in passenger_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "不聊天",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_passenger_data_case['body']['contents'].insert(2,r)
+                            if '嚴禁喝酒及抽菸' in passenger_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "嚴禁喝酒及抽菸",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_passenger_data_case['body']['contents'].insert(2,r)
+                            if '禁食' in passenger_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "禁食",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_passenger_data_case['body']['contents'].insert(3,r)
+                            if '謝絕寵物' in passenger_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "謝絕寵物",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_passenger_data_case['body']['contents'].insert(2,r)
+                            if '寵物需裝籠' in passenger_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "寵物需裝籠",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_passenger_data_case['body']['contents'].insert(2,r)
+                            if '已有司機' in passenger_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "已有司機",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "color": "#ff5551",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_passenger_data_case['body']['contents'].insert(2,r)
+                            if '尚未有司機（徵求司機！）' in passenger_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "尚未有司機（徵求司機！）",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "color": "#ff5551",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_passenger_data_case['body']['contents'].insert(2,r)    
+                            if '叫車分攤費用' in passenger_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "叫車分攤費用",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "color": "#ff5551",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_passenger_data_case['body']['contents'].insert(2,r) 
+                            if '※ 人滿才發車' in passenger_sheet[i][7]:
+                                r = {
+                                            "type": "text",
+                                            "text": "※ 人滿才發車",
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "color": "#ff5551",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                web_passenger_data_case['body']['contents'].insert(2,r)
+                            line_flex_json['contents'].append(web_passenger_data_case)   
+                        else:
+                            pass
+                    else:
+                        pass
+                line_flex_str = json.dumps(line_flex_json) #改成字串格式
+                with ApiClient(configuration) as api_client:
+                    line_bot_api = MessagingApi(api_client)
+                    line_bot_api.broadcast(
+                        BroadcastRequest(
+                            messages=[
+                                TextMessage(text='🔔【共乘資訊推播】阿穿幫你找好乘客啦～趕快來查看今日乘客發起的最新共乘資訊吧！'),
+                                FlexMessage(alt_text='最新共乘資訊', contents=FlexContainer.from_json(line_flex_str))]
+                        )
+                    )
+                New_passenger_update = 'New_passenger_done'
+            else:
+                pass
             print('乘客發起之揪團活動已抓取')
         except:
             print('乘客發起之揪團活動尚無資料')
