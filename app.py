@@ -1637,7 +1637,8 @@ def handle_postbak(event):
                         if int(target_row[14]) != target_row[5]:
                             profile = line_bot_api.get_profile(driver_user_id)
                             # 獲取使用者名稱    
-                            driver_Sure_name=profile.display_name           
+                            driver_Sure_name = profile.display_name 
+                            driver_user_id_check = ''          
                             #-----------------------------------------------------
                             if driver_user_id in target_row[15]:
                                 driver_user_id_check = 'Checked'
@@ -1750,6 +1751,7 @@ def handle_postbak(event):
                             profile = line_bot_api.get_profile(passenger_user_id)
                             # 獲取使用者名稱
                             passenger_Sure_name=profile.display_name
+                            passenger_user_id_check = ''
                             #-----------------------------------------------------
                             if passenger_user_id in target_row[14]:
                                 passenger_user_id_check = 'Checked'
