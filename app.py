@@ -1540,7 +1540,7 @@ def handle_message(event):
                     driver_case_launchdatetime = parse_custom_time(driver_sheet[i][0])
                     driver_case_launchdate = driver_case_launchdatetime.strftime("%Y-%m-%d")
                     if driver_case_date >= now_date or driver_case_launchdate == now_date:
-                        reservation = f'共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人（司機）：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：{driver_sheet[i][8]}\n'
+                        reservation = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘價格：{driver_sheet[i][11]}\n🚗司機資訊：\n{driver_sheet[i][9]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n'
                         driver_text = driver_text+reservation+'--------------------------------\n'
                     else:
                         pass
@@ -1559,7 +1559,7 @@ def handle_message(event):
                     passenger_case_launchdatetime = parse_custom_time(passenger_sheet[i][0])
                     passenger_case_launchdate = passenger_case_launchdatetime.strftime("%Y-%m-%d")
                     if passenger_case_date >= now_date or passenger_case_launchdate == now_date:
-                        reservation = f'共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
+                        reservation = f'📎共乘編號：{passenger_sheet[i][16]}\n📍出發地點：{passenger_sheet[i][2]}\n📍目的地點：{passenger_sheet[i][4]}\n🕒出發時間：\n{passenger_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(passenger_sheet[i][6]))}\n#️⃣共乘上限：{passenger_sheet[i][5]} 人\n✨發起人：\n{passenger_sheet[i][9]}\n🚗司機資訊：{passenger_driver}\n🛞交通工具：{passenger_sheet[i][11]}\n❗️行車規範：\n{passenger_sheet[i][7]}\n💬備註：\n{passenger_sheet[i][8]}\n'
                         passenger_text = passenger_text+reservation+'--------------------------------\n'    
                     else:
                         pass 
@@ -1707,7 +1707,7 @@ def handle_postbak(event):
                     line_bot_api = MessagingApi(api_client)
                     if passenger_case_date > now_date or passenger_case_launchdate == now_date:
                         confirm_template = ConfirmTemplate(
-                            text = f'📎共乘編號：{passenger_sheet[i][16]}\n📍出發地點：{passenger_sheet[i][2]}\n📍目的地點：{passenger_sheet[i][4]}\n🕒出發時間：\n{passenger_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(passenger_sheet[i][6]))}\n#️⃣共乘上限：{passenger_sheet[i][5]} 人\n✨發起人：{passenger_sheet[i][9]}\n🚗司機資訊：\n{passenger_driver}\n🛞交通工具：{passenger_sheet[i][11]}\n❗️行車規範：\n{passenger_sheet[i][7]}\n💬備註：\n{passenger_sheet[i][8]}\n',
+                            text = f'📎共乘編號：{passenger_sheet[i][16]}\n📍出發地點：{passenger_sheet[i][2]}\n📍目的地點：{passenger_sheet[i][4]}\n🕒出發時間：\n{passenger_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(passenger_sheet[i][6]))}\n#️⃣共乘上限：{passenger_sheet[i][5]} 人\n✨發起人：\n{passenger_sheet[i][9]}\n🚗司機資訊：{passenger_driver}\n🛞交通工具：{passenger_sheet[i][11]}\n❗️行車規範：\n{passenger_sheet[i][7]}\n💬備註：\n{passenger_sheet[i][8]}\n',
                             actions=[ #一定只能放兩個Action
                                 PostbackAction(label='我要共乘！', text='我要共乘！', data=f'passenger_Sure{i}'),
                                 PostbackAction(label='我想當司機！', text='我想當司機！', data=f'passenger_bedriver{i}')   
