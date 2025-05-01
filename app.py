@@ -1667,7 +1667,7 @@ def handle_postbak(event):
                                     new_id = id+','+driver_user_id
                                     name = target_row[16]
                                     new_name = name+','+driver_Sure_name
-                                driver_sheet_id.update(f'O{i+1}:Q{i+1}', [[int(target_row[14])+1, new_id, new_name]])
+                                driver_sheet_id.update([[int(target_row[14])+1, new_id, new_name]], f'O{i+1}:Q{i+1}')
                             else:
                                 pass                        
                         else:
@@ -1804,7 +1804,7 @@ def handle_postbak(event):
                                     messages = [TextMessage(text=f'已幫您預約為司機，記得透過LineID聯繫活動發起人!\n發起人LineID：{target_row[10]}')]
                                 )
                             )
-                            passenger_sheet_id.update(f'S{i+1}:T{i+1}', [[passenger_Sure_name, passenger_user_id]])            
+                            passenger_sheet_id.update([[passenger_Sure_name, passenger_user_id]], f'S{i+1}:T{i+1}')            
                         else:
                             line_bot_api.push_message(
                                 PushMessageRequest(
