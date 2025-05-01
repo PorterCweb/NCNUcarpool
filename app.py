@@ -1640,14 +1640,14 @@ def handle_postbak(event):
                             driver_Sure_name=profile.display_name           
                             #-----------------------------------------------------
                             if driver_user_id in target_row[15]:
-                                driver_user_id = 'Checked'
+                                driver_user_id_check = 'Checked'
                                 line_bot_api.push_message(
                                     PushMessageRequest(
                                         to=driver_user_id,
                                         messages = [TextMessage(text='您已預約')]
                                     )
                                 )
-                            elif driver_user_id != 'Checked':
+                            elif driver_user_id_check != 'Checked':
                                 line_bot_api.push_message(
                                     PushMessageRequest(
                                         to=driver_user_id,
@@ -1678,6 +1678,8 @@ def handle_postbak(event):
                                 )
                             )
             elif event.postback.data == f'driver_info{i}':
+                # 獲取使用者 user_ID
+                driver_user_id = event.source.user_id
                 target_row = driver_sheet_id.row_values(i+1)
                 with ApiClient(configuration) as api_client:
                     line_bot_api = MessagingApi(api_client)
@@ -1750,7 +1752,7 @@ def handle_postbak(event):
                             passenger_Sure_name=profile.display_name
                             #-----------------------------------------------------
                             if passenger_user_id in target_row[14]:
-                                passenger_user_id = 'Checked'
+                                passenger_user_id_check = 'Checked'
                                 line_bot_api.push_message(
                                     PushMessageRequest(
                                         to=passenger_user_id,
@@ -1760,7 +1762,7 @@ def handle_postbak(event):
                                 break
                             else:
                                 pass
-                            if passenger_user_id != 'Checked':
+                            if passenger_user_id_check != 'Checked':
                                 line_bot_api.push_message(
                                     PushMessageRequest(
                                         to=passenger_user_id,
@@ -1779,7 +1781,7 @@ def handle_postbak(event):
                                     new_id = id+','+passenger_user_id
                                     name = target_row[15]
                                     new_name = name+','+passenger_Sure_name
-                                passenger_sheet_id.update(f'N{i+1}:P{i+1}', [[int(target_row[13])+1, new_id, new_name]])
+                                passenger_sheet_id.update([[int(target_row[13])+1, new_id, new_name]], f'N{i+1}:P{i+1}')
                         else:
                             line_bot_api.push_message(
                                 PushMessageRequest(
