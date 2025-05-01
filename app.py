@@ -326,12 +326,12 @@ def get_driver_sheet_case():
                     New_driver_update = 'New_driver_update'
                     driver_sheet_id.batch_update([
                         {
-                            'range': f'O{i+1}',
-                            'values': [[0]]
+                            'values': [[0]],
+                            'range': f'O{i+1}'
                         },
                         {
-                            'range': f'R{i+1}',
-                            'values': [[i+1]]
+                            'values': [[i+1]],
+                            'range': f'R{i+1}'
                         }
                     ])
                     driver_sheet[i][14] = 0
@@ -616,12 +616,13 @@ def get_passenger_sheet_case():
                     New_passenger_update = 'New_passenger_update'
                     passenger_sheet_id.batch_update([
                         {
-                            'range': f'N{i+1}',
-                            'values': [[0]]
+                            'values': [[0]],
+                            'range': f'N{i+1}'
+                            
                         },
                         {
-                            'range': f'Q{i+1}',
-                            'values': [[i+1]]
+                            'values': [[i+1]],
+                            'range': f'Q{i+1}'
                         }
                     ])
                     passenger_sheet[i][13] = 0
