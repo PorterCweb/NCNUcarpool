@@ -1554,6 +1554,10 @@ def handle_message(event):
             if user_id in str(passenger_Sure_id_dict.values()): # dict_value type 不能用 str in 的判斷式
                 reservation_case = get_key(passenger_Sure_id_dict,str(user_id))
                 for i in reservation_case:
+                    if passenger_sheet[i][18] == '':
+                        passenger_driver = '無'
+                    else:
+                        passenger_driver = passenger_sheet[i][18]
                     passenger_case_datetime = parse_custom_time(passenger_sheet[i][3])
                     passenger_case_date = passenger_case_datetime.strftime("%Y-%m-%d")
                     passenger_case_launchdatetime = parse_custom_time(passenger_sheet[i][0])
