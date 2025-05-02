@@ -1094,7 +1094,7 @@ def handle_message(event):
                                         "type": "button",
                                         "action": {
                                         "type": "postback",
-                                        "label": "查看詳細資訊",
+                                        "label": "我要共乘（詳細資訊）",
                                         "data": f"driver_Num{i}",
                                         "displayText": f"{driver_sheet[i][2]}到{driver_sheet[i][4]}的共乘資訊"
                                         },
@@ -1381,7 +1381,7 @@ def handle_message(event):
                                         "type": "button",
                                         "action": {
                                         "type": "postback",
-                                        "label": "查看詳細資訊",
+                                        "label": "我要共乘∕當司機（詳細資訊）",
                                         "data": f"passenger_Num{i}",
                                         "displayText": f"{passenger_sheet[i][2]}到{passenger_sheet[i][4]}的共乘資訊"
                                         },
@@ -1541,7 +1541,7 @@ def handle_message(event):
                     driver_case_launchdatetime = parse_custom_time(driver_sheet[i][0])
                     driver_case_launchdate = driver_case_launchdatetime.strftime("%Y-%m-%d")
                     if driver_case_date >= now_date or driver_case_launchdate == now_date:
-                        reservation = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘價格：{driver_sheet[i][11]}\n🚗司機資訊：\n{driver_sheet[i][9]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n'
+                        reservation = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘價格：{driver_sheet[i][11]}\n🚗司機名稱：\n{driver_sheet[i][9]}\n📱手機號碼：{driver_sheet[i][13]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n'
                         driver_text = driver_text+reservation+'--------------------------------\n'
                     else:
                         pass
@@ -1603,7 +1603,7 @@ def handle_postbak(event):
                     line_bot_api = MessagingApi(api_client)
                     if driver_case_date > now_date or driver_case_launchdate == now_date:
                         confirm_template = ConfirmTemplate(
-                            text = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘價格：{driver_sheet[i][11]}\n🚗司機資訊：\n{driver_sheet[i][9]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n',
+                            text = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘價格：{driver_sheet[i][11]}\n🚗司機名稱：\n{driver_sheet[i][9]}\n📱手機號碼：{driver_sheet[i][13]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n',
                             actions=[ #只能放兩個Action
                                 PostbackAction(label='我想共乘！', text='我想共乘！', data=f'driver_Sure{i}'),
                                 PostbackAction(label='司機聯絡資訊', text='司機聯絡資訊', data = f'driver_info{i}')
@@ -1623,7 +1623,7 @@ def handle_postbak(event):
                         line_bot_api.push_message(
                             PushMessageRequest(
                                 to=driver_user_id,
-                                messages = [TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n發起人（司機）LineID：{driver_sheet[i][10]}\n手機號碼：{driver_sheet[i][13]}')]
+                                messages = [TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n司機名稱：{driver_sheet[i][9]}\nLineID：{driver_sheet[i][10]}\n手機號碼：{driver_sheet[i][13]}')]
                             )
                         )        
             # 使用者在Confirm Template按下確定後，試算表的搭車人數將+1
@@ -1652,7 +1652,7 @@ def handle_postbak(event):
                                 line_bot_api.push_message(
                                     PushMessageRequest(
                                         to=driver_user_id,
-                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!\n發起人（司機）LineID：{target_row[10]}\n車牌及型號：{target_row[18]}')]
+                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!\n司機名稱：{target_row[9]}\nLineID：{target_row[10]}\n手機號碼：{driver_sheet[i][13]}\n車牌及型號：{target_row[18]}')]
                                     )
                                 )
                                 try :
@@ -1689,7 +1689,7 @@ def handle_postbak(event):
                     line_bot_api.push_message(
                         PushMessageRequest(
                             to=driver_user_id,
-                            messages = [TextMessage(text=f'LineID：{target_row[10]}\n電話號碼：{target_row[13]}\n聯絡後仍要記得預約喔！後續搭乘問題都會依照實際預約者為先。')]
+                            messages = [TextMessage(text=f'司機名稱：{target_row[9]}\nLineID：{target_row[10]}\n電話號碼：{target_row[13]}\n聯絡後仍要記得預約喔！後續搭乘問題都會依照實際預約者為先。')]
                         )
                     )
             else:
@@ -1715,7 +1715,7 @@ def handle_postbak(event):
                     line_bot_api = MessagingApi(api_client)
                     if passenger_case_date > now_date or passenger_case_launchdate == now_date:
                         confirm_template = ConfirmTemplate(
-                            text = f'📎共乘編號：{passenger_sheet[i][16]}\n📍出發地點：{passenger_sheet[i][2]}\n📍目的地點：{passenger_sheet[i][4]}\n🕒出發時間：\n{passenger_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(passenger_sheet[i][6]))}\n#️⃣共乘上限：{passenger_sheet[i][5]} 人\n✨發起人：\n{passenger_sheet[i][9]}\n🚗司機資訊：{passenger_driver}\n🛞交通工具：{passenger_sheet[i][11]}\n❗️行車規範：\n{passenger_sheet[i][7]}\n💬備註：\n{passenger_sheet[i][8]}\n',
+                            text = f'📎共乘編號：{passenger_sheet[i][16]}\n📍出發地點：{passenger_sheet[i][2]}\n📍目的地點：{passenger_sheet[i][4]}\n🕒出發時間：\n{passenger_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(passenger_sheet[i][6]))}\n#️⃣共乘上限：{passenger_sheet[i][5]} 人\n✨發起人：\n{passenger_sheet[i][9]}\n🚗司機名稱：{passenger_driver}\n📱手機號碼：{passenger_sheet[i][12]}\n🛞交通工具：{passenger_sheet[i][11]}\n❗️行車規範：\n{passenger_sheet[i][7]}\n💬備註：\n{passenger_sheet[i][8]}\n',
                             actions=[ #一定只能放兩個Action
                                 PostbackAction(label='我要共乘！', text='我要共乘！', data=f'passenger_Sure{i}'),
                                 PostbackAction(label='我想當司機！', text='我想當司機！', data=f'passenger_bedriver{i}')   
@@ -1735,7 +1735,7 @@ def handle_postbak(event):
                         line_bot_api.push_message(
                             PushMessageRequest(
                                 to=passenger_user_id,
-                                messages = [TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n發起人LineID：{passenger_sheet[i][10]}\n手機號碼：{passenger_sheet[i][12]}')]
+                                messages = [TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n發起人（乘客）名稱：{passenger_sheet[i][9]}\nLineID：{passenger_sheet[i][10]}\n手機號碼：{passenger_sheet[i][12]}\n司機名稱：')]
                             )
                         )
             else:
@@ -1768,7 +1768,7 @@ def handle_postbak(event):
                                 line_bot_api.push_message(
                                     PushMessageRequest(
                                         to=passenger_user_id,
-                                        messages = [TextMessage(text=f'已幫您預約為乘客，記得透過LineID聯繫活動發起人!\n發起人LineID：{target_row[10]}')]
+                                        messages = [TextMessage(text=f'已幫您預約為乘客，記得透過LineID聯繫活動發起人!\n發起人（乘客）名稱：{passenger_sheet[i][9]}\nLineID：{target_row[10]}\n手機號碼：{target_row[12]}')]
                                     )
                                 )
                                 try :
@@ -1805,7 +1805,7 @@ def handle_postbak(event):
                             line_bot_api.push_message(
                                 PushMessageRequest(
                                     to=passenger_user_id,
-                                    messages = [TextMessage(text=f'已幫您預約為司機，記得透過LineID聯繫活動發起人!\n發起人LineID：{target_row[10]}')]
+                                    messages = [TextMessage(text=f'已幫您預約為司機，記得透過LineID聯繫活動發起人!\n發起人（乘客）名稱：{passenger_sheet[i][9]}\nLineID：{target_row[10]}\n手機號碼：{target_row[12]}')]
                                 )
                             )
                             passenger_sheet_id.update([[passenger_Sure_name, passenger_user_id]], f'S{i+1}:T{i+1}')            
