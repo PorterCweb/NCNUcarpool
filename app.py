@@ -483,7 +483,7 @@ def get_driver_sheet_case():
                                         "type": "button",
                                         "action": {
                                         "type": "postback",
-                                        "label": "查看詳細資訊",
+                                        "label": "我要共乘（詳細資訊）",
                                         "data": f"driver_Num{i}",
                                         "displayText": f"{driver_sheet[i][2]}到{driver_sheet[i][4]}的共乘資訊"
                                         },
@@ -793,7 +793,7 @@ def get_passenger_sheet_case():
                                         "type": "button",
                                         "action": {
                                         "type": "postback",
-                                        "label": "查看詳細資訊",
+                                        "label": "我要共乘∕當司機（詳細資訊）",
                                         "data": f"passenger_Num{i}",
                                         "displayText": f"{passenger_sheet[i][2]}到{passenger_sheet[i][4]}的共乘資訊"
                                         },
