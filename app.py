@@ -1652,7 +1652,7 @@ def handle_postbak(event):
                                 line_bot_api.push_message(
                                     PushMessageRequest(
                                         to=driver_user_id,
-                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!\n司機名稱：{target_row[9]}\nLineID：{target_row[10]}\n手機號碼：{driver_sheet[i][13]}\n車牌及型號：{target_row[18]}')]
+                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!\n司機名稱：{target_row[9]}\nLineID：{target_row[10]}\n手機號碼：{driver_sheet[i][13]}\n車牌及型號：\n{target_row[18]}')]
                                     )
                                 )
                                 try :
@@ -1735,7 +1735,7 @@ def handle_postbak(event):
                         line_bot_api.push_message(
                             PushMessageRequest(
                                 to=passenger_user_id,
-                                messages = [TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n發起人（乘客）名稱：{passenger_sheet[i][9]}\nLineID：{passenger_sheet[i][10]}\n手機號碼：{passenger_sheet[i][12]}\n司機名稱：')]
+                                messages = [TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n發起人（乘客）名稱：\n{passenger_sheet[i][9]}\nLineID：{passenger_sheet[i][10]}\n手機號碼：{passenger_sheet[i][12]}\n司機名稱：')]
                             )
                         )
             else:
@@ -1747,6 +1747,10 @@ def handle_postbak(event):
                         line_bot_api = MessagingApi(api_client)
                         # 獲取使用者 user_ID  
                         passenger_user_id = event.source.user_id
+                        if passenger_sheet[i][18] == '':
+                            passenger_driver = '無'
+                        else:
+                            passenger_driver = passenger_sheet[i][18]
                         if target_row[13] != target_row[5]:
                             profile = line_bot_api.get_profile(passenger_user_id)
                             # 獲取使用者名稱
@@ -1768,7 +1772,7 @@ def handle_postbak(event):
                                 line_bot_api.push_message(
                                     PushMessageRequest(
                                         to=passenger_user_id,
-                                        messages = [TextMessage(text=f'已幫您預約為乘客，記得透過LineID聯繫活動發起人!\n發起人（乘客）名稱：{passenger_sheet[i][9]}\nLineID：{target_row[10]}\n手機號碼：{target_row[12]}')]
+                                        messages = [TextMessage(text=f'已幫您預約為乘客，記得透過LineID聯繫活動發起人!\n發起人（乘客）名稱：\n{target_row[9]}\nLineID：{target_row[10]}\n手機號碼：{target_row[12]}\n司機名稱：{passenger_driver}')]
                                     )
                                 )
                                 try :
@@ -1805,7 +1809,7 @@ def handle_postbak(event):
                             line_bot_api.push_message(
                                 PushMessageRequest(
                                     to=passenger_user_id,
-                                    messages = [TextMessage(text=f'已幫您預約為司機，記得透過LineID聯繫活動發起人!\n發起人（乘客）名稱：{passenger_sheet[i][9]}\nLineID：{target_row[10]}\n手機號碼：{target_row[12]}')]
+                                    messages = [TextMessage(text=f'已幫您預約為司機，記得透過LineID聯繫活動發起人!\n發起人（乘客）名稱：\n{passenger_sheet[i][9]}\nLineID：{target_row[10]}\n手機號碼：{target_row[12]}')]
                                 )
                             )
                             passenger_sheet_id.update([[passenger_Sure_name, passenger_user_id]], f'S{i+1}:T{i+1}')            
