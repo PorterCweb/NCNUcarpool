@@ -590,7 +590,7 @@ def get_driver_sheet_case():
                         )
                     )          
                 New_driver_update = 'New_driver_done'
-                print(f'{driver_sheet[i][1]} 更新的資料已經廣播！')
+                print(f'{driver_sheet[i][1]} 更新的資料已推播！')
             else:
                 pass
             print('司機發起之活動已抓取')
@@ -627,6 +627,7 @@ def get_passenger_sheet_case():
                             'range': f'Q{i+1}'
                         }
                     ])
+                    print(New_passenger_update)
                     passenger_sheet[i][13] = 0
                     passenger_sheet[i][16] = i+1
                 else:
@@ -922,6 +923,7 @@ def get_passenger_sheet_case():
                         )
                     )
                 New_passenger_update = 'New_passenger_done'
+                print(f'{passenger_sheet[i][1]} 更新的資料已推播！')
             else:
                 pass
             print('乘客發起之揪團活動已抓取')
