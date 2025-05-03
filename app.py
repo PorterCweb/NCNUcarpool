@@ -334,6 +334,7 @@ def get_driver_sheet_case():
                             'range': f'R{i+1}'
                         }
                     ])
+                    print(New_driver_update)
                     driver_sheet[i][14] = 0
                     driver_sheet[i][17] = i+1
                 else:
@@ -589,6 +590,7 @@ def get_driver_sheet_case():
                         )
                     )          
                 New_driver_update = 'New_driver_done'
+                print(f'{driver_sheet[i][1]} 更新的資料已經廣播！')
             else:
                 pass
             print('司機發起之活動已抓取')
