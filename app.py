@@ -971,7 +971,11 @@ def handle_message(event):
                             pass
                         except ValueError:
                             driver_sheet[i][14]=0
-                        if int(driver_sheet[i][14]) <= int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
+                        try :
+                            int(driver_sheet[i][5])
+                        except:
+                            driver_sheet_type = '共乘人數上限不為文字'
+                        if driver_sheet_type == '共乘人數上限不為文字' or int(driver_sheet[i][14]) <= int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
                             web_driver_data_case={
                                 "type": "bubble",
                                 "size": "mega",
