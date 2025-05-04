@@ -1244,7 +1244,7 @@ def handle_message(event):
                         else:
                             passenger_driver = passenger_sheet[i][18]
                             pass
-                        if int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0 or type(passenger_sheet[i][5])== str:
+                        if type(passenger_sheet[i][5])== str or int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
                             web_passenger_data_case={
                                 "type": "bubble",
                                 "size": "mega",
