@@ -642,17 +642,22 @@ def get_passenger_sheet_case():
                     passenger_case_launchdate = passenger_case_launchdatetime.strftime("%Y-%m-%d")
                     now_datetime = datetime.now()
                     now_date = now_datetime.strftime("%Y-%m-%d")
+                    driver_sheet_type = ''
                     if passenger_case_launchdate == now_date:
                         try :
                             int(passenger_sheet[i][13])
                         except ValueError:
                             passenger_sheet[i][13]=0
+                        try :
+                            int(driver_sheet[i][5])
+                        except:
+                            driver_sheet_type = '共乘人數上限不為文字'
                         if passenger_sheet[i][18] == '':
                             passenger_driver = '無'
                         else:
                             passenger_driver = passenger_sheet[i][18]
                             pass
-                        if int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
+                        if driver_sheet_type == '共乘人數上限不為文字' or int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
                             web_passenger_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -965,6 +970,7 @@ def handle_message(event):
                     driver_case_launchdate = driver_case_launchdatetime.strftime("%Y-%m-%d")
                     now_datetime = datetime.now()
                     now_date = now_datetime.strftime("%Y-%m-%d")
+                    driver_sheet_carpoollimit_type = ''
                     if driver_case_date>=now_date or driver_case_launchdate == now_date:
                         try :
                             int(driver_sheet[i][14])
@@ -974,8 +980,8 @@ def handle_message(event):
                         try :
                             int(driver_sheet[i][5])
                         except:
-                            driver_sheet_type = '共乘人數上限不為文字'
-                        if driver_sheet_type == '共乘人數上限不為文字' or int(driver_sheet[i][14]) <= int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
+                            driver_sheet_carpoollimit_type = '共乘人數上限不為數字'
+                        if driver_sheet_carpoollimit_type == '共乘人數上限不為數字' or int(driver_sheet[i][14]) <= int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
                             web_driver_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -1238,17 +1244,22 @@ def handle_message(event):
                     passenger_case_launchdate = passenger_case_launchdatetime.strftime("%Y-%m-%d")
                     now_datetime = datetime.now()
                     now_date = now_datetime.strftime("%Y-%m-%d")
+                    passenger_sheet_carpoollimit_type = ''
                     if passenger_case_date>=now_date or passenger_case_launchdate == now_date:
                         try :
                             int(passenger_sheet[i][13])
                         except ValueError:
                             passenger_sheet[i][13]=0
+                        try:
+                            int(passenger_sheet[i][5])
+                        except:
+                            passenger_sheet_carpoollimit_type = '共乘人數上限不為數字'
                         if passenger_sheet[i][18] == '':
                             passenger_driver = '無'
                         else:
                             passenger_driver = passenger_sheet[i][18]
                             pass
-                        if type(passenger_sheet[i][5])== str or int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
+                        if passenger_sheet_carpoollimit_type == '共乘人數上限不為數字' or type(passenger_sheet[i][5])== str or int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
                             web_passenger_data_case={
                                 "type": "bubble",
                                 "size": "mega",
