@@ -319,7 +319,6 @@ def get_driver_sheet_case():
             driver_Sure_id_dict = {}
             driver_Sure_name_dict = {}
             New_driver_update = ''
-            type(driver_sheet[i][6]) = type.sh
             for i in range(1,web_driver_len):
                 driver_Sure_id_dict[i] = driver_sheet[i][15]
                 driver_Sure_name_dict[i] = driver_sheet[i][16]
@@ -1245,7 +1244,7 @@ def handle_message(event):
                         else:
                             passenger_driver = passenger_sheet[i][18]
                             pass
-                        if int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0 or type(passenger_sheet[i][5])== str:
+                        if int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
                             web_passenger_data_case={
                                 "type": "bubble",
                                 "size": "mega",
