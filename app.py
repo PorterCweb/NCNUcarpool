@@ -1070,7 +1070,7 @@ def handle_message(event):
                                     }
                                     ],
                                     "paddingAll": "20px",
-                                    "backgroundColor": "#e6b89d",
+                                    "backgroundColor": "#0367D3",
                                     "spacing": "md",
                                     "height": "265px",
                                     "paddingTop": "22px"
@@ -1362,7 +1362,7 @@ def handle_message(event):
                                     }
                                     ],
                                     "paddingAll": "20px",
-                                    "backgroundColor": "#e6b89d",
+                                    "backgroundColor": "#0367D3",
                                     "spacing": "md",
                                     "height": "300px",
                                     "paddingTop": "22px"
@@ -1546,575 +1546,63 @@ def handle_message(event):
                     )  
                 )                
         elif text == '我的預約':
-            line_flex_json = {
-                    "type": "carousel",
-                    "contents": []
-            }
             # 獲取使用者 user_ID 
             user_id = event.source.user_id
+            text = ''
+            driver_text = ''
             now_datetime = datetime.now()
             now_date = now_datetime.strftime("%Y-%m-%d")
             if user_id in str(driver_Sure_id_dict.values()): # dict_value type 不能用 str in 的判斷式
-                for i in range(1,web_driver_len):
+                reservation_case = get_key(driver_Sure_id_dict,str(user_id))
+                for i in reservation_case:
                     driver_case_datetime = parse_custom_time(driver_sheet[i][3])
                     driver_case_date = driver_case_datetime.strftime("%Y-%m-%d")
                     driver_case_launchdatetime = parse_custom_time(driver_sheet[i][0])
                     driver_case_launchdate = driver_case_launchdatetime.strftime("%Y-%m-%d")
-                    driver_sheet_carpoollimit_type = ''
-                    if driver_case_date>=now_date or driver_case_launchdate == now_date:
-                        try :
-                            int(driver_sheet[i][14])
-                            pass
-                        except ValueError:
-                            driver_sheet[i][14]=0
-                        try :
-                            int(driver_sheet[i][5])
-                        except:
-                            driver_sheet_carpoollimit_type = '共乘人數上限不為數字'
-                        if driver_sheet_carpoollimit_type == '共乘人數上限不為數字' or int(driver_sheet[i][14]) <= int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
-                            web_driver_data_case={
-                                "type": "bubble",
-                                "size": "mega",
-                                "header": {
-                                    "type": "box",
-                                    "layout": "vertical",
-                                    "contents": [
-                                    {
-                                        "type": "box",
-                                        "layout": "vertical",
-                                        "contents": [
-                                        {
-                                            "type": "text",
-                                            "text": "FROM",
-                                            "color": "#ffffff66",
-                                            "size": "xxs"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": driver_sheet[i][2],
-                                            "color": "#ffffff",
-                                            "size": "lg",
-                                            "weight": "bold"
-                                        }
-                                        ]
-                                    },
-                                    {
-                                        "type": "box",
-                                        "layout": "vertical",
-                                        "contents": [
-                                        {
-                                            "type": "text",
-                                            "text": "TO",
-                                            "color": "#ffffff66",
-                                            "size": "xxs"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": driver_sheet[i][4],
-                                            "color": "#ffffff",
-                                            "size": "lg",
-                                            "weight": "bold",
-                                            "margin": "none"
-                                        }
-                                        ]
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"出發時間：{driver_sheet[i][3]}",
-                                        "color": "#000000",
-                                        "size": "xs",
-                                        "contents": [],
-                                        "decoration": "underline"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"總時程：{time_hrmi(int(driver_sheet[i][6]))}",
-                                        "color": "#000000",
-                                        "size": "xs",
-                                        "decoration": "underline"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"發起人（司機）：{driver_sheet[i][9]}",
-                                        "color": "#000000",
-                                        "size": "xs",
-                                        "decoration": "underline"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"共乘人數上限：{driver_sheet[i][5]}",
-                                        "color": "#000000",
-                                        "size": "xs"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"價格：{driver_sheet[i][11]}",
-                                        "color": "#000000",
-                                        "size": "xs"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"當前預約人數：{int(driver_sheet[i][14])}",
-                                        "color": "#000000",
-                                        "size": "xs"
-                                    }
-                                    ],
-                                    "paddingAll": "20px",
-                                    "backgroundColor": "#c89273",
-                                    "spacing": "md",
-                                    "height": "265px",
-                                    "paddingTop": "22px"
-                                },
-                                "body": {
-                                    "type": "box",
-                                    "layout": "vertical",
-                                    "contents": [
-                                    {
-                                        "type": "text",
-                                        "text": f"共乘編號：{driver_sheet[i][17]}",
-                                        "margin": "none",
-                                        "size": "sm",
-                                        "weight": "bold"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"交通工具：{driver_sheet[i][12]}",
-                                        "margin": "none",
-                                        "size": "sm",
-                                        "weight": "bold"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"備註：{driver_sheet[i][8]}",
-                                        "margin": "xl"
-                                    }
-                                    ]
-                                },
-                                "footer": {
-                                    "type": "box",
-                                    "layout": "vertical",
-                                    "contents": [
-                                        {
-                                            "type": "button",
-                                            "action": {
-                                            "type": "postback",
-                                            "label": "詳細資訊",
-                                            "data": "driver_template_detail_info{i}",
-                                            "displayText": f"{driver_sheet[i][2]}到{driver_sheet[i][4]}的共乘資訊"
-                                            },
-                                            "style": "link"
-                                        },
-                                        {
-                                            "type": "button",
-                                            "action": {
-                                            "type": "postback",
-                                            "label": "取消預約",
-                                            "data": "driver_cancel_Num{i}",
-                                            "displayText": f"{driver_sheet[i][2]}到{driver_sheet[i][4]}的取消預約"
-                                            },
-                                            "style": "link"
-                                        }
-                                    ]
-                                }
-                            }
-                            # 新增規範
-                            if '上下車地點可討論' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "上下車地點可討論",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '自備零錢不找零' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "自備零錢不找零",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '接受線上付款 / 轉帳' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "接受線上付款 / 轉帳",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '禁食' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "禁食",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '不聊天' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "不聊天",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '寵物需裝籠' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "寵物需裝籠",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '謝絕寵物' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "謝絕寵物",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '※ 人滿才發車' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "※ 人滿才發車",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "color": "#ff5551",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            line_flex_json['contents'].append(web_driver_data_case)
-                        else:
-                            pass
+                    if driver_case_date >= now_date or driver_case_launchdate == now_date:
+                        reservation = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘價格：{driver_sheet[i][11]}\n🚗司機名稱：\n{driver_sheet[i][9]}\n📱手機號碼：{driver_sheet[i][13]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n'
+                        driver_text = driver_text+reservation+'--------------------------------\n'
                     else:
                         pass
             else:
                 pass
+            if driver_text != '':
+                text = '司機（揪團）預約：\n'+driver_text      
+            else:
+                pass 
+            passenger_text = '乘客（揪團）預約：\n'  
             if user_id in str(passenger_Sure_id_dict.values()): # dict_value type 不能用 str in 的判斷式
-                for i in range(1,web_passenger_len):
+                reservation_case = get_key(passenger_Sure_id_dict,str(user_id))
+                for i in reservation_case:
+                    if passenger_sheet[i][18] == '':
+                        passenger_driver = '無'
+                    else:
+                        passenger_driver = passenger_sheet[i][18]
                     passenger_case_datetime = parse_custom_time(passenger_sheet[i][3])
                     passenger_case_date = passenger_case_datetime.strftime("%Y-%m-%d")
                     passenger_case_launchdatetime = parse_custom_time(passenger_sheet[i][0])
                     passenger_case_launchdate = passenger_case_launchdatetime.strftime("%Y-%m-%d")
-                    passenger_sheet_carpoollimit_type = ''
-                    if passenger_case_date>=now_date or passenger_case_launchdate == now_date:
-                        try :
-                            int(passenger_sheet[i][13])
-                        except ValueError:
-                            passenger_sheet[i][13]=0
-                        try:
-                            int(passenger_sheet[i][5])
-                        except:
-                            passenger_sheet_carpoollimit_type = '共乘人數上限不為數字'
-                        if passenger_sheet[i][18] == '':
-                            passenger_driver = '無'
-                        else:
-                            passenger_driver = passenger_sheet[i][18]
-                            pass
-                        if passenger_sheet_carpoollimit_type == '共乘人數上限不為數字' or type(passenger_sheet[i][5])== str or int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
-                            web_passenger_data_case={
-                                "type": "bubble",
-                                "size": "mega",
-                                "header": {
-                                    "type": "box",
-                                    "layout": "vertical",
-                                    "contents": [
-                                    {
-                                        "type": "box",
-                                        "layout": "vertical",
-                                        "contents": [
-                                        {
-                                            "type": "text",
-                                            "text": "FROM",
-                                            "color": "#ffffff66",
-                                            "size": "xxs"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": passenger_sheet[i][2],
-                                            "color": "#ffffff",
-                                            "size": "lg",
-                                            "weight": "bold"
-                                        }
-                                        ]
-                                    },
-                                    {
-                                        "type": "box",
-                                        "layout": "vertical",
-                                        "contents": [
-                                        {
-                                            "type": "text",
-                                            "text": "TO",
-                                            "color": "#ffffff66",
-                                            "size": "xxs"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "text": passenger_sheet[i][4],
-                                            "color": "#ffffff",
-                                            "size": "lg",
-                                            "weight": "bold",
-                                            "margin": "none"
-                                        }
-                                        ]
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"出發時間：{passenger_sheet[i][3]}",
-                                        "color": "#000000",
-                                        "size": "xs",
-                                        "contents": [],
-                                        "decoration": "underline"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"預估時程：{time_hrmi(int(passenger_sheet[i][6]))}",
-                                        "color": "#000000",
-                                        "size": "xs",
-                                        "decoration": "underline"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"發起人：{passenger_sheet[i][9]}",
-                                        "color": "#000000",
-                                        "size": "xs",
-                                        "decoration": "underline"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"司機：{passenger_driver}",
-                                        "color": "#000000",
-                                        "size": "xs"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"手機號碼：{passenger_sheet[i][12]}",
-                                        "color": "#000000",
-                                        "size": "xs",
-                                        "decoration": "underline"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"LineID：{passenger_sheet[i][10]}",
-                                        "color": "#000000",
-                                        "size": "xs",
-                                        "decoration": "underline"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"共乘人數上限：{passenger_sheet[i][5]}",
-                                        "color": "#000000",
-                                        "size": "xs"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"當前預約人數：{int(passenger_sheet[i][13])}",
-                                        "color": "#000000",
-                                        "size": "xs"
-                                    }
-                                    ],
-                                    "paddingAll": "20px",
-                                    "backgroundColor": "#c89273",
-                                    "spacing": "md",
-                                    "height": "300px",
-                                    "paddingTop": "22px"
-                                },
-                                "body": {
-                                    "type": "box",
-                                    "layout": "vertical",
-                                    "contents": [
-                                    {
-                                        "type": "text",
-                                        "text": f"共乘編號：{passenger_sheet[i][16]}",
-                                        "margin": "none",
-                                        "size": "sm",
-                                        "weight": "bold"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"交通工具：{passenger_sheet[i][11]}",
-                                        "margin": "none",
-                                        "size": "sm",
-                                        "weight": "bold"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"備註：{passenger_sheet[i][8]}",
-                                        "margin": "xl"
-                                    }
-                                    ]
-                                },
-                                "footer": {
-                                    "type": "box",
-                                    "layout": "vertical",
-                                    "contents": [
-                                        {
-                                            "type": "button",
-                                            "action": {
-                                            "type": "postback",
-                                            "label": "詳細資訊",
-                                            "data": "driver_template_detail_info{i}",
-                                            "displayText": f"{passenger_sheet[i][2]}到{passenger_sheet[i][4]}的共乘資訊"
-                                            },
-                                            "style": "link"
-                                        },
-                                        {
-                                            "type": "button",
-                                            "action": {
-                                            "type": "postback",
-                                            "label": "取消預約",
-                                            "data": "driver_cancel_Num{i}",
-                                            "displayText": f"{passenger_sheet[i][2]}到{passenger_sheet[i][4]}的取消預約"
-                                            },
-                                            "style": "link"
-                                        }
-                                    ]
-                                }
-                                }
-                            # 新增規範
-                            if '上下車地點可討論' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "上下車地點可討論",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '不聊天' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "不聊天",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '嚴禁喝酒及抽菸' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "嚴禁喝酒及抽菸",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '禁食' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "禁食",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(3,r)
-                            if '謝絕寵物' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "謝絕寵物",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '寵物需裝籠' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "寵物需裝籠",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '已有司機' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "已有司機",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "color": "#ff5551",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '尚未有司機（徵求司機！）' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "尚未有司機（徵求司機！）",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "color": "#ff5551",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)    
-                            if '叫車分攤費用' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "叫車分攤費用",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "color": "#ff5551",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r) 
-                            if '※ 人滿才發車' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "※ 人滿才發車",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "color": "#ff5551",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            line_flex_json['contents'].append(web_passenger_data_case)   
-                        else:
-                            pass
+                    if passenger_case_date >= now_date or passenger_case_launchdate == now_date:
+                        reservation = f'📎共乘編號：{passenger_sheet[i][16]}\n📍出發地點：{passenger_sheet[i][2]}\n📍目的地點：{passenger_sheet[i][4]}\n🕒出發時間：\n{passenger_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(passenger_sheet[i][6]))}\n#️⃣共乘上限：{passenger_sheet[i][5]} 人\n✨發起人：\n{passenger_sheet[i][9]}\n🚗司機資訊：{passenger_driver}\n🛞交通工具：{passenger_sheet[i][11]}\n❗️行車規範：\n{passenger_sheet[i][7]}\n💬備註：\n{passenger_sheet[i][8]}\n'
+                        passenger_text = passenger_text+reservation+'--------------------------------\n'    
                     else:
-                        pass
-            if line_flex_json != {
-                "type": "carousel",
-                "contents": []
-            }:
-                line_flex_str = json.dumps(line_flex_json) #改成字串格式
-                line_bot_api.reply_message(
-                    ReplyMessageRequest(
-                        reply_token=event.reply_token,
-                        messages=[FlexMessage(alt_text='已預約的共乘', contents=FlexContainer.from_json(line_flex_str))]
-                    )
-                )
+                        pass 
             else:
-                line_bot_api.reply_message( #傳送回復訊息
-                    ReplyMessageRequest(
-                        reply_token=event.reply_token,
-                        messages=[TextMessage(text='您尚未預約任何活動')]
-                    )
+                pass
+            if passenger_text!= '乘客（揪團）預約：\n':
+                text = text + passenger_text
+            else:
+                pass   
+            if text == '':
+                text = '您尚未預約任何活動'
+            else:
+                pass
+            line_bot_api.reply_message( #傳送回復訊息
+                ReplyMessageRequest(
+                    reply_token=event.reply_token,
+                    messages=[TextMessage(text=text)]
                 )
+            )
 driver_lock = threading.Lock()
 passenger_lock = threading.Lock()
 @line_handler.add(PostbackEvent)
@@ -2266,7 +1754,7 @@ def handle_postbak(event):
                         line_bot_api.push_message(
                             PushMessageRequest(
                                 to=passenger_user_id,
-                                messages = [TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n發起人（乘客）名稱：\n{passenger_sheet[i][9]}\nLineID：{passenger_sheet[i][10]}\n手機號碼：{passenger_sheet[i][12]}\n司機名稱：{passenger_driver}')]
+                                messages = [TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n發起人（乘客）名稱：\n{passenger_sheet[i][9]}\nLineID：{passenger_sheet[i][10]}\n手機號碼：{passenger_sheet[i][12]}\n司機名稱：')]
                             )
                         )
             else:
