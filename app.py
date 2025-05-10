@@ -2205,6 +2205,7 @@ def handle_postbak(event):
                                     name = target_row[16]
                                     new_name = name+','+driver_Sure_name
                                 driver_sheet_id.update([[int(target_row[14])+1, new_id, new_name]], f'O{i+1}:Q{i+1}')
+                                get_driver_sheet_case()
                             else:
                                 pass                        
                         else:
@@ -2368,6 +2369,7 @@ def handle_postbak(event):
                                     name = target_row[15]
                                     new_name = name+','+passenger_Sure_name
                                 passenger_sheet_id.update([[int(target_row[13])+1, new_id, new_name]], f'N{i+1}:P{i+1}')
+                                get_passenger_sheet_case()
                         else:
                             line_bot_api.push_message(
                                 PushMessageRequest(
