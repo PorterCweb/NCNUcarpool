@@ -941,8 +941,8 @@ def run_scheduler():
         schedule.run_pending()
         time.sleep(0.1)  
 schedule.every(15).minutes.do(check_project)
-schedule.every(30).seconds.do(get_driver_sheet_case)
-schedule.every(30).seconds.do(get_passenger_sheet_case)
+schedule.every(10).seconds.do(get_driver_sheet_case)
+schedule.every(10).seconds.do(get_passenger_sheet_case)
 scheduler_thread_case = threading.Thread(target=run_scheduler)
 # 20250418有可能運行期間出現問題後(任何)，就會永久結束，需要伺服器重啟才能再執行，因此不使用。
 # scheduler_thread_case.daemon = True 主程式結束此也結束
@@ -1559,17 +1559,16 @@ def handle_message(event):
                     driver_case_launchdate = driver_case_launchdatetime.strftime("%Y-%m-%d")
                     driver_sheet_carpoollimit_type = ''
                     if driver_case_date>=now_date or driver_case_launchdate == now_date:
-                        target_row = driver_sheet_id.row_values(i+1)
                         try :
-                            int(target_row[14])
+                            int(driver_sheet[i][14])
                             pass
                         except ValueError:
-                            target_row[14]=0
+                            driver_sheet[i][14]=0
                         try :
-                            int(target_row[5])
+                            int(driver_sheet[i][5])
                         except:
                             driver_sheet_carpoollimit_type = '共乘人數上限不為數字'
-                        if driver_sheet_carpoollimit_type == '共乘人數上限不為數字' or int(target_row[14]) <= int(target_row[5]) or int(target_row[14])== 0:
+                        if driver_sheet_carpoollimit_type == '共乘人數上限不為數字' or int(driver_sheet[i][14]) <= int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
                             web_driver_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -1589,7 +1588,7 @@ def handle_message(event):
                                         },
                                         {
                                             "type": "text",
-                                            "text": target_row[2],
+                                            "text": driver_sheet[i][2],
                                             "color": "#ffffff",
                                             "size": "lg",
                                             "weight": "bold"
@@ -1608,7 +1607,7 @@ def handle_message(event):
                                         },
                                         {
                                             "type": "text",
-                                            "text": target_row[4],
+                                            "text": driver_sheet[i][4],
                                             "color": "#ffffff",
                                             "size": "lg",
                                             "weight": "bold",
@@ -1618,7 +1617,7 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"出發時間：{target_row[3]}",
+                                        "text": f"出發時間：{driver_sheet[i][3]}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "contents": [],
@@ -1626,33 +1625,33 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"總時程：{time_hrmi(int(target_row[6]))}",
+                                        "text": f"總時程：{time_hrmi(int(driver_sheet[i][6]))}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"發起人（司機）：{target_row[9]}",
+                                        "text": f"發起人（司機）：{driver_sheet[i][9]}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"共乘人數上限：{target_row[5]}",
+                                        "text": f"共乘人數上限：{driver_sheet[i][5]}",
                                         "color": "#000000",
                                         "size": "xs"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"價格：{target_row[11]}",
+                                        "text": f"價格：{driver_sheet[i][11]}",
                                         "color": "#000000",
                                         "size": "xs"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"當前預約人數：{int(target_row[14])}",
+                                        "text": f"當前預約人數：{int(driver_sheet[i][14])}",
                                         "color": "#000000",
                                         "size": "xs"
                                     }
@@ -1669,21 +1668,21 @@ def handle_message(event):
                                     "contents": [
                                     {
                                         "type": "text",
-                                        "text": f"共乘編號：{target_row[17]}",
+                                        "text": f"共乘編號：{driver_sheet[i][17]}",
                                         "margin": "none",
                                         "size": "sm",
                                         "weight": "bold"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"交通工具：{target_row[12]}",
+                                        "text": f"交通工具：{driver_sheet[i][12]}",
                                         "margin": "none",
                                         "size": "sm",
                                         "weight": "bold"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"備註：{target_row[8]}",
+                                        "text": f"備註：{driver_sheet[i][8]}",
                                         "margin": "xl"
                                     }
                                     ]
@@ -1698,7 +1697,7 @@ def handle_message(event):
                                             "type": "postback",
                                             "label": "詳細資訊",
                                             "data": f"driver_template_detail_info{i}",
-                                            "displayText": f"{target_row[2]}到{target_row[4]}的共乘資訊"
+                                            "displayText": f"{driver_sheet[i][2]}到{driver_sheet[i][4]}的共乘資訊"
                                             },
                                             "style": "link",
                                             "margin": "none",
@@ -1710,7 +1709,7 @@ def handle_message(event):
                                             "type": "postback",
                                             "label": "取消預約",
                                             "data": f"driver_cancel_Num{i}",
-                                            "displayText": f"{target_row[2]}到{target_row[4]}的取消預約"
+                                            "displayText": f"{driver_sheet[i][2]}到{driver_sheet[i][4]}的取消預約"
                                             },
                                             "style": "primary",
                                             "height": "sm",
@@ -1720,7 +1719,7 @@ def handle_message(event):
                                 }
                             }
                             # 新增規範
-                            if '上下車地點可討論' in target_row[7]:
+                            if '上下車地點可討論' in driver_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "上下車地點可討論",
@@ -1730,7 +1729,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_driver_data_case['body']['contents'].insert(2,r)
-                            if '自備零錢不找零' in target_row[7]:
+                            if '自備零錢不找零' in driver_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "自備零錢不找零",
@@ -1740,7 +1739,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_driver_data_case['body']['contents'].insert(2,r)
-                            if '接受線上付款 / 轉帳' in target_row[7]:
+                            if '接受線上付款 / 轉帳' in driver_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "接受線上付款 / 轉帳",
@@ -1750,7 +1749,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_driver_data_case['body']['contents'].insert(2,r)
-                            if '禁食' in target_row[7]:
+                            if '禁食' in driver_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "禁食",
@@ -1760,7 +1759,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_driver_data_case['body']['contents'].insert(2,r)
-                            if '不聊天' in target_row[7]:
+                            if '不聊天' in driver_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "不聊天",
@@ -1770,7 +1769,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_driver_data_case['body']['contents'].insert(2,r)
-                            if '寵物需裝籠' in target_row[7]:
+                            if '寵物需裝籠' in driver_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "寵物需裝籠",
@@ -1780,7 +1779,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_driver_data_case['body']['contents'].insert(2,r)
-                            if '謝絕寵物' in target_row[7]:
+                            if '謝絕寵物' in driver_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "謝絕寵物",
@@ -1790,7 +1789,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_driver_data_case['body']['contents'].insert(2,r)
-                            if '※ 人滿才發車' in target_row[7]:
+                            if '※ 人滿才發車' in driver_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "※ 人滿才發車",
@@ -1816,20 +1815,19 @@ def handle_message(event):
                     passenger_case_launchdate = passenger_case_launchdatetime.strftime("%Y-%m-%d")
                     passenger_sheet_carpoollimit_type = ''
                     if passenger_case_date>=now_date or passenger_case_launchdate == now_date:
-                        target_row = passenger_sheet_id.row_values(i+1)
                         try :
-                            int(target_row[13])
+                            int(passenger_sheet[i][13])
                         except ValueError:
-                            target_row[13]=0
+                            passenger_sheet[i][13]=0
                         try:
-                            int(target_row[5])
+                            int(passenger_sheet[i][5])
                         except:
                             passenger_sheet_carpoollimit_type = '共乘人數上限不為數字'
-                        if target_row[18] == '':
+                        if passenger_sheet[i][18] == '':
                             passenger_driver = '無'
                         else:
-                            passenger_driver = target_row[18]
-                        if passenger_sheet_carpoollimit_type == '共乘人數上限不為數字' or type(target_row[5])== str or int(target_row[13]) <= int(target_row[5]) or int(target_row[13])== 0:
+                            passenger_driver = passenger_sheet[i][18]
+                        if passenger_sheet_carpoollimit_type == '共乘人數上限不為數字' or type(passenger_sheet[i][5])== str or int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
                             web_passenger_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -1849,7 +1847,7 @@ def handle_message(event):
                                         },
                                         {
                                             "type": "text",
-                                            "text": target_row[2],
+                                            "text": passenger_sheet[i][2],
                                             "color": "#ffffff",
                                             "size": "lg",
                                             "weight": "bold"
@@ -1868,7 +1866,7 @@ def handle_message(event):
                                         },
                                         {
                                             "type": "text",
-                                            "text": target_row[4],
+                                            "text": passenger_sheet[i][4],
                                             "color": "#ffffff",
                                             "size": "lg",
                                             "weight": "bold",
@@ -1878,7 +1876,7 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"出發時間：{target_row[3]}",
+                                        "text": f"出發時間：{passenger_sheet[i][3]}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "contents": [],
@@ -1886,14 +1884,14 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"預估時程：{time_hrmi(int(target_row[6]))}",
+                                        "text": f"預估時程：{time_hrmi(int(passenger_sheet[i][6]))}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"發起人：{target_row[9]}",
+                                        "text": f"發起人：{passenger_sheet[i][9]}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
@@ -1906,27 +1904,27 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"手機號碼：{target_row[12]}",
+                                        "text": f"手機號碼：{passenger_sheet[i][12]}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"LineID：{target_row[10]}",
+                                        "text": f"LineID：{passenger_sheet[i][10]}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"共乘人數上限：{target_row[5]}",
+                                        "text": f"共乘人數上限：{passenger_sheet[i][5]}",
                                         "color": "#000000",
                                         "size": "xs"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"當前預約人數：{int(target_row[13])}",
+                                        "text": f"當前預約人數：{int(passenger_sheet[i][13])}",
                                         "color": "#000000",
                                         "size": "xs"
                                     }
@@ -1943,21 +1941,21 @@ def handle_message(event):
                                     "contents": [
                                     {
                                         "type": "text",
-                                        "text": f"共乘編號：{target_row[16]}",
+                                        "text": f"共乘編號：{passenger_sheet[i][16]}",
                                         "margin": "none",
                                         "size": "sm",
                                         "weight": "bold"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"交通工具：{target_row[11]}",
+                                        "text": f"交通工具：{passenger_sheet[i][11]}",
                                         "margin": "none",
                                         "size": "sm",
                                         "weight": "bold"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"備註：{target_row[8]}",
+                                        "text": f"備註：{passenger_sheet[i][8]}",
                                         "margin": "xl"
                                     }
                                     ]
@@ -1972,7 +1970,7 @@ def handle_message(event):
                                             "type": "postback",
                                             "label": "詳細資訊",
                                             "data": f"passenger_template_detail_info{i}",
-                                            "displayText": f"{target_row[2]}到{target_row[4]}的共乘資訊"
+                                            "displayText": f"{passenger_sheet[i][2]}到{passenger_sheet[i][4]}的共乘資訊"
                                             },
                                             "style": "link",
                                             "margin": "none",
@@ -1984,7 +1982,7 @@ def handle_message(event):
                                             "type": "postback",
                                             "label": "取消預約",
                                             "data": f"passenger_cancel_Num{i}",
-                                            "displayText": f"{target_row[2]}到{target_row[4]}的取消預約"
+                                            "displayText": f"{passenger_sheet[i][2]}到{passenger_sheet[i][4]}的取消預約"
                                             },
                                             "style": "primary",
                                             "height": "sm",
@@ -1994,7 +1992,7 @@ def handle_message(event):
                                 }
                                 }
                             # 新增規範
-                            if '上下車地點可討論' in target_row[7]:
+                            if '上下車地點可討論' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "上下車地點可討論",
@@ -2004,7 +2002,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '不聊天' in target_row[7]:
+                            if '不聊天' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "不聊天",
@@ -2014,7 +2012,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '嚴禁喝酒及抽菸' in target_row[7]:
+                            if '嚴禁喝酒及抽菸' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "嚴禁喝酒及抽菸",
@@ -2024,7 +2022,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '禁食' in target_row[7]:
+                            if '禁食' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "禁食",
@@ -2034,7 +2032,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(3,r)
-                            if '謝絕寵物' in target_row[7]:
+                            if '謝絕寵物' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "謝絕寵物",
@@ -2044,7 +2042,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '寵物需裝籠' in target_row[7]:
+                            if '寵物需裝籠' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "寵物需裝籠",
@@ -2054,7 +2052,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '已有司機' in target_row[7]:
+                            if '已有司機' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "已有司機",
@@ -2065,7 +2063,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '尚未有司機（徵求司機！）' in target_row[7]:
+                            if '尚未有司機（徵求司機！）' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "尚未有司機（徵求司機！）",
@@ -2076,7 +2074,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(2,r)    
-                            if '叫車分攤費用' in target_row[7]:
+                            if '叫車分攤費用' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "叫車分攤費用",
@@ -2087,7 +2085,7 @@ def handle_message(event):
                                             "offsetEnd": "none"
                                         }
                                 web_passenger_data_case['body']['contents'].insert(2,r) 
-                            if '※ 人滿才發車' in target_row[7]:
+                            if '※ 人滿才發車' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
                                             "text": "※ 人滿才發車",
