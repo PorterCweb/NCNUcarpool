@@ -1660,7 +1660,7 @@ def handle_message(event):
                                     }
                                     ],
                                     "paddingAll": "20px",
-                                    "backgroundColor": "#d5a88e",
+                                    "backgroundColor": "#c89273",
                                     "spacing": "md",
                                     "height": "265px",
                                     "paddingTop": "22px"
@@ -1930,7 +1930,7 @@ def handle_message(event):
                                     }
                                     ],
                                     "paddingAll": "20px",
-                                    "backgroundColor": "#d5a88e",
+                                    "backgroundColor": "#c89273",
                                     "spacing": "md",
                                     "height": "300px",
                                     "paddingTop": "22px"
@@ -1964,16 +1964,26 @@ def handle_message(event):
                                     "type": "box",
                                     "layout": "vertical",
                                     "contents": [
-                                    {
-                                        "type": "button",
-                                        "action": {
-                                        "type": "postback",
-                                        "label": "我要共乘∕當司機（詳細資訊）",
-                                        "data": f"passenger_Num{i}",
-                                        "displayText": f"{passenger_sheet[i][2]}到{passenger_sheet[i][4]}的共乘資訊"
+                                        {
+                                            "type": "button",
+                                            "action": {
+                                            "type": "postback",
+                                            "label": "詳細資訊",
+                                            "data": "driver_template_detail_info{i}",
+                                            "displayText": f"{passenger_sheet[i][2]}到{passenger_sheet[i][4]}的共乘資訊"
+                                            },
+                                            "style": "link"
                                         },
-                                        "style": "secondary"
-                                    }
+                                        {
+                                            "type": "button",
+                                            "action": {
+                                            "type": "postback",
+                                            "label": "取消預約",
+                                            "data": "driver_cancel_Num{i}",
+                                            "displayText": f"{passenger_sheet[i][2]}到{passenger_sheet[i][4]}的取消預約"
+                                            },
+                                            "style": "link"
+                                        }
                                     ]
                                 }
                                 }
