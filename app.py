@@ -2250,15 +2250,24 @@ def handle_postbak(event):
                 # 獲取使用者名稱        
                 passenger_Sure_name=profile.display_name
                 with driver_lock:
-                    # 刪除 UserID 紀錄
-                    id = target_row[15].split(',')
-                    target_position = id.index(driver_user_id)
-                    deled_id = target_row[15].replace(f',{driver_user_id}','')
-                    # 刪除 User名稱 紀錄
-                    name = target_row[16].split(',')
-                    del name[target_position]
-                    deled_name = ','.join(name)
-                    driver_sheet_id.update([[int(target_row[14])-1, deled_id, deled_name]], f'O{i+1}:Q{i+1}')
+                    with ApiClient(configuration) as api_client:
+                        line_bot_api = MessagingApi(api_client)
+                        # 刪除 UserID 紀錄
+                        id = target_row[15].split(',')
+                        target_position = id.index(driver_user_id)
+                        deled_id = target_row[15].replace(f',{driver_user_id}','')
+                        # 刪除 User名稱 紀錄
+                        name = target_row[16].split(',')
+                        del name[target_position]
+                        deled_name = ','.join(name)
+                        driver_sheet_id.update([[int(target_row[14])-1, deled_id, deled_name]], f'O{i+1}:Q{i+1}')
+                        line_bot_api.push_message(
+                            PushMessageRequest(
+                                to=driver_user_id,
+                                messages = [TextMessage(text=f'已幫你取消共乘編號：{target_row[17]}的預約')]
+                            )
+                        )
+                        
     except NameError:
         pass
     try:
@@ -2387,7 +2396,7 @@ def handle_postbak(event):
                 # 獲取使用者 user_ID
                 passenger_user_id = event.source.user_id
                 with ApiClient(configuration) as api_client:
-                    lina_bot_api = MessagingApi(api_client)
+                    line_bot_api = MessagingApi(api_client)
                     reservation = f'📎共乘編號：{passenger_sheet[i][16]}\n📍出發地點：{passenger_sheet[i][2]}\n📍目的地點：{passenger_sheet[i][4]}\n🕒出發時間：\n{passenger_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(passenger_sheet[i][6]))}\n#️⃣共乘上限：{passenger_sheet[i][5]} 人\n✨發起人：\n{passenger_sheet[i][9]}\n🚗司機名稱：{passenger_driver}\n📱手機號碼：{passenger_sheet[i][12]}\n🛞交通工具：{passenger_sheet[i][11]}\n❗️行車規範：\n{passenger_sheet[i][7]}\n💬備註：\n{passenger_sheet[i][8]}\n'
                     line_bot_api.push_message(
                         PushMessageRequest(
@@ -2403,15 +2412,23 @@ def handle_postbak(event):
                 # 獲取使用者名稱        
                 passenger_Sure_name=profile.display_name
                 with passenger_lock:
-                    # 刪除 UserID 紀錄
-                    id = target_row[14].split(',')
-                    target_position = id.index(passenger_user_id)
-                    deled_id = target_row[14].replace(f',{passenger_user_id}','')
-                    # 刪除 User名稱 紀錄
-                    name = target_row[15].split(',')
-                    del name[target_position]
-                    deled_name = ','.join(name)
-                    driver_sheet_id.update([[int(target_row[13])-1, deled_id, deled_name]], f'N{i+1}:P{i+1}')
+                    with ApiClient(configuration) as api_client:
+                        line_bot_api = MessagingApi(api_client)
+                        # 刪除 UserID 紀錄
+                        id = target_row[14].split(',')
+                        target_position = id.index(passenger_user_id)
+                        deled_id = target_row[14].replace(f',{passenger_user_id}','')
+                        # 刪除 User名稱 紀錄
+                        name = target_row[15].split(',')
+                        del name[target_position]
+                        deled_name = ','.join(name)
+                        driver_sheet_id.update([[int(target_row[13])-1, deled_id, deled_name]], f'N{i+1}:P{i+1}')
+                        line_bot_api.push_message(
+                            PushMessageRequest(
+                                to=driver_user_id,
+                                messages = [TextMessage(text=f'已幫您取消共乘編號：{target_row[16]}的預約')]
+                            )
+                        )
             else:
                 pass
     except NameError:
