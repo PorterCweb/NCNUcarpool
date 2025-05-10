@@ -941,8 +941,8 @@ def run_scheduler():
         schedule.run_pending()
         time.sleep(0.1)  
 schedule.every(15).minutes.do(check_project)
-schedule.every(5).seconds.do(get_driver_sheet_case)
-schedule.every(5).seconds.do(get_passenger_sheet_case)
+schedule.every(30).seconds.do(get_driver_sheet_case)
+schedule.every(30).seconds.do(get_passenger_sheet_case)
 scheduler_thread_case = threading.Thread(target=run_scheduler)
 # 20250418有可能運行期間出現問題後(任何)，就會永久結束，需要伺服器重啟才能再執行，因此不使用。
 # scheduler_thread_case.daemon = True 主程式結束此也結束
