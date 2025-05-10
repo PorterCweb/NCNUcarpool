@@ -1362,7 +1362,7 @@ def handle_message(event):
                                     }
                                     ],
                                     "paddingAll": "20px",
-                                    "backgroundColor": "#0367D3",
+                                    "backgroundColor": "#e6b89d",
                                     "spacing": "md",
                                     "height": "300px",
                                     "paddingTop": "22px"
@@ -1660,7 +1660,7 @@ def handle_message(event):
                                     }
                                     ],
                                     "paddingAll": "20px",
-                                    "backgroundColor": "#d5a88d",
+                                    "backgroundColor": "#d5a88e",
                                     "spacing": "md",
                                     "height": "265px",
                                     "paddingTop": "22px"
@@ -1930,7 +1930,7 @@ def handle_message(event):
                                     }
                                     ],
                                     "paddingAll": "20px",
-                                    "backgroundColor": "#0367D3",
+                                    "backgroundColor": "#d5a88e",
                                     "spacing": "md",
                                     "height": "300px",
                                     "paddingTop": "22px"
