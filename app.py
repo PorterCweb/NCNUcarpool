@@ -451,7 +451,7 @@ def get_driver_sheet_case():
                                     }
                                     ],
                                     "paddingAll": "20px",
-                                    "backgroundColor": "#0367D3",
+                                    "backgroundColor": "#e6b89d",
                                     "spacing": "md",
                                     "height": "265px",
                                     "paddingTop": "22px"
@@ -476,7 +476,7 @@ def get_driver_sheet_case():
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"簡介：{driver_sheet[i][8]}",
+                                        "text": f"備註：{driver_sheet[i][8]}",
                                         "margin": "xl"
                                     }
                                     ]
@@ -719,7 +719,7 @@ def get_passenger_sheet_case():
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"總時程：{time_hrmi(int(passenger_sheet[i][6]))}",
+                                        "text": f"預估時程：{time_hrmi(int(passenger_sheet[i][6]))}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
@@ -765,7 +765,7 @@ def get_passenger_sheet_case():
                                     }
                                     ],
                                     "paddingAll": "20px",
-                                    "backgroundColor": "#0367D3",
+                                    "backgroundColor": "#e6b89d",
                                     "spacing": "md",
                                     "height": "300px",
                                     "paddingTop": "22px"
@@ -790,7 +790,7 @@ def get_passenger_sheet_case():
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"簡介：{passenger_sheet[i][8]}",
+                                        "text": f"備註：{passenger_sheet[i][8]}",
                                         "margin": "xl"
                                     }
                                     ]
@@ -811,7 +811,7 @@ def get_passenger_sheet_case():
                                     }
                                     ]
                                 }
-                                }
+                            }
                             # 新增規範
                             if '上下車地點可討論' in passenger_sheet[i][7]:
                                 r = {
@@ -1412,7 +1412,7 @@ def handle_message(event):
                                     }
                                     ]
                                 }
-                                }
+                            }
                             # 新增規範
                             if '上下車地點可討論' in passenger_sheet[i][7]:
                                 r = {
