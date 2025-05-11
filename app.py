@@ -338,7 +338,6 @@ def get_driver_sheet_case():
                             'range': f'R{i+1}'
                         }
                     ])
-                    print(New_driver_update)
                     driver_sheet[i][14] = 0
                     driver_sheet[i][17] = i+1
                 else:
@@ -1831,7 +1830,7 @@ def handle_message(event):
                             passenger_driver = '無'
                         else:
                             passenger_driver = passenger_sheet[i][18]
-                        if user_id in passenger_sheet[i][15]:
+                        if user_id in passenger_sheet[i][14]:
                             web_passenger_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -2105,6 +2104,8 @@ def handle_message(event):
                             pass
                     else:
                         pass
+            else:
+                pass
             if line_flex_json != {
                 "type": "carousel",
                 "contents": []
