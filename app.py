@@ -310,6 +310,13 @@ def get_driver_sheet_case():
     def get_driver_sheet_sheet_case_s():
         global driver_sheet, web_driver_len, driver_Sure_id_dict, driver_Sure_name_dict, New_driver_update
         driver_sheet = driver_sheet_id.get_all_values()
+        print(driver_sheet[1][0])
+        driver_case_launchdatetime = parse_custom_time(driver_sheet[1][0])
+        print(driver_case_launchdatetime)
+        driver_case_launchdate = driver_case_launchdatetime.strftime("%Y-%m-%d")
+        print(driver_case_launchdate)
+        now_datetime = datetime.now()
+        now_date = now_datetime.strftime("%Y-%m-%d")
         try:
             web_driver_len=len(driver_sheet) #抓取司機表單中有幾筆資料(已藉由更改其App script的程式碼扣除第一列的項目)
         except requests.exceptions.JSONDecodeError:
@@ -1568,7 +1575,7 @@ def handle_message(event):
                             int(driver_sheet[i][5])
                         except:
                             driver_sheet_carpoollimit_type = '共乘人數上限不為數字'
-                        if driver_sheet_carpoollimit_type == '共乘人數上限不為數字' or int(driver_sheet[i][14]) <= int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
+                        if user_id in driver_sheet[i][15]:
                             web_driver_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -1827,7 +1834,7 @@ def handle_message(event):
                             passenger_driver = '無'
                         else:
                             passenger_driver = passenger_sheet[i][18]
-                        if passenger_sheet_carpoollimit_type == '共乘人數上限不為數字' or type(passenger_sheet[i][5])== str or int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
+                        if user_id in passenger_sheet[i][15]:
                             web_passenger_data_case={
                                 "type": "bubble",
                                 "size": "mega",
