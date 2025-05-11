@@ -310,11 +310,8 @@ def get_driver_sheet_case():
     def get_driver_sheet_sheet_case_s():
         global driver_sheet, web_driver_len, driver_Sure_id_dict, driver_Sure_name_dict, New_driver_update
         driver_sheet = driver_sheet_id.get_all_values()
-        print(driver_sheet[1][0])
         driver_case_launchdatetime = parse_custom_time(driver_sheet[1][0])
-        print(driver_case_launchdatetime)
         driver_case_launchdate = driver_case_launchdatetime.strftime("%Y-%m-%d")
-        print(driver_case_launchdate)
         now_datetime = datetime.now()
         now_date = now_datetime.strftime("%Y-%m-%d")
         try:
