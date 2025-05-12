@@ -92,7 +92,8 @@ import schedule
 import time
 import threading
 #   因為json讀取google sheet的時間格式會錯誤，因此引入函數做矯正
-from datetime import datetime 
+import datetime
+from datetime import datetime as datetime_datetime
 from datetime import date
 from datetime import timezone
 import pytz
@@ -107,7 +108,7 @@ def parse_custom_time(time_str):
     ampm_en = "AM" if ampm == "上午" else "PM"
     # 合併為可解析的字符串
     datetime_str = f"{date_part} {time_part} {ampm_en}"
-    return datetime.strptime(datetime_str, "%Y/%m/%d %I:%M:%S %p")
+    return datetime_datetime.strptime(datetime_str, "%Y/%m/%d %I:%M:%S %p")
 # 獲得dict內的value
 def get_key(dict, target):
     number_list = []
@@ -142,12 +143,11 @@ def check_project():
         print(f"目前已處理的司機: {web_driver_Sure}")
         print(f"目前已處理的乘客: {web_passenger_Sure}")
         for i in range(1,web_driver_len):
-            driver_case_datetime = parse_custom_time(driver_sheet[i][3])
-            driver_case_date = driver_case_datetime.strftime("%Y-%m-%d")
-            now_datetime = datetime.now()
-            now_date = now_datetime.strftime("%Y-%m-%d")
+            driver_case_datetime = parse_custom_time(driver_sheet[i][3]).replace(minute=0, second=0, microsecond=0)
+            driver_case_datetime_ahead = driver_case_datetime - datetime.timedelta(hours = 3)
+            now_datetime = datetime_datetime.now().replace(minute=0, second=0, microsecond=0)
             if i not in web_driver_Sure:
-                if driver_case_date == now_date:
+                if driver_case_datetime_ahead == now_datetime:
                     # 有人且已滿
                     if int(driver_sheet[i][14])== int(driver_sheet[i][5]):
                         # 寄信給發起人，告知結果
@@ -224,12 +224,11 @@ def check_project():
             else:
                 pass
         for i in range(1,web_passenger_len):
-            passenger_case_datetime = parse_custom_time(passenger_sheet[i][3])
-            passenger_case_date = passenger_case_datetime.strftime("%Y-%m-%d")
-            now_datetime = datetime.now()
-            now_date = now_datetime.strftime("%Y-%m-%d")
+            passenger_case_datetime = parse_custom_time(passenger_sheet[i][3]).replace(minute=0, second=0, microsecond=0)
+            passenger_case_datetime_ahead = passenger_case_datetime - datetime.timedelta(hours = 3)
+            now_datetime = datetime_datetime.now().replace(minute=0, second=0, microsecond=0)
             if i not in web_passenger_Sure :
-                if passenger_case_date == now_date:
+                if passenger_case_datetime_ahead == now_datetime:
                     # 有人且已滿
                     if int(passenger_sheet[i][13])== int(passenger_sheet[i][5]):
                         name_list = passenger_Sure_name_dict.get(i).split(',')
@@ -310,10 +309,6 @@ def get_driver_sheet_case():
     def get_driver_sheet_sheet_case_s():
         global driver_sheet, web_driver_len, driver_Sure_id_dict, driver_Sure_name_dict, New_driver_update
         driver_sheet = driver_sheet_id.get_all_values()
-        driver_case_launchdatetime = parse_custom_time(driver_sheet[1][0])
-        driver_case_launchdate = driver_case_launchdatetime.strftime("%Y-%m-%d")
-        now_datetime = datetime.now()
-        now_date = now_datetime.strftime("%Y-%m-%d")
         try:
             web_driver_len=len(driver_sheet) #抓取司機表單中有幾筆資料(已藉由更改其App script的程式碼扣除第一列的項目)
         except requests.exceptions.JSONDecodeError:
@@ -348,17 +343,20 @@ def get_driver_sheet_case():
                         "contents": []
                     }    
                 for i in range(1,web_driver_len):
-                    driver_case_launchdatetime = parse_custom_time(driver_sheet[i][0])
-                    driver_case_launchdate = driver_case_launchdatetime.strftime("%Y-%m-%d")
-                    now_datetime = datetime.now()
-                    now_date = now_datetime.strftime("%Y-%m-%d")
+                    driver_case_launchdate = parse_custom_time(driver_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
+                    now_date = datetime_datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                    driver_limitnumber_type = ''
                     if driver_case_launchdate == now_date:
                         try :
                             int(driver_sheet[i][14])
                             pass
                         except ValueError:
                             driver_sheet[i][14]=0
-                        if int(driver_sheet[i][14]) <= int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
+                        try :
+                            int(driver_sheet[i][5])
+                        except:
+                            driver_limitnumber_type = '共乘人數上限不為數字'
+                        if driver_limitnumber_type == '共乘人數上限不為數字' or int(driver_sheet[i][14]) <= int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
                             web_driver_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -640,11 +638,9 @@ def get_passenger_sheet_case():
                     "contents": []
                 }
                 for i in range(1,web_passenger_len):
-                    passenger_case_launchdatetime = parse_custom_time(passenger_sheet[i][0])
-                    passenger_case_launchdate = passenger_case_launchdatetime.strftime("%Y-%m-%d")
-                    now_datetime = datetime.now()
-                    now_date = now_datetime.strftime("%Y-%m-%d")
-                    driver_sheet_type = ''
+                    passenger_case_launchdate = parse_custom_time(passenger_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
+                    now_date = datetime_datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                    passenger_limitnumber_type = ''
                     if passenger_case_launchdate == now_date:
                         try :
                             int(passenger_sheet[i][13])
@@ -653,12 +649,12 @@ def get_passenger_sheet_case():
                         try :
                             int(driver_sheet[i][5])
                         except:
-                            driver_sheet_type = '共乘人數上限不為文字'
+                            passenger_limitnumber_type = '共乘人數上限不為文字'
                         if passenger_sheet[i][18] == '':
                             passenger_driver = '無'
                         else:
                             passenger_driver = passenger_sheet[i][18]
-                        if driver_sheet_type == '共乘人數上限不為文字' or int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
+                        if passenger_limitnumber_type == '共乘人數上限不為文字' or int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
                             web_passenger_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -965,13 +961,10 @@ def handle_message(event):
                     "contents": []
                 }    
                 for i in range(1,web_driver_len):
-                    driver_case_datetime = parse_custom_time(driver_sheet[i][3])
-                    driver_case_date = driver_case_datetime.strftime("%Y-%m-%d")
-                    driver_case_launchdatetime = parse_custom_time(driver_sheet[i][0])
-                    driver_case_launchdate = driver_case_launchdatetime.strftime("%Y-%m-%d")
-                    now_datetime = datetime.now()
-                    now_date = now_datetime.strftime("%Y-%m-%d")
-                    driver_sheet_carpoollimit_type = ''
+                    driver_case_date = parse_custom_time(driver_sheet[i][3]).replace(hour=0, minute=0, second=0, microsecond=0)
+                    driver_case_launchdate = parse_custom_time(driver_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
+                    now_date = datetime_datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                    driver_limitnumber_type = ''
                     if driver_case_date>=now_date or driver_case_launchdate == now_date:
                         try :
                             int(driver_sheet[i][14])
@@ -981,8 +974,8 @@ def handle_message(event):
                         try :
                             int(driver_sheet[i][5])
                         except:
-                            driver_sheet_carpoollimit_type = '共乘人數上限不為數字'
-                        if driver_sheet_carpoollimit_type == '共乘人數上限不為數字' or int(driver_sheet[i][14]) <= int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
+                            driver_limitnumber_type = '共乘人數上限不為數字'
+                        if driver_limitnumber_type == '共乘人數上限不為數字' or int(driver_sheet[i][14]) <= int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
                             web_driver_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -1239,13 +1232,10 @@ def handle_message(event):
                     "contents": []
                 }
                 for i in range(1,web_passenger_len):
-                    passenger_case_datetime = parse_custom_time(passenger_sheet[i][3])
-                    passenger_case_date = passenger_case_datetime.strftime("%Y-%m-%d")
-                    passenger_case_launchdatetime = parse_custom_time(passenger_sheet[i][0])
-                    passenger_case_launchdate = passenger_case_launchdatetime.strftime("%Y-%m-%d")
-                    now_datetime = datetime.now()
-                    now_date = now_datetime.strftime("%Y-%m-%d")
-                    passenger_sheet_carpoollimit_type = ''
+                    passenger_case_date = parse_custom_time(passenger_sheet[i][3]).replace(hour=0, minute=0, second=0, microsecond=0)
+                    passenger_case_launchdate = parse_custom_time(passenger_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
+                    now_date = datetime_datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                    passenger_limitnumber_type = ''
                     if passenger_case_date>=now_date or passenger_case_launchdate == now_date:
                         try :
                             int(passenger_sheet[i][13])
@@ -1254,12 +1244,12 @@ def handle_message(event):
                         try:
                             int(passenger_sheet[i][5])
                         except:
-                            passenger_sheet_carpoollimit_type = '共乘人數上限不為數字'
+                            passenger_limitnumber_type = '共乘人數上限不為數字'
                         if passenger_sheet[i][18] == '':
                             passenger_driver = '無'
                         else:
                             passenger_driver = passenger_sheet[i][18]
-                        if passenger_sheet_carpoollimit_type == '共乘人數上限不為數字' or type(passenger_sheet[i][5])== str or int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
+                        if passenger_limitnumber_type == '共乘人數上限不為數字' or type(passenger_sheet[i][5])== str or int(passenger_sheet[i][13]) <= int(passenger_sheet[i][5]) or int(passenger_sheet[i][13])== 0:
                             web_passenger_data_case={
                                 "type": "bubble",
                                 "size": "mega",
@@ -1552,25 +1542,17 @@ def handle_message(event):
             }
             # 獲取使用者 user_ID 
             user_id = event.source.user_id
-            now_datetime = datetime.now()
-            now_date = now_datetime.strftime("%Y-%m-%d")
+            now_date = datetime_datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
             if user_id in str(driver_Sure_id_dict.values()): # dict_value type 不能用 str in 的判斷式
                 for i in range(1,web_driver_len):
-                    driver_case_datetime = parse_custom_time(driver_sheet[i][3])
-                    driver_case_date = driver_case_datetime.strftime("%Y-%m-%d")
-                    driver_case_launchdatetime = parse_custom_time(driver_sheet[i][0])
-                    driver_case_launchdate = driver_case_launchdatetime.strftime("%Y-%m-%d")
-                    driver_sheet_carpoollimit_type = ''
+                    driver_case_date = parse_custom_time(driver_sheet[i][3]).replace(hour=0, minute=0, second=0, microsecond=0)
+                    driver_case_launchdate = parse_custom_time(driver_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
                     if driver_case_date>=now_date or driver_case_launchdate == now_date:
                         try :
                             int(driver_sheet[i][14])
                             pass
                         except ValueError:
                             driver_sheet[i][14]=0
-                        try :
-                            int(driver_sheet[i][5])
-                        except:
-                            driver_sheet_carpoollimit_type = '共乘人數上限不為數字'
                         if user_id in driver_sheet[i][15]:
                             web_driver_data_case={
                                 "type": "bubble",
@@ -1812,20 +1794,13 @@ def handle_message(event):
                 pass
             if user_id in str(passenger_Sure_id_dict.values()): # dict_value type 不能用 str in 的判斷式
                 for i in range(1,web_passenger_len):
-                    passenger_case_datetime = parse_custom_time(passenger_sheet[i][3])
-                    passenger_case_date = passenger_case_datetime.strftime("%Y-%m-%d")
-                    passenger_case_launchdatetime = parse_custom_time(passenger_sheet[i][0])
-                    passenger_case_launchdate = passenger_case_launchdatetime.strftime("%Y-%m-%d")
-                    passenger_sheet_carpoollimit_type = ''
+                    passenger_case_date = parse_custom_time(passenger_sheet[i][3]).replace(hour=0, minute=0, second=0, microsecond=0)
+                    passenger_case_launchdate = parse_custom_time(passenger_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
                     if passenger_case_date>=now_date or passenger_case_launchdate == now_date:
                         try :
                             int(passenger_sheet[i][13])
                         except ValueError:
                             passenger_sheet[i][13]=0
-                        try:
-                            int(passenger_sheet[i][5])
-                        except:
-                            passenger_sheet_carpoollimit_type = '共乘人數上限不為數字'
                         if passenger_sheet[i][18] == '':
                             passenger_driver = '無'
                         else:
@@ -2131,17 +2106,16 @@ def handle_postbak(event):
     try:
         for i in range(1,web_driver_len):
             if event.postback.data == f'driver_Num{i}':
-                driver_case_datetime = parse_custom_time(driver_sheet[i][3])
-                driver_case_date = driver_case_datetime.strftime("%Y-%m-%d")
-                driver_case_launchdatetime = parse_custom_time(driver_sheet[i][0])
-                driver_case_launchdate = driver_case_launchdatetime.strftime("%Y-%m-%d")
-                now_datetime = datetime.now()
-                now_date = now_datetime.strftime("%Y-%m-%d")
+                driver_case_datetime = parse_custom_time(driver_sheet[i][3]).replace(minute=0, second=0, microsecond=0)
+                driver_case_datetime_ahead = driver_case_datetime - datetime.timedelta(hours = 3)
+                driver_case_launchdate = parse_custom_time(driver_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
+                now_date = datetime_datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                now_datetime = datetime_datetime.now().replace(minute=0, second=0, microsecond=0)
                 # 獲取使用者 user_ID
                 driver_user_id = event.source.user_id
                 with ApiClient(configuration) as api_client:
                     line_bot_api = MessagingApi(api_client)
-                    if driver_case_date > now_date or driver_case_launchdate == now_date:
+                    if driver_case_datetime_ahead >= now_datetime or driver_case_launchdate == now_date:
                         confirm_template = ConfirmTemplate(
                             text = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘價格：{driver_sheet[i][11]}\n🚗司機名稱：\n{driver_sheet[i][9]}\n📱手機號碼：{driver_sheet[i][13]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n',
                             actions=[ #只能放兩個Action
@@ -2193,7 +2167,7 @@ def handle_postbak(event):
                                 line_bot_api.push_message(
                                     PushMessageRequest(
                                         to=driver_user_id,
-                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!\n司機名稱：{target_row[9]}\nLineID：{target_row[10]}\n手機號碼：{driver_sheet[i][13]}\n車牌及型號：\n{target_row[18]}')]
+                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!\n發起人（司機）名稱：{target_row[9]}\nLineID：{target_row[10]}\n手機號碼：{driver_sheet[i][13]}\n車牌及型號：\n{target_row[18]}')]
                                     )
                                 )
                                 try :
@@ -2286,12 +2260,11 @@ def handle_postbak(event):
     try:
         for i in range(1,web_passenger_len):
             if event.postback.data == f'passenger_Num{i}':
-                passenger_case_datetime = parse_custom_time(passenger_sheet[i][3])
-                passenger_case_date = passenger_case_datetime.strftime("%Y-%m-%d")
-                passenger_case_launchdatetime = parse_custom_time(passenger_sheet[i][0])
-                passenger_case_launchdate = passenger_case_launchdatetime.strftime("%Y-%m-%d")
-                now_datetime = datetime.now()
-                now_date = now_datetime.strftime("%Y-%m-%d")
+                passenger_case_datetime = parse_custom_time(passenger_sheet[i][3]).replace(minute=0, second=0, microsecond=0)
+                passenger_case_datetime_ahead = passenger_case_datetime - datetime.timedelta(hours = 3)
+                passenger_case_launchdate = parse_custom_time(passenger_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
+                now_date = datetime_datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                now_datetime = datetime_datetime.now().replace(minute=0, second=0, microsecond=0)
                 # 獲取使用者 user_ID  
                 passenger_user_id = event.source.user_id
                 if passenger_sheet[i][18] == '':
@@ -2300,7 +2273,7 @@ def handle_postbak(event):
                     passenger_driver = passenger_sheet[i][18]
                 with ApiClient(configuration) as api_client:
                     line_bot_api = MessagingApi(api_client)
-                    if passenger_case_date > now_date or passenger_case_launchdate == now_date:
+                    if passenger_case_datetime_ahead >= now_datetime or passenger_case_launchdate == now_date:
                         confirm_template = ConfirmTemplate(
                             text = f'📎共乘編號：{passenger_sheet[i][16]}\n📍出發地點：{passenger_sheet[i][2]}\n📍目的地點：{passenger_sheet[i][4]}\n🕒出發時間：\n{passenger_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(passenger_sheet[i][6]))}\n#️⃣共乘上限：{passenger_sheet[i][5]} 人\n✨發起人：\n{passenger_sheet[i][9]}\n🚗司機名稱：{passenger_driver}\n📱手機號碼：{passenger_sheet[i][12]}\n🛞交通工具：{passenger_sheet[i][11]}\n❗️行車規範：\n{passenger_sheet[i][7]}\n💬備註：\n{passenger_sheet[i][8]}\n',
                             actions=[ #一定只能放兩個Action
