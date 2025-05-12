@@ -939,7 +939,7 @@ def run_scheduler():
     while a:
         schedule.run_pending()
         time.sleep(0.1)  
-schedule.every(15).minutes.do(check_project)
+#schedule.every(15).minutes.do(check_project)
 schedule.every(15).seconds.do(get_driver_sheet_case)
 schedule.every(15).seconds.do(get_passenger_sheet_case)
 scheduler_thread_case = threading.Thread(target=run_scheduler)
