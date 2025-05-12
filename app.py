@@ -306,7 +306,7 @@ def check_project():
     check_project_s()
 def get_driver_sheet_case():
     @retry(stop=stop_after_attempt(2), wait=wait_fixed(60), retry=retry_if_exception_type(gspread.exceptions.APIError))
-    def get_driver_sheet_sheet_case_s():
+    def get_driver_sheet_case_s():
         global driver_sheet, web_driver_len, driver_Sure_id_dict, driver_Sure_name_dict, New_driver_update
         driver_sheet = driver_sheet_id.get_all_values()
         try:
@@ -596,7 +596,7 @@ def get_driver_sheet_case():
             print('司機發起之活動已抓取')
         except:
             print('司機發起之活動尚無資料')
-    get_driver_sheet_sheet_case_s()
+    get_driver_sheet_case_s()
 def get_passenger_sheet_case():
     @retry(stop=stop_after_attempt(2), wait=wait_fixed(60), retry=retry_if_exception_type(gspread.exceptions.APIError))
     def get_passenger_sheet_case_s():
@@ -2248,6 +2248,7 @@ def handle_postbak(event):
                             del name[target_position]
                             deled_name = ','.join(name)
                             driver_sheet_id.update([[int(target_row[14])-1, deled_id, deled_name]], f'O{i+1}:Q{i+1}')
+                            get_driver_sheet_case()
                         else:
                             line_bot_api.reply_message(
                                 ReplyMessageRequest(
@@ -2425,6 +2426,7 @@ def handle_postbak(event):
                             del name[target_position]
                             deled_name = ','.join(name)
                             passenger_sheet_id.update([[int(target_row[13])-1, deled_id, deled_name]], f'N{i+1}:P{i+1}')
+                            get_passenger_sheet_case()
                         else:
                             line_bot_api.reply_message(
                                 ReplyMessageRequest(
