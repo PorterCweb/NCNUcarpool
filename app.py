@@ -1207,7 +1207,7 @@ def handle_message(event):
                     line_bot_api.reply_message(
                         ReplyMessageRequest(
                             reply_token=event.reply_token,
-                            messages=[FlexMessage(alt_text='目前有的共乘(已有司機)', contents=FlexContainer.from_json(line_flex_str))]
+                            messages=[FlexMessage(alt_text='目前有的共乘（司機揪團）', contents=FlexContainer.from_json(line_flex_str))]
                         )
                     )
                 # 若有活動但人數皆已滿
@@ -1517,7 +1517,7 @@ def handle_message(event):
                     line_bot_api.reply_message(
                         ReplyMessageRequest(
                             reply_token=event.reply_token,
-                            messages=[FlexMessage(alt_text='目前有的共乘(揪團)', contents=FlexContainer.from_json(line_flex_str))]
+                            messages=[FlexMessage(alt_text='目前有的共乘（乘客揪團）', contents=FlexContainer.from_json(line_flex_str))]
                         )
                     )
                 # 若有活動但人數皆已滿
