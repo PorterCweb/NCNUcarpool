@@ -147,7 +147,7 @@ def check_project():
         for i in range(1,web_driver_len):
             driver_case_datetime = parse_custom_time(driver_sheet[i][3]).replace(minute=0, second=0, microsecond=0)
             driver_case_datetime_ahead = driver_case_datetime - datetime.timedelta(hours = 3)
-            now_datetime = datetime_datetime.now(tz = tzone).replace(minute=0, second=0, microsecond=0)
+            now_datetime = datetime_datetime.now().replace(minute=0, second=0, microsecond=0)
             if i not in web_driver_Sure:
                 if driver_case_datetime_ahead == now_datetime:
                     # 有人且已滿
@@ -228,7 +228,7 @@ def check_project():
         for i in range(1,web_passenger_len):
             passenger_case_datetime = parse_custom_time(passenger_sheet[i][3]).replace(minute=0, second=0, microsecond=0)
             passenger_case_datetime_ahead = passenger_case_datetime - datetime.timedelta(hours = 3)
-            now_datetime = datetime_datetime.now(tz = tzone).replace(minute=0, second=0, microsecond=0)
+            now_datetime = datetime_datetime.now().replace(minute=0, second=0, microsecond=0)
             if i not in web_passenger_Sure :
                 if passenger_case_datetime_ahead == now_datetime:
                     # 有人且已滿
@@ -346,7 +346,7 @@ def get_driver_sheet_case():
                     }    
                 for i in range(1,web_driver_len):
                     driver_case_launchdate = parse_custom_time(driver_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
-                    now_date = datetime_datetime.now(tz = tzone).replace(hour=0, minute=0, second=0, microsecond=0)
+                    now_date = datetime_datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
                     driver_limitnumber_type = ''
                     if driver_case_launchdate == now_date:
                         try :
@@ -641,7 +641,7 @@ def get_passenger_sheet_case():
                 }
                 for i in range(1,web_passenger_len):
                     passenger_case_launchdate = parse_custom_time(passenger_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
-                    now_date = datetime_datetime.now(tz = tzone).replace(hour=0, minute=0, second=0, microsecond=0)
+                    now_date = datetime_datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
                     passenger_limitnumber_type = ''
                     if passenger_case_launchdate == now_date:
                         try :
@@ -965,7 +965,7 @@ def handle_message(event):
                 for i in range(1,web_driver_len):
                     driver_case_date = parse_custom_time(driver_sheet[i][3]).replace(hour=0, minute=0, second=0, microsecond=0)
                     driver_case_launchdate = parse_custom_time(driver_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
-                    now_date = datetime_datetime.now(tz = tzone).replace(hour=0, minute=0, second=0, microsecond=0)
+                    now_date = datetime_datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
                     driver_limitnumber_type = ''
                     if driver_case_date>=now_date or driver_case_launchdate == now_date:
                         try :
@@ -1236,7 +1236,7 @@ def handle_message(event):
                 for i in range(1,web_passenger_len):
                     passenger_case_date = parse_custom_time(passenger_sheet[i][3]).replace(hour=0, minute=0, second=0, microsecond=0)
                     passenger_case_launchdate = parse_custom_time(passenger_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
-                    now_date = datetime_datetime.now(tz = tzone).replace(hour=0, minute=0, second=0, microsecond=0)
+                    now_date = datetime_datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
                     passenger_limitnumber_type = ''
                     if passenger_case_date>=now_date or passenger_case_launchdate == now_date:
                         try :
@@ -1544,7 +1544,7 @@ def handle_message(event):
             }
             # 獲取使用者 user_ID 
             user_id = event.source.user_id
-            now_date = datetime_datetime.now(tz = tzone).replace(hour=0, minute=0, second=0, microsecond=0)
+            now_date = datetime_datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
             if user_id in str(driver_Sure_id_dict.values()): # dict_value type 不能用 str in 的判斷式
                 for i in range(1,web_driver_len):
                     driver_case_date = parse_custom_time(driver_sheet[i][3]).replace(hour=0, minute=0, second=0, microsecond=0)
@@ -2111,8 +2111,8 @@ def handle_postbak(event):
                 driver_case_datetime = parse_custom_time(driver_sheet[i][3]).replace(minute=0, second=0, microsecond=0)
                 driver_case_datetime_ahead = driver_case_datetime - datetime.timedelta(hours = 3)
                 driver_case_launchdate = parse_custom_time(driver_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
-                now_date = datetime_datetime.now(tz = tzone).replace(hour=0, minute=0, second=0, microsecond=0)
-                now_datetime = datetime_datetime.now(tz = tzone).replace(minute=0, second=0, microsecond=0)
+                now_date = datetime_datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                now_datetime = datetime_datetime.now().replace(minute=0, second=0, microsecond=0)
                 # 獲取使用者 user_ID
                 driver_user_id = event.source.user_id
                 with ApiClient(configuration) as api_client:
@@ -2266,8 +2266,8 @@ def handle_postbak(event):
                 passenger_case_datetime = parse_custom_time(passenger_sheet[i][3]).replace(minute=0, second=0, microsecond=0)
                 passenger_case_datetime_ahead = passenger_case_datetime - datetime.timedelta(hours = 3)
                 passenger_case_launchdate = parse_custom_time(passenger_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
-                now_date = datetime_datetime.now(tz = tzone).replace(hour=0, minute=0, second=0, microsecond=0)
-                now_datetime = datetime_datetime.now(tz = tzone).replace(minute=0, second=0, microsecond=0)
+                now_date = datetime_datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+                now_datetime = datetime_datetime.now().replace(minute=0, second=0, microsecond=0)
                 # 獲取使用者 user_ID  
                 passenger_user_id = event.source.user_id
                 if passenger_sheet[i][18] == '':
