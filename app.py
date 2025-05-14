@@ -872,16 +872,19 @@ def get_passenger_sheet_case():
                                         }
                                 web_passenger_data_case['body']['contents'].insert(2,r)
                             if '尚未有司機（徵求司機！）' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "尚未有司機（徵求司機！）",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "color": "#ff5551",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)    
+                                if passenger_driver == '無':
+                                    r = {
+                                                "type": "text",
+                                                "text": "尚未有司機（徵求司機！）",
+                                                "size": "sm",
+                                                "margin": "none",
+                                                "color": "#ff5551",
+                                                "contents": [],
+                                                "offsetEnd": "none"
+                                            }
+                                    web_passenger_data_case['body']['contents'].insert(2,r)    
+                                else:
+                                    pass   
                             if '叫車分攤費用' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
@@ -1467,16 +1470,19 @@ def handle_message(event):
                                         }
                                 web_passenger_data_case['body']['contents'].insert(2,r)
                             if '尚未有司機（徵求司機！）' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "尚未有司機（徵求司機！）",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "color": "#ff5551",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)    
+                                if passenger_driver == '無':
+                                    r = {
+                                                "type": "text",
+                                                "text": "尚未有司機（徵求司機！）",
+                                                "size": "sm",
+                                                "margin": "none",
+                                                "color": "#ff5551",
+                                                "contents": [],
+                                                "offsetEnd": "none"
+                                            }
+                                    web_passenger_data_case['body']['contents'].insert(2,r)    
+                                else:
+                                    pass
                             if '叫車分攤費用' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
@@ -2037,16 +2043,19 @@ def handle_message(event):
                                         }
                                 web_passenger_data_case['body']['contents'].insert(2,r)
                             if '尚未有司機（徵求司機！）' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "尚未有司機（徵求司機！）",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "color": "#ff5551",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)    
+                                if passenger_driver == '無':
+                                    r = {
+                                                "type": "text",
+                                                "text": "尚未有司機（徵求司機！）",
+                                                "size": "sm",
+                                                "margin": "none",
+                                                "color": "#ff5551",
+                                                "contents": [],
+                                                "offsetEnd": "none"
+                                            }
+                                    web_passenger_data_case['body']['contents'].insert(2,r)    
+                                else:
+                                    pass  
                             if '叫車分攤費用' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
