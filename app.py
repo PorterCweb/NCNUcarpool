@@ -74,7 +74,6 @@ def callback():
 # 額外必要
 import json
 import requests
-import linecache
 import gspread #寫入google sheet的函數
 def time_hrmi(time):
     hr=int(time/60)
@@ -94,9 +93,6 @@ import threading
 #   因為json讀取google sheet的時間格式會錯誤，因此引入函數做矯正
 import datetime
 from datetime import datetime as datetime_datetime
-from datetime import date
-from datetime import timezone
-import pytz
 # 解析含中文上午/下午的時間字符串為 datetime 對象
 def parse_custom_time(time_str):
     """解析含中文上午/下午的時間字符串為 datetime 對象"""
@@ -119,7 +115,6 @@ def get_key(dict, target):
             pass
     return(number_list)
 # token.json的資料如放在公開伺服器上執行之類的，會遭停用，需到google cloud重新建立金鑰，否則會跳出JWP錯誤
-import tempfile
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -939,7 +934,7 @@ def run_scheduler():
     while a:
         schedule.run_pending()
         time.sleep(0.1)  
-#schedule.every(15).minutes.do(check_project)
+schedule.every(30).minutes.do(check_project)
 schedule.every(15).seconds.do(get_driver_sheet_case)
 schedule.every(15).seconds.do(get_passenger_sheet_case)
 scheduler_thread_case = threading.Thread(target=run_scheduler)
