@@ -149,27 +149,27 @@ def check_project():
                         name_list = driver_Sure_name_dict.get(i).split(',')
                         output = '、'.join(map(str, name_list))
                         str1 = '您在 共乘阿穿 發起的（有司機）共乘活動人數已滿了，活動資訊如下：'
-                        str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：<br>{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>價格：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：<br>{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
+                        str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：<br>{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>共乘能源&國道收費分攤費：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：<br>{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
                         str3 = f'參與者Line名稱:{output}'
                         str4 = '您在 共乘阿穿 發起的（有司機）共乘活動人數已滿囉'
                         # 針對 Linebot 參與的乘客
-                        driver_text = f'您參加的（有司機）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：\n{driver_sheet[i][8]}\n'
+                        driver_text = f'您參加的（有司機）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n共乘能源&國道收費分攤費：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：\n{driver_sheet[i][8]}\n'
                     # 有人且發起者未勾選 ※ 人滿才發車
                     elif '※ 人滿才發車' not in driver_sheet[i][7] and int(driver_sheet[i][14])>0:
                         # 寄信給發起人，告知結果
                         name_list = driver_Sure_name_dict.get(i).split(',')
                         output = '、'.join(map(str, name_list))
                         str1 = '您在 共乘阿穿 發起的（司機揪團）共乘活動人數未滿，但您未勾選「人滿才發車」，因此成團喔！活動資訊如下：'
-                        str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：<br>{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>價格：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：<br>{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
+                        str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：<br>{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>共乘能源&國道收費分攤費：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：<br>{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
                         str3 = f'參與者Line名稱:{output}'
                         str4 = '您在 共乘阿穿 發起的（司機揪團）共乘活動人數未滿，但您未勾選「人滿才發車」，因此成團喔！'
                         # 針對 Linebot 參與的乘客
-                        driver_text = f'您參加的（司機揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n價格：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：{driver_sheet[i][7]}\n簡介：\n{driver_sheet[i][8]}\n'
+                        driver_text = f'您參加的（司機揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n共乘能源&國道收費分攤費：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：{driver_sheet[i][7]}\n簡介：\n{driver_sheet[i][8]}\n'
                     # 未成團
                     else:
                         # 寄信給發起人，告知結果
                         str1 = f'您在 共乘阿穿 發起的（司機揪團）共乘活動人數未滿，共乘編號為{driver_sheet[i][17]}，因此未發車。活動資訊如下：'
-                        str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：<br>{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>價格：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：<br>{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
+                        str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：<br>{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>共乘能源&國道收費分攤費：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：<br>{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
                         str3 = ''
                         str4 = '您在 共乘阿穿 發起的（司機揪團）共乘活動人數未滿'
                         # 針對 Linebot 參與的乘客
@@ -428,7 +428,7 @@ def get_driver_sheet_case():
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"價格：{driver_sheet[i][11]}",
+                                        "text": f"共乘能源&國道收費分攤費：{driver_sheet[i][11]}",
                                         "color": "#000000",
                                         "size": "xs"
                                     },
@@ -1050,7 +1050,7 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"價格：{driver_sheet[i][11]}",
+                                        "text": f"共乘能源&國道收費分攤費：{driver_sheet[i][11]}",
                                         "color": "#000000",
                                         "size": "xs"
                                     },
@@ -1631,7 +1631,7 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"價格：{driver_sheet[i][11]}",
+                                        "text": f"共乘能源&國道收費分攤費：{driver_sheet[i][11]}",
                                         "color": "#000000",
                                         "size": "xs"
                                     },
@@ -2121,7 +2121,7 @@ def handle_postbak(event):
                     line_bot_api = MessagingApi(api_client)
                     if driver_case_datetime_ahead >= now_datetime or driver_case_launchdate == now_date:
                         confirm_template = ConfirmTemplate(
-                            text = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘價格：{driver_sheet[i][11]}\n🚗司機名稱：\n{driver_sheet[i][9]}\n📱手機號碼：{driver_sheet[i][13]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n',
+                            text = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘共乘能源&國道收費分攤費：{driver_sheet[i][11]}\n🚗司機名稱：\n{driver_sheet[i][9]}\n📱手機號碼：{driver_sheet[i][13]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n',
                             actions=[ #只能放兩個Action
                                 PostbackAction(label='我想共乘！', text='我想共乘！', data=f'driver_Sure{i}'),
                                 PostbackAction(label='司機聯絡資訊', text='司機聯絡資訊', data = f'driver_info{i}')
@@ -2217,7 +2217,7 @@ def handle_postbak(event):
                 driver_user_id = event.source.user_id
                 with ApiClient(configuration) as api_client:
                     line_bot_api = MessagingApi(api_client)
-                    reservation = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘價格：{driver_sheet[i][11]}\n🚗司機名稱：\n{driver_sheet[i][9]}\n📱手機號碼：{driver_sheet[i][13]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n'
+                    reservation = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘共乘能源&國道收費分攤費：{driver_sheet[i][11]}\n🚗司機名稱：\n{driver_sheet[i][9]}\n📱手機號碼：{driver_sheet[i][13]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n'
                     line_bot_api.push_message(
                         PushMessageRequest(
                             to=driver_user_id,
