@@ -884,7 +884,16 @@ def get_passenger_sheet_case():
                                             }
                                     web_passenger_data_case['body']['contents'].insert(2,r)    
                                 else:
-                                    pass   
+                                    r = {
+                                                "type": "text",
+                                                "text": "已有司機！",
+                                                "size": "sm",
+                                                "margin": "none",
+                                                "color": "#ff5551",
+                                                "contents": [],
+                                                "offsetEnd": "none"
+                                            }
+                                    web_passenger_data_case['body']['contents'].insert(2,r)   
                             if '叫車分攤費用' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
@@ -1482,7 +1491,16 @@ def handle_message(event):
                                             }
                                     web_passenger_data_case['body']['contents'].insert(2,r)    
                                 else:
-                                    pass
+                                    r = {
+                                                "type": "text",
+                                                "text": "已有司機！",
+                                                "size": "sm",
+                                                "margin": "none",
+                                                "color": "#ff5551",
+                                                "contents": [],
+                                                "offsetEnd": "none"
+                                            }
+                                    web_passenger_data_case['body']['contents'].insert(2,r)
                             if '叫車分攤費用' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
@@ -2055,7 +2073,16 @@ def handle_message(event):
                                             }
                                     web_passenger_data_case['body']['contents'].insert(2,r)    
                                 else:
-                                    pass  
+                                    r = {
+                                                "type": "text",
+                                                "text": "已有司機！",
+                                                "size": "sm",
+                                                "margin": "none",
+                                                "color": "#ff5551",
+                                                "contents": [],
+                                                "offsetEnd": "none"
+                                            }
+                                    web_passenger_data_case['body']['contents'].insert(2,r)  
                             if '叫車分攤費用' in passenger_sheet[i][7]:
                                 r = {
                                             "type": "text",
