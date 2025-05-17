@@ -130,9 +130,9 @@ passenger_sheet_id = carpool.get_worksheet(1)
 # 初始化追踪字典，為每個索引設置False
 web_driver_Sure = set()
 web_passenger_Sure = set()
-from tenacity import retry, stop_after_attempt, retry_if_exception_type, wait_fixed
+from tenacity import retry, stop_after_attempt, retry_if_exception_type, wait_fixed, wait_exponential
 def check_project():    
-    @retry(stop=stop_after_attempt(1), wait=wait_fixed(75), retry=retry_if_exception_type(gspread.exceptions.APIError))
+    @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=4, max=60), retry=retry_if_exception_type(gspread.exceptions.APIError))
     def check_project_s():
         global web_driver_Sure, web_passenger_Sure
         print(f"目前已處理的司機: {web_driver_Sure}")
@@ -300,7 +300,7 @@ def check_project():
                 pass
     check_project_s()
 def get_driver_sheet_case():
-    @retry(stop=stop_after_attempt(2), wait=wait_fixed(60), retry=retry_if_exception_type(gspread.exceptions.APIError))
+    @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=4, max=60), retry=retry_if_exception_type(gspread.exceptions.APIError))
     def get_driver_sheet_case_s():
         global driver_sheet, web_driver_len, driver_Sure_id_dict, driver_Sure_name_dict, New_driver_update
         driver_sheet = driver_sheet_id.get_all_values()
@@ -593,7 +593,7 @@ def get_driver_sheet_case():
             print('司機發起之活動尚無資料')
     get_driver_sheet_case_s()
 def get_passenger_sheet_case():
-    @retry(stop=stop_after_attempt(2), wait=wait_fixed(60), retry=retry_if_exception_type(gspread.exceptions.APIError))
+    @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=4, max=60), retry=retry_if_exception_type(gspread.exceptions.APIError))
     def get_passenger_sheet_case_s():
         global passenger_sheet, web_passenger_len, passenger_Sure_id_dict, passenger_Sure_name_dict, New_passenger_update
         passenger_sheet = passenger_sheet_id.get_all_values()
