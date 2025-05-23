@@ -2272,7 +2272,7 @@ def handle_postbak(event):
                 driver_user_id = event.source.user_id
                 with ApiClient(configuration) as api_client:
                     line_bot_api = MessagingApi(api_client)
-                    reservation = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘費用分攤（總共）：{driver_sheet[i][11]}\n🚗司機名稱：\n{driver_sheet[i][9]}🆔LineID：{driver_sheet[i][10]}\n📱手機號碼：{driver_sheet[i][13]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n'
+                    reservation = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘費用分攤（總共）：{driver_sheet[i][11]}\n🚗司機名稱：\n{driver_sheet[i][9]}\n🆔LineID：{driver_sheet[i][10]}\n📱手機號碼：{driver_sheet[i][13]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n'
                     line_bot_api.push_message(
                         PushMessageRequest(
                             to=driver_user_id,
