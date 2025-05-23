@@ -143,6 +143,7 @@ def check_project():
             now_datetime = (datetime_datetime.now() + datetime.timedelta(hours = 8)).replace(minute=0, second=0, microsecond=0)
             if i not in web_driver_Sure and driver_sheet[i][19] == '否':
                 if driver_case_datetime_ahead == now_datetime:
+                    driver_limitnumber_type = ''
                     try :
                         int(driver_sheet[i][5])
                     except:
@@ -239,6 +240,7 @@ def check_project():
             now_datetime = (datetime_datetime.now() + datetime.timedelta(hours = 8)).replace(minute=0, second=0, microsecond=0)
             if i not in web_passenger_Sure and passenger_sheet[i][17] == '否':
                 if passenger_case_datetime_ahead == now_datetime:
+                    passenger_limitnumber_type = ''
                     try :
                         int(driver_sheet[i][5])
                     except:
@@ -371,8 +373,8 @@ def get_driver_sheet_case():
                 for i in range(1,web_driver_len):
                     driver_case_launchdate = parse_custom_time(driver_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
                     now_date = (datetime_datetime.now() + datetime.timedelta(hours = 8)).replace(hour=0, minute=0, second=0, microsecond=0)
-                    driver_limitnumber_type = ''
                     if driver_case_launchdate == now_date:
+                        driver_limitnumber_type = ''
                         try :
                             int(driver_sheet[i][14])
                             pass
@@ -666,8 +668,8 @@ def get_passenger_sheet_case():
                 for i in range(1,web_passenger_len):
                     passenger_case_launchdate = parse_custom_time(passenger_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
                     now_date = (datetime_datetime.now() + datetime.timedelta(hours = 8)).replace(hour=0, minute=0, second=0, microsecond=0)
-                    passenger_limitnumber_type = ''
                     if passenger_case_launchdate == now_date:
+                        passenger_limitnumber_type = ''
                         try :
                             int(passenger_sheet[i][13])
                         except ValueError:
@@ -1005,8 +1007,8 @@ def handle_message(event):
                     driver_case_date = parse_custom_time(driver_sheet[i][3]).replace(hour=0, minute=0, second=0, microsecond=0)
                     driver_case_launchdate = parse_custom_time(driver_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
                     now_date = (datetime_datetime.now() + datetime.timedelta(hours = 8)).replace(hour=0, minute=0, second=0, microsecond=0)
-                    driver_limitnumber_type = ''
                     if driver_case_date>=now_date or driver_case_launchdate == now_date:
+                        driver_limitnumber_type = ''
                         try :
                             int(driver_sheet[i][14])
                             pass
@@ -1276,8 +1278,8 @@ def handle_message(event):
                     passenger_case_date = parse_custom_time(passenger_sheet[i][3]).replace(hour=0, minute=0, second=0, microsecond=0)
                     passenger_case_launchdate = parse_custom_time(passenger_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
                     now_date = (datetime_datetime.now() + datetime.timedelta(hours = 8)).replace(hour=0, minute=0, second=0, microsecond=0)
-                    passenger_limitnumber_type = ''
                     if passenger_case_date>=now_date or passenger_case_launchdate == now_date:
+                        passenger_limitnumber_type = ''
                         try :
                             int(passenger_sheet[i][13])
                         except ValueError:
