@@ -255,7 +255,7 @@ def check_project():
                         str3 = f'參與者Line名稱:{output}'
                         str4 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動報名已截止'
                         # 針對 Linebot 參與的乘客
-                        passenger_text = f'您參與的（乘客揪團）共乘活動報名截止囉，因發起人尚未註明共乘人數上限，因此僅以此郵件通知您記得聯絡發起人！發起人LineID：{passenger_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
+                        passenger_text = f'您參與的（乘客揪團）共乘活動報名截止囉，因發起人尚未註明共乘人數上限，因此僅以此郵件通知您記得聯絡發起人！發起人LineID：{passenger_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人（乘客）：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
                     # 有人且已滿
                     elif int(passenger_sheet[i][13])== int(passenger_sheet[i][5]):
                         # 寄信給發起人，告知結果 
@@ -461,7 +461,7 @@ def get_driver_sheet_case():
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"共乘費用分攤：{driver_sheet[i][11]}",
+                                        "text": f"共乘費用分攤（總共）：{driver_sheet[i][11]}",
                                         "color": "#000000",
                                         "size": "xs"
                                     },
@@ -746,7 +746,7 @@ def get_passenger_sheet_case():
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"發起人：{passenger_sheet[i][9]}",
+                                        "text": f"發起人（乘客）：{passenger_sheet[i][9]}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
@@ -756,20 +756,6 @@ def get_passenger_sheet_case():
                                         "text": f"司機：{passenger_driver}",
                                         "color": "#000000",
                                         "size": "xs"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"手機號碼：{passenger_sheet[i][12]}",
-                                        "color": "#000000",
-                                        "size": "xs",
-                                        "decoration": "underline"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"LineID：{passenger_sheet[i][10]}",
-                                        "color": "#000000",
-                                        "size": "xs",
-                                        "decoration": "underline"
                                     },
                                     {
                                         "type": "text",
@@ -787,7 +773,7 @@ def get_passenger_sheet_case():
                                     "paddingAll": "20px",
                                     "backgroundColor": "#e6b89d",
                                     "spacing": "md",
-                                    "height": "300px",
+                                    "height": "270px",
                                     "paddingTop": "22px"
                                 },
                                 "body": {
@@ -1095,7 +1081,7 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"共乘費用分攤：{driver_sheet[i][11]}",
+                                        "text": f"共乘費用分攤（總共）：{driver_sheet[i][11]}",
                                         "color": "#000000",
                                         "size": "xs"
                                     },
@@ -1356,7 +1342,7 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"發起人：{passenger_sheet[i][9]}",
+                                        "text": f"發起人（乘客）：{passenger_sheet[i][9]}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
@@ -1366,20 +1352,6 @@ def handle_message(event):
                                         "text": f"司機：{passenger_driver}",
                                         "color": "#000000",
                                         "size": "xs"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"手機號碼：{passenger_sheet[i][12]}",
-                                        "color": "#000000",
-                                        "size": "xs",
-                                        "decoration": "underline"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"LineID：{passenger_sheet[i][10]}",
-                                        "color": "#000000",
-                                        "size": "xs",
-                                        "decoration": "underline"
                                     },
                                     {
                                         "type": "text",
@@ -1397,7 +1369,7 @@ def handle_message(event):
                                     "paddingAll": "20px",
                                     "backgroundColor": "#e6b89d",
                                     "spacing": "md",
-                                    "height": "300px",
+                                    "height": "270px",
                                     "paddingTop": "22px"
                                 },
                                 "body": {
@@ -1682,13 +1654,27 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
+                                        "text": f"手機號碼：{driver_sheet[i][13]}",
+                                        "color": "#000000",
+                                        "size": "xs",
+                                        "decoration": "underline"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"LineID：{driver_sheet[i][10]}",
+                                        "color": "#000000",
+                                        "size": "xs",
+                                        "decoration": "underline"
+                                    },
+                                    {
+                                        "type": "text",
                                         "text": f"共乘人數上限：{driver_sheet[i][5]}",
                                         "color": "#000000",
                                         "size": "xs"
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"共乘費用分攤：{driver_sheet[i][11]}",
+                                        "text": f"共乘費用分攤（總共）：{driver_sheet[i][11]}",
                                         "color": "#000000",
                                         "size": "xs"
                                     },
@@ -1702,7 +1688,7 @@ def handle_message(event):
                                     "paddingAll": "20px",
                                     "backgroundColor": "#c89273",
                                     "spacing": "md",
-                                    "height": "265px",
+                                    "height": "300px",
                                     "paddingTop": "22px"
                                 },
                                 "body": {
@@ -1927,16 +1913,10 @@ def handle_message(event):
                                     },
                                     {
                                         "type": "text",
-                                        "text": f"發起人：{passenger_sheet[i][9]}",
+                                        "text": f"發起人（乘客）：{passenger_sheet[i][9]}",
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": f"司機：{passenger_driver}",
-                                        "color": "#000000",
-                                        "size": "xs"
                                     },
                                     {
                                         "type": "text",
@@ -1951,6 +1931,12 @@ def handle_message(event):
                                         "color": "#000000",
                                         "size": "xs",
                                         "decoration": "underline"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": f"司機：{passenger_driver}",
+                                        "color": "#000000",
+                                        "size": "xs"
                                     },
                                     {
                                         "type": "text",
@@ -2190,7 +2176,7 @@ def handle_postbak(event):
                     line_bot_api = MessagingApi(api_client)
                     if driver_case_datetime_ahead >= now_datetime or driver_case_launchdate == now_date:
                         confirm_template = ConfirmTemplate(
-                            text = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘共乘費用分攤：{driver_sheet[i][11]}\n🚗司機名稱：\n{driver_sheet[i][9]}\n📱手機號碼：{driver_sheet[i][13]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n',
+                            text = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘共乘費用分攤：{driver_sheet[i][11]}\n🚗司機名稱：\n{driver_sheet[i][9]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n',
                             actions=[ #只能放兩個Action
                                 PostbackAction(label='我想共乘！', text='我想共乘！', data=f'driver_Sure{i}'),
                                 PostbackAction(label='司機聯絡資訊', text='司機聯絡資訊', data = f'driver_info{i}')
@@ -2210,7 +2196,7 @@ def handle_postbak(event):
                         line_bot_api.push_message(
                             PushMessageRequest(
                                 to=driver_user_id,
-                                messages = [TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n司機名稱：{driver_sheet[i][9]}\nLineID：{driver_sheet[i][10]}\n手機號碼：{driver_sheet[i][13]}')]
+                                messages = [TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n發起人（司機）名稱：{driver_sheet[i][9]}\nLineID：{driver_sheet[i][10]}\n手機號碼：{driver_sheet[i][13]}')]
                             )
                         )        
             # 使用者在Confirm Template按下確定後，試算表的搭車人數將+1
@@ -2278,7 +2264,7 @@ def handle_postbak(event):
                     line_bot_api.push_message(
                         PushMessageRequest(
                             to=driver_user_id,
-                            messages = [TextMessage(text=f'司機名稱：{target_row[9]}\nLineID：{target_row[10]}\n電話號碼：{target_row[13]}\n聯絡後仍要記得預約喔！後續搭乘問題都會依照實際預約者為先。')]
+                            messages = [TextMessage(text=f'發起人（司機）名稱：{target_row[9]}\nLineID：{target_row[10]}\n電話號碼：{target_row[13]}\n聯絡後仍要記得預約喔！後續搭乘問題都會依照實際預約者為先。')]
                         )
                     )
             elif event.postback.data == f"driver_template_detail_info{i}":
@@ -2286,7 +2272,7 @@ def handle_postbak(event):
                 driver_user_id = event.source.user_id
                 with ApiClient(configuration) as api_client:
                     line_bot_api = MessagingApi(api_client)
-                    reservation = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘共乘費用分攤：{driver_sheet[i][11]}\n🚗司機名稱：\n{driver_sheet[i][9]}\n📱手機號碼：{driver_sheet[i][13]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n'
+                    reservation = f'📎共乘編號：{driver_sheet[i][17]}\n📍出發地點：{driver_sheet[i][2]}\n📍目的地點：{driver_sheet[i][4]}\n🕒出發時間：\n{driver_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(driver_sheet[i][6]))}\n#️⃣共乘上限：{driver_sheet[i][5]} 人\n🏷️共乘費用分攤（總共）：{driver_sheet[i][11]}\n🚗司機名稱：\n{driver_sheet[i][9]}🆔LineID：{driver_sheet[i][10]}\n📱手機號碼：{driver_sheet[i][13]}\n🛞交通工具：{driver_sheet[i][12]}\n❗️行車規範：\n{driver_sheet[i][7]}\n💬備註：\n{driver_sheet[i][8]}\n'
                     line_bot_api.push_message(
                         PushMessageRequest(
                             to=driver_user_id,
@@ -2349,7 +2335,7 @@ def handle_postbak(event):
                     line_bot_api = MessagingApi(api_client)
                     if passenger_case_datetime_ahead >= now_datetime or passenger_case_launchdate == now_date:
                         confirm_template = ConfirmTemplate(
-                            text = f'📎共乘編號：{passenger_sheet[i][16]}\n📍出發地點：{passenger_sheet[i][2]}\n📍目的地點：{passenger_sheet[i][4]}\n🕒出發時間：\n{passenger_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(passenger_sheet[i][6]))}\n#️⃣共乘上限：{passenger_sheet[i][5]} 人\n✨發起人：\n{passenger_sheet[i][9]}\n🚗司機名稱：{passenger_driver}\n📱手機號碼：{passenger_sheet[i][12]}\n🛞交通工具：{passenger_sheet[i][11]}\n❗️行車規範：\n{passenger_sheet[i][7]}\n💬備註：\n{passenger_sheet[i][8]}\n',
+                            text = f'📎共乘編號：{passenger_sheet[i][16]}\n📍出發地點：{passenger_sheet[i][2]}\n📍目的地點：{passenger_sheet[i][4]}\n🕒出發時間：\n{passenger_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(passenger_sheet[i][6]))}\n#️⃣共乘上限：{passenger_sheet[i][5]} 人\n✨發起人（乘客）：\n{passenger_sheet[i][9]}\n🚗司機名稱：{passenger_driver}\n🛞交通工具：{passenger_sheet[i][11]}\n❗️行車規範：\n{passenger_sheet[i][7]}\n💬備註：\n{passenger_sheet[i][8]}\n',
                             actions=[ #一定只能放兩個Action
                                 PostbackAction(label='我要共乘！', text='我要共乘！', data=f'passenger_Sure{i}'),
                                 PostbackAction(label='我想當司機！', text='我想當司機！', data=f'passenger_bedriver{i}')   
@@ -2464,7 +2450,7 @@ def handle_postbak(event):
                         passenger_driver = '無'
                     else:
                         passenger_driver = passenger_sheet[i][18]
-                    reservation = f'📎共乘編號：{passenger_sheet[i][16]}\n📍出發地點：{passenger_sheet[i][2]}\n📍目的地點：{passenger_sheet[i][4]}\n🕒出發時間：\n{passenger_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(passenger_sheet[i][6]))}\n#️⃣共乘上限：{passenger_sheet[i][5]} 人\n✨發起人：\n{passenger_sheet[i][9]}\n🚗司機名稱：{passenger_driver}\n📱手機號碼：{passenger_sheet[i][12]}\n🛞交通工具：{passenger_sheet[i][11]}\n❗️行車規範：\n{passenger_sheet[i][7]}\n💬備註：\n{passenger_sheet[i][8]}\n'
+                    reservation = f'📎共乘編號：{passenger_sheet[i][16]}\n📍出發地點：{passenger_sheet[i][2]}\n📍目的地點：{passenger_sheet[i][4]}\n🕒出發時間：\n{passenger_sheet[i][3]}\n⏳預估時程：{time_hrmi(int(passenger_sheet[i][6]))}\n#️⃣共乘上限：{passenger_sheet[i][5]} 人\n✨發起人（乘客）：\n{passenger_sheet[i][9]}\n🆔LineID：{passenger_sheet[i][10]}\n📱手機號碼：{passenger_sheet[i][12]}\n🚗司機名稱：{passenger_driver}\n🛞交通工具：{passenger_sheet[i][11]}\n❗️行車規範：\n{passenger_sheet[i][7]}\n💬備註：\n{passenger_sheet[i][8]}\n'
                     line_bot_api.reply_message(
                         ReplyMessageRequest(
                             reply_token=event.reply_token,
