@@ -2226,7 +2226,7 @@ def handle_postbak(event):
                                 line_bot_api.push_message(
                                     PushMessageRequest(
                                         to=driver_user_id,
-                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!\n發起人（司機）名稱：{target_row[9]}\nLineID：{target_row[10]}\n手機號碼：{driver_sheet[i][13]}\n車牌及型號：\n{target_row[18]}')]
+                                        messages = [TextMessage(text=f'已幫您預約，記得透過LineID聯繫活動發起人!\n發起人（司機）名稱：\n{target_row[9]}\nLineID：{target_row[10]}\n手機號碼：{driver_sheet[i][13]}\n車牌及型號：\n{target_row[18]}')]
                                     )
                                 )
                                 try :
