@@ -628,7 +628,7 @@ def get_driver_sheet_case():
 def get_passenger_sheet_case():
     @retry(stop=stop_after_attempt(5), wait=wait_exponential(multiplier=1, min=4, max=60), retry=retry_if_exception_type(gspread.exceptions.APIError))
     def get_passenger_sheet_case_s():
-        global passenger_sheet, web_passenger_len, passenger_Sure_id_dict, passenger_Sure_name_dict, New_passenger_update
+        global passenger_sheet, web_passenger_len, passenger_Sure_id_dict, passenger_bedriverSure_id_dict, passenger_Sure_name_dict, New_passenger_update
         passenger_sheet = passenger_sheet_id.get_all_values()
         try:
             web_passenger_len=len(passenger_sheet) #抓取司機表單中有幾筆資料(已藉由更改其App script的程式碼扣除第一列的項目)
@@ -637,10 +637,12 @@ def get_passenger_sheet_case():
         try:
             # 設定一個揪團的dict容納確定參與的使用者
             passenger_Sure_id_dict = {}
+            passenger_bedriverSure_id_dict = {}
             passenger_Sure_name_dict = {}
             New_passenger_update = ''
             for i in range(1,web_passenger_len):
                 passenger_Sure_id_dict[i] = passenger_sheet[i][14]
+                passenger_bedriverSure_id_dict[i] = passenger_sheet[i][19]
                 passenger_Sure_name_dict[i] = passenger_sheet[i][15]
                 if passenger_sheet[i][13] == '':
                     New_passenger_update = 'New_passenger_update'
@@ -1836,7 +1838,7 @@ def handle_message(event):
                         pass
             else:
                 pass
-            if user_id in str(passenger_Sure_id_dict.values()): # dict_value type 不能用 str in 的判斷式
+            if user_id in str(passenger_Sure_id_dict.values()) or str(passenger_bedriverSure_id_dict.values()): # dict_value type 不能用 str in 的判斷式
                 for i in range(1,web_passenger_len):
                     passenger_case_date = parse_custom_time(passenger_sheet[i][3]).replace(hour=0, minute=0, second=0, microsecond=0)
                     passenger_case_launchdate = parse_custom_time(passenger_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
