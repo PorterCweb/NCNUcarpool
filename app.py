@@ -971,8 +971,8 @@ def run_scheduler():
         schedule.run_pending()
         time.sleep(0.1)  
 schedule.every(30).minutes.do(check_project)
-schedule.every(20).seconds.do(get_driver_sheet_case)
-schedule.every(20).seconds.do(get_passenger_sheet_case)
+schedule.every(30).seconds.do(get_driver_sheet_case)
+schedule.every(30).seconds.do(get_passenger_sheet_case)
 scheduler_thread_case = threading.Thread(target=run_scheduler)
 # 20250418有可能運行期間出現問題後(任何)，就會永久結束，需要伺服器重啟才能再執行，因此不使用。
 # scheduler_thread_case.daemon = True 主程式結束此也結束
@@ -1738,9 +1738,9 @@ def handle_message(event):
                                             "type": "button",
                                             "action": {
                                             "type": "postback",
-                                            "label": "取消預約",
+                                            "label": "取消乘客預約",
                                             "data": f"driver_cancel_Num{i}",
-                                            "displayText": f"{driver_sheet[i][2]}到{driver_sheet[i][4]}的取消預約"
+                                            "displayText": f"我想取消共乘編號：{driver_sheet[i][17]}的乘客預約"
                                             },
                                             "style": "primary",
                                             "height": "sm",
@@ -2007,7 +2007,7 @@ def handle_message(event):
                                             "type": "postback",
                                             "label": "取消乘客預約",
                                             "data": f"passenger_cancel_Num{i}",
-                                            "displayText": f"{passenger_sheet[i][2]}到{passenger_sheet[i][4]}的取消預約"
+                                            "displayText": f"我想取消共乘編號：{driver_sheet[i][17]}的乘客預約"
                                             },
                                             "style": "primary",
                                             "height": "sm",
@@ -2293,7 +2293,7 @@ def handle_message(event):
                                             "type": "postback",
                                             "label": "取消司機預約",
                                             "data": f"passenger_cancel_bedriver_Num{i}",
-                                            "displayText": f"{passenger_sheet[i][2]}到{passenger_sheet[i][4]}的取消預約"
+                                            "displayText": f"我想取消共乘編號：{passenger_sheet[i][16]}的司機預約"
                                             },
                                             "style": "primary",
                                             "height": "sm",
