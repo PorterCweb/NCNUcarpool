@@ -990,7 +990,7 @@ def handle_message(event):
                 line_bot_api.reply_message(
                     ReplyMessageRequest(
                         reply_token=event.reply_token,
-                        messages=[FlexMessage(text=f'您參加的（司機揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[47][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[47][17]}\n發車地點：{driver_sheet[47][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[47][3]}\n總時程：{time_hrmi(int(driver_sheet[47][6]))}\n發起人：{driver_sheet[47][9]}\n手機號碼：{driver_sheet[47][13]}\nLineID：{driver_sheet[47][10]}\n共乘人數上限：{driver_sheet[47][5]}\n共乘費用分攤：{driver_sheet[47][11]}\n交通工具：{driver_sheet[47][12]}\n行車規範：\n{driver_sheet[47][7]}\n簡介：\n{driver_sheet[47][8]}\n')]
+                        messages=[FlexMessage(text=f'您參加的（司機揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[47][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[47][17]}\n發車地點：{driver_sheet[47][2]}\n目的地：{driver_sheet[47][4]}\n出發時間：\n{driver_sheet[47][3]}\n總時程：{time_hrmi(int(driver_sheet[47][6]))}\n發起人：{driver_sheet[47][9]}\n手機號碼：{driver_sheet[47][13]}\nLineID：{driver_sheet[47][10]}\n共乘人數上限：{driver_sheet[47][5]}\n共乘費用分攤：{driver_sheet[47][11]}\n交通工具：{driver_sheet[47][12]}\n行車規範：\n{driver_sheet[47][7]}\n簡介：\n{driver_sheet[47][8]}\n')]
                     )
                 )
             if web_driver_len != 1:
