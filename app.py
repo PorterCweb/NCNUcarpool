@@ -165,31 +165,31 @@ def check_project():
                         name_list = driver_Sure_name_dict.get(i).split(',')
                         output = '、'.join(map(str, name_list))
                         str1 = '您在 共乘阿穿 發起的（司機揪團）共乘活動人數已滿了，活動資訊如下：'
-                        str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：<br>{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>共乘費用分攤：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：<br>{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
+                        str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>共乘費用分攤：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
                         str3 = f'參與者Line名稱:{output}'
                         str4 = '您在 共乘阿穿 發起的（司機揪團）共乘活動人數已滿囉'
                         # 針對 Linebot 參與的乘客
-                        driver_text = f'您參加的（司機揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n共乘費用分攤：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：\n{driver_sheet[i][8]}\n'
+                        driver_text = f'您參加的（司機揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人！發起人LineID：{driver_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n共乘費用分攤：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：\n{driver_sheet[i][7]}\n簡介：\n{driver_sheet[i][8]}\n'
                     # 有人且發起者未勾選 ※ 人滿才發車
                     elif '※ 人滿才發車' not in driver_sheet[i][7] and int(driver_sheet[i][14])>0:
                         # 寄信給發起人，告知結果
                         name_list = driver_Sure_name_dict.get(i).split(',')
                         output = '、'.join(map(str, name_list))
                         str1 = '您在 共乘阿穿 發起的（司機揪團）共乘活動人數未滿，但您未勾選「人滿才發車」，因此成團喔，也請留意是否有乘客臨時聯絡您需要共乘！活動資訊如下：'
-                        str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：<br>{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>共乘費用分攤：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：<br>{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
+                        str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>共乘費用分攤：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
                         str3 = f'參與者Line名稱:{output}'
                         str4 = '您在 共乘阿穿 發起的（司機揪團）共乘活動人數未滿，但您未勾選「人滿才發車」，因此成團喔！'
                         # 針對 Linebot 參與的乘客
-                        driver_text = f'您參加的（司機揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n共乘費用分攤：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：{driver_sheet[i][7]}\n簡介：\n{driver_sheet[i][8]}\n'
+                        driver_text = f'您參加的（司機揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人！發起人LineID：{driver_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[i][17]}\n發車地點：{driver_sheet[i][2]}\n目的地：{driver_sheet[i][4]}\n出發時間：\n{driver_sheet[i][3]}\n總時程：{time_hrmi(int(driver_sheet[i][6]))}\n發起人：{driver_sheet[i][9]}\n手機號碼：{driver_sheet[i][13]}\nLineID：{driver_sheet[i][10]}\n共乘人數上限：{driver_sheet[i][5]}\n共乘費用分攤：{driver_sheet[i][11]}\n交通工具：{driver_sheet[i][12]}\n行車規範：{driver_sheet[i][7]}\n簡介：\n{driver_sheet[i][8]}\n'
                     # 未成團
                     else:
                         # 寄信給發起人，告知結果
                         str1 = f'您在 共乘阿穿 發起的（司機揪團）共乘活動人數未滿，共乘編號為{driver_sheet[i][17]}，因此未發車，也請留意是否有乘客臨時聯絡您需要共乘。活動資訊如下：'
-                        str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：<br>{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>共乘費用分攤：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：<br>{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
+                        str2 = f'共乘編號：{driver_sheet[i][17]}<br>發車地點：{driver_sheet[i][2]}<br>目的地：{driver_sheet[i][4]}<br>出發時間：{driver_sheet[i][3]}<br>總時程：{time_hrmi(int(driver_sheet[i][6]))}<br>發起人：{driver_sheet[i][9]}<br>手機號碼：{driver_sheet[i][13]}<br>LineID：{driver_sheet[i][10]}<br>共乘人數上限：{driver_sheet[i][5]}<br>共乘費用分攤：{driver_sheet[i][11]}<br>交通工具：{driver_sheet[i][12]}<br>行車規範：{driver_sheet[i][7]}<br>簡介：<br>{driver_sheet[i][8]}<br>'
                         str3 = ''
                         str4 = '您在 共乘阿穿 發起的（司機揪團）共乘活動人數未滿'
                         # 針對 Linebot 參與的乘客
-                        driver_text = f'您參與的（司機揪團）共乘活動因人數未滿而不發車喔!共乘編號為{driver_sheet[i][17]}'
+                        driver_text = f'您參與的（司機揪團）共乘活動因人數未滿而不發車喔！共乘編號為{driver_sheet[i][17]}'
                     # 寄信給發起人
                     name_list = driver_Sure_name_dict.get(i).split(',')
                     output = ','.join(map(str, name_list))
@@ -262,31 +262,31 @@ def check_project():
                         name_list = passenger_Sure_name_dict.get(i).split(',')
                         output = '、'.join(map(str, name_list))
                         str1 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數已滿了，活動資訊如下：'
-                        str2 = f'共乘編號：{passenger_sheet[i][16]}<br>發車地點：{passenger_sheet[i][2]}<br>目的地：{passenger_sheet[i][4]}<br>出發時間：<br>{passenger_sheet[i][3]}<br>總時程：{time_hrmi(int(passenger_sheet[i][6]))}<br>發起人：{passenger_sheet[i][9]}<br>手機號碼：{passenger_sheet[i][12]}<br>LineID：{passenger_sheet[i][10]}<br>共乘人數上限：{passenger_sheet[i][5]}<br>交通工具：{passenger_sheet[i][11]}<br>行車規範：<br>{passenger_sheet[i][7]}\n簡介：\n{passenger_sheet[i][8]}<br>'
+                        str2 = f'共乘編號：{passenger_sheet[i][16]}<br>發車地點：{passenger_sheet[i][2]}<br>目的地：{passenger_sheet[i][4]}<br>出發時間：{passenger_sheet[i][3]}<br>總時程：{time_hrmi(int(passenger_sheet[i][6]))}<br>發起人：{passenger_sheet[i][9]}<br>手機號碼：{passenger_sheet[i][12]}<br>LineID：{passenger_sheet[i][10]}<br>共乘人數上限：{passenger_sheet[i][5]}<br>交通工具：{passenger_sheet[i][11]}<br>行車規範：{passenger_sheet[i][7]}<br>簡介：<br>{passenger_sheet[i][8]}<br>'
                         str3 = f'參與者Line名稱:{output}'
                         str4 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數已滿囉'
                         # 針對 Linebot 參與的乘客
-                        passenger_text = f'您參加的（乘客揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{passenger_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
+                        passenger_text = f'您參加的（乘客揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人！發起人LineID：{passenger_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
                     # 有人且發起者未勾選 ※ 人滿才發車
                     elif '※ 人滿才發車' not in passenger_sheet[i][7] and int(passenger_sheet[i][13])>0:
                         # 寄信給發起人，告知結果
                         name_list = passenger_Sure_name_dict.get(i).split(',')
                         output = '、'.join(map(str, name_list))
                         str1 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數未滿，但您未勾選「人滿才發車」，因此成團喔，也請留意是否有乘客臨時聯絡您需要共乘！活動資訊如下：'
-                        str2 = f'共乘編號：{passenger_sheet[i][16]}<br>發車地點：{passenger_sheet[i][2]}<br>目的地：{passenger_sheet[i][4]}<br>出發時間：<br>{passenger_sheet[i][3]}<br>總時程：{time_hrmi(int(passenger_sheet[i][6]))}<br>發起人：{passenger_sheet[i][9]}<br>手機號碼：{passenger_sheet[i][12]}<br>LineID：{passenger_sheet[i][10]}<br>共乘人數上限：{passenger_sheet[i][5]}<br>交通工具：{passenger_sheet[i][11]}<br>行車規範：<br>{passenger_sheet[i][7]}\n簡介：<br>{passenger_sheet[i][8]}<br>'
+                        str2 = f'共乘編號：{passenger_sheet[i][16]}<br>發車地點：{passenger_sheet[i][2]}<br>目的地：{passenger_sheet[i][4]}<br>出發時間：{passenger_sheet[i][3]}<br>總時程：{time_hrmi(int(passenger_sheet[i][6]))}<br>發起人：{passenger_sheet[i][9]}<br>手機號碼：{passenger_sheet[i][12]}<br>LineID：{passenger_sheet[i][10]}<br>共乘人數上限：{passenger_sheet[i][5]}<br>交通工具：{passenger_sheet[i][11]}<br>行車規範：{passenger_sheet[i][7]}<br>簡介：<br>{passenger_sheet[i][8]}<br>'
                         str3 = f'參與者Line名稱:{output}'
                         str4 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數未滿，但您未勾選「人滿才發車」，因此成團喔！'
                         # 針對 Linebot 參與的乘客
-                        passenger_text = f'您參加的（乘客揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{passenger_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
+                        passenger_text = f'您參加的（乘客揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人！發起人LineID：{passenger_sheet[i][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{passenger_sheet[i][16]}\n發車地點：{passenger_sheet[i][2]}\n目的地：{passenger_sheet[i][4]}\n出發時間：\n{passenger_sheet[i][3]}\n總時程：{time_hrmi(int(passenger_sheet[i][6]))}\n發起人：{passenger_sheet[i][9]}\n手機號碼：{passenger_sheet[i][12]}\nLineID：{passenger_sheet[i][10]}\n共乘人數上限：{passenger_sheet[i][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}\n'
                     # 未成團
                     else:
                         # 寄信給發起人，告知結果    
                         str1 = f'您在 共乘阿穿 發起的（乘客揪團）共乘活動人數未滿或是無人預定，共乘編號為{passenger_sheet[i][16]}，因此未發車，也請留意是否有乘客臨時聯絡您需要共乘。活動資訊如下：'
-                        str2 = f'共乘編號：{passenger_sheet[i][16]}<br>發車地點：{passenger_sheet[i][2]}<br>目的地：{passenger_sheet[i][4]}<br>出發時間：<br>{passenger_sheet[i][3]}<br>總時程：{time_hrmi(int(passenger_sheet[i][6]))}<br>發起人：{passenger_sheet[i][9]}<br>手機號碼：{passenger_sheet[i][12]}<br>LineID：{passenger_sheet[i][10]}<br>共乘人數上限：{passenger_sheet[i][5]}<br>交通工具：{passenger_sheet[i][11]}<br>行車規範：<br>{passenger_sheet[i][7]}<br>簡介：{passenger_sheet[i][8]}<br>'
+                        str2 = f'共乘編號：{passenger_sheet[i][16]}<br>發車地點：{passenger_sheet[i][2]}<br>目的地：{passenger_sheet[i][4]}<br>出發時間：{passenger_sheet[i][3]}<br>總時程：{time_hrmi(int(passenger_sheet[i][6]))}<br>發起人：{passenger_sheet[i][9]}<br>手機號碼：{passenger_sheet[i][12]}<br>LineID：{passenger_sheet[i][10]}<br>共乘人數上限：{passenger_sheet[i][5]}<br>交通工具：{passenger_sheet[i][11]}<br>行車規範：{passenger_sheet[i][7]}<br>簡介：<br>{passenger_sheet[i][8]}<br>'
                         str3 = ''
                         str4 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數未滿'
                         # 針對 Linebot 參與的乘客
-                        passenger_text = f'您參與的（乘客揪團）共乘活動因人數未滿而不發車喔!共乘編號為{passenger_sheet[i][16]}'
+                        passenger_text = f'您參與的（乘客揪團）共乘活動因人數未滿而不發車喔！共乘編號為{passenger_sheet[i][16]}'
                     # 寄信給發起人
                     name_list = passenger_Sure_name_dict.get(i).split(',')
                     output = ','.join(map(str, name_list))
@@ -990,7 +990,7 @@ def handle_message(event):
                 line_bot_api.reply_message(
                     ReplyMessageRequest(
                         reply_token=event.reply_token,
-                        messages=[TextMessage(text=f'您參加的（司機揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[47][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[47][17]}\n發車地點：{driver_sheet[47][2]}\n目的地：{driver_sheet[47][4]}\n出發時間：\n{driver_sheet[47][3]}\n總時程：{time_hrmi(int(driver_sheet[47][6]))}\n發起人：{driver_sheet[47][9]}\n手機號碼：{driver_sheet[47][13]}\nLineID：{driver_sheet[47][10]}\n共乘人數上限：{driver_sheet[47][5]}\n共乘費用分攤：{driver_sheet[47][11]}\n交通工具：{driver_sheet[47][12]}\n行車規範：\n{driver_sheet[47][7]}\n簡介：\n{driver_sheet[47][8]}\n')]
+                        messages=[TextMessage(text=f'您參加的（司機揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[41][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[41][17]}\n發車地點：{driver_sheet[41][2]}\n目的地：{driver_sheet[41][4]}\n出發時間：\n{driver_sheet[41][3]}\n總時程：{time_hrmi(int(driver_sheet[41][6]))}\n發起人：{driver_sheet[41][9]}\n手機號碼：{driver_sheet[41][13]}\nLineID：{driver_sheet[41][10]}\n共乘人數上限：{driver_sheet[41][5]}\n共乘費用分攤：{driver_sheet[41][11]}\n交通工具：{driver_sheet[41][12]}\n行車規範：\n{driver_sheet[41][7]}\n簡介：\n{driver_sheet[41][8]}\n')]
                     )
                 )
             if web_driver_len != 1:
@@ -1264,6 +1264,13 @@ def handle_message(event):
                     )  
                 ) 
         elif text =='目前有哪些共乘（揪團）？':
+            with ApiClient(configuration) as api_client:
+                line_bot_api.reply_message(
+                    ReplyMessageRequest(
+                        reply_token=event.reply_token,
+                        messages=[TextMessage(text=f'您參加的（乘客揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人！發起人LineID：{passenger_sheet[25][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{passenger_sheet[25][16]}\n發車地點：{passenger_sheet[25][2]}\n目的地：{passenger_sheet[25][4]}\n出發時間：\n{passenger_sheet[25][3]}\n總時程：{time_hrmi(int(passenger_sheet[25][6]))}\n發起人：{passenger_sheet[25][9]}\n手機號碼：{passenger_sheet[25][12]}\nLineID：{passenger_sheet[25][10]}\n共乘人數上限：{passenger_sheet[25][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[25][7]}\n簡介：{passenger_sheet[25][8]}\n')]
+                    )
+                )
             if web_passenger_len != 1:
                 line_flex_json = {
                     "type": "carousel",
