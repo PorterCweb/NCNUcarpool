@@ -282,7 +282,7 @@ def check_project():
                     else:
                         # 寄信給發起人，告知結果    
                         str1 = f'您在 共乘阿穿 發起的（乘客揪團）共乘活動人數未滿或是無人預定，共乘編號為{passenger_sheet[i][16]}，因此未發車，也請留意是否有乘客臨時聯絡您需要共乘。活動資訊如下：'
-                        str2 = f'共乘編號：{passenger_sheet[i][16]}<br>發車地點：{passenger_sheet[i][2]}<br>目的地：{passenger_sheet[i][4]}<ber>出發時間：<br>{passenger_sheet[i][3]}<br>總時程：{time_hrmi(int(passenger_sheet[i][6]))}<br>發起人：{passenger_sheet[i][9]}<br>手機號碼：{passenger_sheet[i][12]}<br>LineID：{passenger_sheet[i][10]}<br>共乘人數上限：{passenger_sheet[i][5]}<br>交通工具：{passenger_sheet[i][11]}<br>行車規範：<br>{passenger_sheet[i][7]}\n簡介：{passenger_sheet[i][8]}<br>'
+                        str2 = f'共乘編號：{passenger_sheet[i][16]}<br>發車地點：{passenger_sheet[i][2]}<br>目的地：{passenger_sheet[i][4]}<br>出發時間：<br>{passenger_sheet[i][3]}<br>總時程：{time_hrmi(int(passenger_sheet[i][6]))}<br>發起人：{passenger_sheet[i][9]}<br>手機號碼：{passenger_sheet[i][12]}<br>LineID：{passenger_sheet[i][10]}<br>共乘人數上限：{passenger_sheet[i][5]}<br>交通工具：{passenger_sheet[i][11]}<br>行車規範：<br>{passenger_sheet[i][7]}<br>簡介：{passenger_sheet[i][8]}<br>'
                         str3 = ''
                         str4 = '您在 共乘阿穿 發起的（乘客揪團）共乘活動人數未滿'
                         # 針對 Linebot 參與的乘客
@@ -990,7 +990,7 @@ def handle_message(event):
                 line_bot_api.reply_message(
                     ReplyMessageRequest(
                         reply_token=event.reply_token,
-                        messages=[FlexMessage(text=f'您參加的（司機揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[47][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[47][17]}\n發車地點：{driver_sheet[47][2]}\n目的地：{driver_sheet[47][4]}\n出發時間：\n{driver_sheet[47][3]}\n總時程：{time_hrmi(int(driver_sheet[47][6]))}\n發起人：{driver_sheet[47][9]}\n手機號碼：{driver_sheet[47][13]}\nLineID：{driver_sheet[47][10]}\n共乘人數上限：{driver_sheet[47][5]}\n共乘費用分攤：{driver_sheet[47][11]}\n交通工具：{driver_sheet[47][12]}\n行車規範：\n{driver_sheet[47][7]}\n簡介：\n{driver_sheet[47][8]}\n')]
+                        messages=[TextMessage(text=f'您參加的（司機揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[47][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[47][17]}\n發車地點：{driver_sheet[47][2]}\n目的地：{driver_sheet[47][4]}\n出發時間：\n{driver_sheet[47][3]}\n總時程：{time_hrmi(int(driver_sheet[47][6]))}\n發起人：{driver_sheet[47][9]}\n手機號碼：{driver_sheet[47][13]}\nLineID：{driver_sheet[47][10]}\n共乘人數上限：{driver_sheet[47][5]}\n共乘費用分攤：{driver_sheet[47][11]}\n交通工具：{driver_sheet[47][12]}\n行車規範：\n{driver_sheet[47][7]}\n簡介：\n{driver_sheet[47][8]}\n')]
                     )
                 )
             if web_driver_len != 1:
