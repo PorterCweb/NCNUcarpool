@@ -971,8 +971,8 @@ def run_scheduler():
         schedule.run_pending()
         time.sleep(0.1)  
 schedule.every(30).minutes.do(check_project)
-schedule.every(5).seconds.do(get_driver_sheet_case)
-schedule.every(5).seconds.do(get_passenger_sheet_case)
+schedule.every(30).seconds.do(get_driver_sheet_case)
+schedule.every(30).seconds.do(get_passenger_sheet_case)
 scheduler_thread_case = threading.Thread(target=run_scheduler)
 # 20250418有可能運行期間出現問題後(任何)，就會永久結束，需要伺服器重啟才能再執行，因此不使用。
 # scheduler_thread_case.daemon = True 主程式結束此也結束
@@ -986,13 +986,6 @@ def handle_message(event):
         line_bot_api = MessagingApi(api_client)
         # Carousel Template 
         if text =='目前有哪些共乘（已有司機）？':
-            with ApiClient(configuration) as api_client:
-                line_bot_api.reply_message(
-                    ReplyMessageRequest(
-                        reply_token=event.reply_token,
-                        messages=[TextMessage(text=f'您參加的（司機揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人!發起人LineID：{driver_sheet[41][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{driver_sheet[41][17]}\n發車地點：{driver_sheet[41][2]}\n目的地：{driver_sheet[41][4]}\n出發時間：\n{driver_sheet[41][3]}\n總時程：{time_hrmi(int(driver_sheet[41][6]))}\n發起人：{driver_sheet[41][9]}\n手機號碼：{driver_sheet[41][13]}\nLineID：{driver_sheet[41][10]}\n共乘人數上限：{driver_sheet[41][5]}\n共乘費用分攤：{driver_sheet[41][11]}\n交通工具：{driver_sheet[41][12]}\n行車規範：\n{driver_sheet[41][7]}\n簡介：\n{driver_sheet[41][8]}\n')]
-                    )
-                )
             if web_driver_len != 1:
                 line_flex_json = {
                     "type": "carousel",
@@ -1264,13 +1257,6 @@ def handle_message(event):
                     )  
                 ) 
         elif text =='目前有哪些共乘（揪團）？':
-            with ApiClient(configuration) as api_client:
-                line_bot_api.reply_message(
-                    ReplyMessageRequest(
-                        reply_token=event.reply_token,
-                        messages=[TextMessage(text=f'您參加的（乘客揪團）共乘活動成團囉，記得透過LineID聯繫活動發起人！發起人LineID：{passenger_sheet[25][10]}，活動資訊如下：\n--------------------------------\n共乘編號：{passenger_sheet[25][16]}\n發車地點：{passenger_sheet[25][2]}\n目的地：{passenger_sheet[25][4]}\n出發時間：\n{passenger_sheet[25][3]}\n總時程：{time_hrmi(int(passenger_sheet[25][6]))}\n發起人：{passenger_sheet[25][9]}\n手機號碼：{passenger_sheet[25][12]}\nLineID：{passenger_sheet[25][10]}\n共乘人數上限：{passenger_sheet[25][5]}\n交通工具：{passenger_sheet[i][11]}\n行車規範：\n{passenger_sheet[25][7]}\n簡介：{passenger_sheet[25][8]}\n')]
-                    )
-                )
             if web_passenger_len != 1:
                 line_flex_json = {
                     "type": "carousel",
