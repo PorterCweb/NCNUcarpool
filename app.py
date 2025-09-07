@@ -1,3 +1,4 @@
+# 先需要點及右下角 並在搜尋欄輸入環境的路徑（venv-Scripts-python.exe）
 #----------------------------------------LineSDK必要----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 from logging import Handler
 from flask import Flask, request, abort
@@ -374,6 +375,7 @@ def get_driver_sheet_case():
                     driver_case_launchdate = parse_custom_time(driver_sheet[i][0]).replace(hour=0, minute=0, second=0, microsecond=0)
                     now_date = (datetime_datetime.now() + datetime.timedelta(hours = 8)).replace(hour=0, minute=0, second=0, microsecond=0)
                     if driver_case_launchdate == now_date:
+                        # 最新共乘推播需要今日發起（測試要注意發起共乘日期）
                         driver_limitnumber_type = ''
                         try :
                             int(driver_sheet[i][14])
