@@ -76,6 +76,7 @@ def callback():
 import json
 import requests
 import gspread #寫入google sheet的函數
+# 換算總時程函數
 def time_hrmi(time):
     hr=int(time/60)
     mi=int(time%60)
@@ -85,7 +86,7 @@ def time_hrmi(time):
         return f'{hr}小時'
     else:
         return f'{hr}小時{mi}分鐘' 
-# 使用schedule及threading函數來每隔0.1秒檢查試算表的表單情況
+# 使用schedule及threading函數來每隔30秒檢查試算表的表單情況
 import smtplib
 from email.mime.text import MIMEText
 import schedule
@@ -96,7 +97,7 @@ import datetime
 from datetime import datetime as datetime_datetime
 # 解析含中文上午/下午的時間字符串為 datetime 對象
 def parse_custom_time(time_str):
-    """解析含中文上午/下午的時間字符串為 datetime 對象"""
+    # 解析含中文上午/下午的時間字符串為 datetime 對象
     parts = time_str.split()
     date_part = parts[0]
     ampm = parts[1]
@@ -116,6 +117,7 @@ def get_key(dict, target):
             pass
     return(number_list)
 # token.json的資料如放在公開伺服器上執行之類的，會遭停用，需到google cloud重新建立金鑰，否則會跳出JWP錯誤
+# os函數 引用 env
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -123,7 +125,7 @@ load_dotenv()
 credentials_str = os.getenv('GOOGLE_CREDENTIALS')
 if credentials_str:
     credentials_dict = json.loads(credentials_str)
-# 使用修正後的字典創建 gspread 客戶端
+# 使用 credentials 修正後的字典開啟 Google Sheet 
 gc = gspread.service_account_from_dict(credentials_dict)
 carpool = gc.open_by_url('https://docs.google.com/spreadsheets/d/1q8HKO2NBz1O8UBE7ag9Kq-eNAc114TKzkXyOq32vfSA/edit?gid=1437248658#gid=1437248658')
 driver_sheet_id = carpool.get_worksheet(0)
@@ -382,9 +384,9 @@ def get_driver_sheet_case():
                             pass
                         except ValueError:
                             driver_sheet[i][14]=0
-                        try :
+                        try :  
                             int(driver_sheet[i][5])
-                        except:
+                        except:\
                             driver_limitnumber_type = '共乘人數上限不為數字'
                         if driver_limitnumber_type == '共乘人數上限不為數字' or int(driver_sheet[i][14]) <= int(driver_sheet[i][5]) or int(driver_sheet[i][14])== 0:
                             web_driver_data_case={
@@ -523,86 +525,30 @@ def get_driver_sheet_case():
                                 }
                             }
                             # 新增規範
-                            if '上下車地點可討論' in driver_sheet[i][7]:
-                                r = {
+                            driver_speci_set = ['上下車地點可討論', '自備零錢不找零', '接受線上付款 / 轉帳', '禁食', '不聊天', '寵物需裝籠', '謝絕寵物']
+                            for specification in driver_speci_set:
+                                if specification in driver_sheet[i][7]:
+                                    r = {
                                             "type": "text",
-                                            "text": "上下車地點可討論",
+                                            "text": specification,
                                             "size": "sm",
                                             "margin": "none",
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '自備零錢不找零' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "自備零錢不找零",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '接受線上付款 / 轉帳' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "接受線上付款 / 轉帳",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '禁食' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "禁食",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '不聊天' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "不聊天",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '寵物需裝籠' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "寵物需裝籠",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '謝絕寵物' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "謝絕寵物",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
+                                    web_driver_data_case['body']['contents'].insert(2,r)
+                                else:
+                                    pass
                             if '※ 人滿才發車' in driver_sheet[i][7]:
                                 r = {
-                                            "type": "text",
-                                            "text": "※ 人滿才發車",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "color": "#ff5551",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
+                                        "type": "text",
+                                        "text": '※ 人滿才發車',
+                                        "size": "sm",
+                                        "margin": "none",
+                                        "color": "#ff5551",
+                                        "contents": [],
+                                        "offsetEnd": "none"
+                                    }
                                 web_driver_data_case['body']['contents'].insert(2,r)
                             line_flex_json['contents'].append(web_driver_data_case)
                         else:
@@ -823,118 +769,26 @@ def get_passenger_sheet_case():
                                 }
                             }
                             # 新增規範
-                            if '上下車地點可討論' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "上下車地點可討論",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '不聊天' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "不聊天",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '嚴禁喝酒及抽菸' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "嚴禁喝酒及抽菸",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '禁食' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "禁食",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(3,r)
-                            if '謝絕寵物' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "謝絕寵物",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '寵物需裝籠' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "寵物需裝籠",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '已有司機' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "已有司機",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "color": "#ff5551",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '尚未有司機（徵求司機！）' in passenger_sheet[i][7]:
-                                if passenger_driver == '無':
+                            passenger_speci_set = ['上下車地點可討論', '不聊天', '嚴禁喝酒及抽菸', '禁食', '謝絕寵物', '寵物需裝籠']
+                            passenger_speci_red_set = ['已有司機', '尚未有司機（徵求司機！）', '叫車分攤費用', '※ 人滿才發車']
+                            for specification in passenger_speci_set:
+                                if specification in passenger_sheet[i][7]:
                                     r = {
-                                                "type": "text",
-                                                "text": "尚未有司機（徵求司機！）",
-                                                "size": "sm",
-                                                "margin": "none",
-                                                "color": "#ff5551",
-                                                "contents": [],
-                                                "offsetEnd": "none"
-                                            }
-                                    web_passenger_data_case['body']['contents'].insert(2,r)    
-                                else:
-                                    r = {
-                                                "type": "text",
-                                                "text": "已有司機！",
-                                                "size": "sm",
-                                                "margin": "none",
-                                                "color": "#ff5551",
-                                                "contents": [],
-                                                "offsetEnd": "none"
-                                            }
-                                    web_passenger_data_case['body']['contents'].insert(2,r)   
-                            if '叫車分攤費用' in passenger_sheet[i][7]:
-                                if passenger_driver == '無':
-                                    r = {
-                                                "type": "text",
-                                                "text": "叫車分攤費用",
-                                                "size": "sm",
-                                                "margin": "none",
-                                                "color": "#ff5551",
-                                                "contents": [],
-                                                "offsetEnd": "none"
-                                            }
-                                    web_passenger_data_case['body']['contents'].insert(2,r) 
+                                            "type": "text",
+                                            "text": specification,
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                    web_passenger_data_case['body']['contents'].insert(2,r)
                                 else:
                                     pass
-                            if '※ 人滿才發車' in passenger_sheet[i][7]:
-                                r = {
+                            for specification in passenger_speci_red_set:
+                                if specification in passenger_sheet[i][7]:
+                                    r = {
                                             "type": "text",
-                                            "text": "※ 人滿才發車",
+                                            "text": specification,
                                             "size": "sm",
                                             "margin": "none",
                                             "color": "#ff5551",
@@ -973,8 +827,8 @@ def run_scheduler():
         schedule.run_pending()
         time.sleep(0.1)  
 schedule.every(30).minutes.do(check_project)
-schedule.every(30).seconds.do(get_driver_sheet_case)
-schedule.every(30).seconds.do(get_passenger_sheet_case)
+schedule.every(10).seconds.do(get_driver_sheet_case)
+schedule.every(10).seconds.do(get_passenger_sheet_case)
 scheduler_thread_case = threading.Thread(target=run_scheduler)
 # 20250418有可能運行期間出現問題後(任何)，就會永久結束，需要伺服器重啟才能再執行，因此不使用。
 # scheduler_thread_case.daemon = True 主程式結束此也結束
@@ -1145,87 +999,33 @@ def handle_message(event):
                                 }
                             }
                             # 新增規範
-                            if '上下車地點可討論' in driver_sheet[i][7]:
-                                r = {
+                            driver_speci_set = ['上下車地點可討論', '自備零錢不找零', '接受線上付款 / 轉帳', '禁食', '不聊天', '寵物需裝籠', '謝絕寵物']
+                            for specification in driver_speci_set:
+                                if specification in driver_sheet[i][7]:
+                                    r = {
                                             "type": "text",
-                                            "text": "上下車地點可討論",
+                                            "text": specification,
                                             "size": "sm",
                                             "margin": "none",
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '自備零錢不找零' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "自備零錢不找零",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '接受線上付款 / 轉帳' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "接受線上付款 / 轉帳",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '禁食' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "禁食",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '不聊天' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "不聊天",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '寵物需裝籠' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "寵物需裝籠",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '謝絕寵物' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "謝絕寵物",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
+                                    web_driver_data_case['body']['contents'].insert(2,r)
+                                else:
+                                    pass
                             if '※ 人滿才發車' in driver_sheet[i][7]:
                                 r = {
-                                            "type": "text",
-                                            "text": "※ 人滿才發車",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "color": "#ff5551",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
+                                        "type": "text",
+                                        "text": '※ 人滿才發車',
+                                        "size": "sm",
+                                        "margin": "none",
+                                        "color": "#ff5551",
+                                        "contents": [],
+                                        "offsetEnd": "none"
+                                    }
                                 web_driver_data_case['body']['contents'].insert(2,r)
+                            else:
+                                pass
                             line_flex_json['contents'].append(web_driver_data_case)
                         else:
                             pass
@@ -1419,125 +1219,35 @@ def handle_message(event):
                                 }
                             }
                             # 新增規範
-                            if '上下車地點可討論' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "上下車地點可討論",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '不聊天' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "不聊天",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '嚴禁喝酒及抽菸' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "嚴禁喝酒及抽菸",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '禁食' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "禁食",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(3,r)
-                            if '謝絕寵物' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "謝絕寵物",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '寵物需裝籠' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "寵物需裝籠",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '已有司機' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "已有司機",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "color": "#ff5551",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '尚未有司機（徵求司機！）' in passenger_sheet[i][7]:
-                                if passenger_driver == '無':
+                            passenger_speci_set = ['上下車地點可討論', '不聊天', '嚴禁喝酒及抽菸', '禁食', '謝絕寵物', '寵物需裝籠']
+                            passenger_speci_red_set = ['已有司機', '尚未有司機（徵求司機！）', '叫車分攤費用', '※ 人滿才發車']
+                            for specification in passenger_speci_set:
+                                if specification in passenger_sheet[i][7]:
                                     r = {
-                                                "type": "text",
-                                                "text": "尚未有司機（徵求司機！）",
-                                                "size": "sm",
-                                                "margin": "none",
-                                                "color": "#ff5551",
-                                                "contents": [],
-                                                "offsetEnd": "none"
-                                            }
-                                    web_passenger_data_case['body']['contents'].insert(2,r)    
-                                else:
-                                    r = {
-                                                "type": "text",
-                                                "text": "已有司機！",
-                                                "size": "sm",
-                                                "margin": "none",
-                                                "color": "#ff5551",
-                                                "contents": [],
-                                                "offsetEnd": "none"
-                                            }
+                                            "type": "text",
+                                            "text": specification,
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
                                     web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '叫車分攤費用' in passenger_sheet[i][7]:
-                                if passenger_driver == '無':
-                                    r = {
-                                                "type": "text",
-                                                "text": "叫車分攤費用",
-                                                "size": "sm",
-                                                "margin": "none",
-                                                "color": "#ff5551",
-                                                "contents": [],
-                                                "offsetEnd": "none"
-                                            }
-                                    web_passenger_data_case['body']['contents'].insert(2,r) 
                                 else:
                                     pass
-                            if '※ 人滿才發車' in passenger_sheet[i][7]:
-                                r = {
+                            for specification in passenger_speci_red_set:
+                                if specification in passenger_sheet[i][7]:
+                                    r = {
                                             "type": "text",
-                                            "text": "※ 人滿才發車",
+                                            "text": specification,
                                             "size": "sm",
                                             "margin": "none",
                                             "color": "#ff5551",
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
+                                    web_passenger_data_case['body']['contents'].insert(2,r)
+                                else:
+                                    pass
                             line_flex_json['contents'].append(web_passenger_data_case)   
                         else:
                             pass
@@ -1752,87 +1462,33 @@ def handle_message(event):
                                 }
                             }
                             # 新增規範
-                            if '上下車地點可討論' in driver_sheet[i][7]:
-                                r = {
+                            driver_speci_set = ['上下車地點可討論', '自備零錢不找零', '接受線上付款 / 轉帳', '禁食', '不聊天', '寵物需裝籠', '謝絕寵物']
+                            for specification in driver_speci_set:
+                                if specification in driver_sheet[i][7]:
+                                    r = {
                                             "type": "text",
-                                            "text": "上下車地點可討論",
+                                            "text": specification,
                                             "size": "sm",
                                             "margin": "none",
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '自備零錢不找零' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "自備零錢不找零",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '接受線上付款 / 轉帳' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "接受線上付款 / 轉帳",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '禁食' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "禁食",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '不聊天' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "不聊天",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '寵物需裝籠' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "寵物需裝籠",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
-                            if '謝絕寵物' in driver_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "謝絕寵物",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_driver_data_case['body']['contents'].insert(2,r)
+                                    web_driver_data_case['body']['contents'].insert(2,r)
+                                else:
+                                    pass
                             if '※ 人滿才發車' in driver_sheet[i][7]:
                                 r = {
-                                            "type": "text",
-                                            "text": "※ 人滿才發車",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "color": "#ff5551",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
+                                        "type": "text",
+                                        "text": '※ 人滿才發車',
+                                        "size": "sm",
+                                        "margin": "none",
+                                        "color": "#ff5551",
+                                        "contents": [],
+                                        "offsetEnd": "none"
+                                    }
                                 web_driver_data_case['body']['contents'].insert(2,r)
+                            else:
+                                pass
                             line_flex_json['contents'].append(web_driver_data_case)
                         else:
                             pass
@@ -2019,125 +1675,35 @@ def handle_message(event):
                                 }
                                 }
                             # 新增規範
-                            if '上下車地點可討論' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "上下車地點可討論",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '不聊天' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "不聊天",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '嚴禁喝酒及抽菸' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "嚴禁喝酒及抽菸",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '禁食' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "禁食",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(3,r)
-                            if '謝絕寵物' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "謝絕寵物",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '寵物需裝籠' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "寵物需裝籠",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '已有司機' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "已有司機",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "color": "#ff5551",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '尚未有司機（徵求司機！）' in passenger_sheet[i][7]:
-                                if passenger_driver == '無':
+                            passenger_speci_set = ['上下車地點可討論', '不聊天', '嚴禁喝酒及抽菸', '禁食', '謝絕寵物', '寵物需裝籠']
+                            passenger_speci_red_set = ['已有司機', '尚未有司機（徵求司機！）', '叫車分攤費用', '※ 人滿才發車']
+                            for specification in passenger_speci_set:
+                                if specification in passenger_sheet[i][7]:
                                     r = {
-                                                "type": "text",
-                                                "text": "尚未有司機（徵求司機！）",
-                                                "size": "sm",
-                                                "margin": "none",
-                                                "color": "#ff5551",
-                                                "contents": [],
-                                                "offsetEnd": "none"
-                                            }
-                                    web_passenger_data_case['body']['contents'].insert(2,r)    
-                                else:
-                                    r = {
-                                                "type": "text",
-                                                "text": "已有司機！",
-                                                "size": "sm",
-                                                "margin": "none",
-                                                "color": "#ff5551",
-                                                "contents": [],
-                                                "offsetEnd": "none"
-                                            }
-                                    web_passenger_data_case['body']['contents'].insert(2,r)  
-                            if '叫車分攤費用' in passenger_sheet[i][7]:
-                                if passenger_driver == '無':
-                                    r = {
-                                                "type": "text",
-                                                "text": "叫車分攤費用",
-                                                "size": "sm",
-                                                "margin": "none",
-                                                "color": "#ff5551",
-                                                "contents": [],
-                                                "offsetEnd": "none"
-                                            }
-                                    web_passenger_data_case['body']['contents'].insert(2,r) 
+                                            "type": "text",
+                                            "text": specification,
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                    web_passenger_data_case['body']['contents'].insert(2,r)
                                 else:
                                     pass
-                            if '※ 人滿才發車' in passenger_sheet[i][7]:
-                                r = {
+                            for specification in passenger_speci_red_set:
+                                if specification in passenger_sheet[i][7]:
+                                    r = {
                                             "type": "text",
-                                            "text": "※ 人滿才發車",
+                                            "text": specification,
                                             "size": "sm",
                                             "margin": "none",
                                             "color": "#ff5551",
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
+                                    web_passenger_data_case['body']['contents'].insert(2,r)
+                                else:
+                                    pass
                             line_flex_json['contents'].append(web_passenger_data_case)   
                         # 使用者預約為司機
                         elif user_id in passenger_sheet[i][19]:
@@ -2305,126 +1871,36 @@ def handle_message(event):
                                 }
                             }
                             # 新增規範
-                            if '上下車地點可討論' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "上下車地點可討論",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '不聊天' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "不聊天",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '嚴禁喝酒及抽菸' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "嚴禁喝酒及抽菸",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '禁食' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "禁食",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(3,r)
-                            if '謝絕寵物' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "謝絕寵物",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '寵物需裝籠' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "寵物需裝籠",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '已有司機' in passenger_sheet[i][7]:
-                                r = {
-                                            "type": "text",
-                                            "text": "已有司機",
-                                            "size": "sm",
-                                            "margin": "none",
-                                            "color": "#ff5551",
-                                            "contents": [],
-                                            "offsetEnd": "none"
-                                        }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            if '尚未有司機（徵求司機！）' in passenger_sheet[i][7]:
-                                if passenger_driver == '無':
+                            passenger_speci_set = ['上下車地點可討論', '不聊天', '嚴禁喝酒及抽菸', '禁食', '謝絕寵物', '寵物需裝籠']
+                            passenger_speci_red_set = ['已有司機', '尚未有司機（徵求司機！）', '叫車分攤費用', '※ 人滿才發車']
+                            for specification in passenger_speci_set:
+                                if specification in passenger_sheet[i][7]:
                                     r = {
-                                                "type": "text",
-                                                "text": "尚未有司機（徵求司機！）",
-                                                "size": "sm",
-                                                "margin": "none",
-                                                "color": "#ff5551",
-                                                "contents": [],
-                                                "offsetEnd": "none"
-                                            }
-                                    web_passenger_data_case['body']['contents'].insert(2,r)    
-                                else:
-                                    r = {
-                                                "type": "text",
-                                                "text": "已有司機！",
-                                                "size": "sm",
-                                                "margin": "none",
-                                                "color": "#ff5551",
-                                                "contents": [],
-                                                "offsetEnd": "none"
-                                            }
-                                    web_passenger_data_case['body']['contents'].insert(2,r)  
-                            if '叫車分攤費用' in passenger_sheet[i][7]:
-                                if passenger_driver == '無':
-                                    r = {
-                                                "type": "text",
-                                                "text": "叫車分攤費用",
-                                                "size": "sm",
-                                                "margin": "none",
-                                                "color": "#ff5551",
-                                                "contents": [],
-                                                "offsetEnd": "none"
-                                            }
-                                    web_passenger_data_case['body']['contents'].insert(2,r) 
+                                            "type": "text",
+                                            "text": specification,
+                                            "size": "sm",
+                                            "margin": "none",
+                                            "contents": [],
+                                            "offsetEnd": "none"
+                                        }
+                                    web_passenger_data_case['body']['contents'].insert(2,r)
                                 else:
                                     pass
-                            if '※ 人滿才發車' in passenger_sheet[i][7]:
-                                r = {
+                            for specification in passenger_speci_red_set:
+                                if specification in passenger_sheet[i][7]:
+                                    r = {
                                             "type": "text",
-                                            "text": "※ 人滿才發車",
+                                            "text": specification,
                                             "size": "sm",
                                             "margin": "none",
                                             "color": "#ff5551",
                                             "contents": [],
                                             "offsetEnd": "none"
                                         }
-                                web_passenger_data_case['body']['contents'].insert(2,r)
-                            line_flex_json['contents'].append(web_passenger_data_case)                               
+                                    web_passenger_data_case['body']['contents'].insert(2,r)
+                                else:
+                                    pass
+                            line_flex_json['contents'].append(web_passenger_data_case)                              
                         else:
                             pass
                     else:
@@ -2678,7 +2154,7 @@ def handle_postbak(event):
                                 break
                             else:
                                 pass
-                            if passenger_user_id_check != 'Checked':
+                            if passenger_user_id_check != 'Checked' and passenger_Sure_name not in target_row[18]:
                                 line_bot_api.push_message(
                                     PushMessageRequest(
                                         to=passenger_user_id,
@@ -2699,6 +2175,15 @@ def handle_postbak(event):
                                     new_name = name+','+passenger_Sure_name
                                 passenger_sheet_id.update([[int(target_row[13])+1, new_id, new_name]], f'N{i+1}:P{i+1}')
                                 get_passenger_sheet_case()
+                            elif passenger_Sure_name in target_row[18]:
+                                line_bot_api.push_message(
+                                    PushMessageRequest(
+                                        to=passenger_user_id,
+                                        messages=[TextMessage(text='您已預約為司機！')]
+                                    )
+                                )
+                            else:
+                                pass
                         else:
                             line_bot_api.push_message(
                                 PushMessageRequest(
@@ -2716,15 +2201,23 @@ def handle_postbak(event):
                         # 獲取使用者資料
                         profile = line_bot_api.get_profile(passenger_user_id)
                         # 獲取使用者名稱        
-                        passenger_Sure_name=profile.display_name
-                        if target_row[18] == '':
+                        passenger_Sure_name = profile.display_name
+                        if target_row[18] == '' and passenger_Sure_name not in target_row[15]:
                             line_bot_api.push_message(
                                 PushMessageRequest(
                                     to=passenger_user_id,
                                     messages = [TextMessage(text=f'已幫您預約為司機，記得透過LineID聯繫活動發起人!\n發起人（乘客）名稱：\n{passenger_sheet[i][9]}\nLineID：{target_row[10]}\n手機號碼：{target_row[12]}')]
                                 )
                             )
-                            passenger_sheet_id.update([[passenger_Sure_name, passenger_user_id]], f'S{i+1}:T{i+1}')            
+                            passenger_sheet_id.update([[passenger_Sure_name, passenger_user_id]], f'S{i+1}:T{i+1}')     
+                            get_passenger_sheet_case()
+                        elif passenger_Sure_name in target_row[15]:
+                            line_bot_api.push_message(
+                                PushMessageRequest(
+                                    to=passenger_user_id,
+                                    messages = [TextMessage(text='您已預約為乘客！')]
+                                )
+                            )    
                         else:
                             line_bot_api.push_message(
                                 PushMessageRequest(
