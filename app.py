@@ -1557,7 +1557,7 @@ def handle_postbak(event):
                         line_bot_api.push_message(
                             PushMessageRequest(
                                 to=driver_user_id,
-                                messages = [TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n發起人（司機）名稱：{driver_sheet[i][9]}\nLineID：{driver_sheet[i][10]}\n手機號碼：{driver_sheet[i][13]}')]
+                                messages = [TextMessage(text=f'報名已經截止囉！時間未到的話也可嘗試聯絡活動發起人。\n發起人（司機）名稱：\n{driver_sheet[i][9]}\nLineID：{driver_sheet[i][10]}\n手機號碼：{driver_sheet[i][13]}')]
                             )
                         )        
             # 使用者在Confirm Template按下確定後，試算表的搭車人數將+1
