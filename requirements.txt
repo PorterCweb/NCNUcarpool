@@ -1,6 +1,6 @@
 Flask==2.3.3
 line-bot-sdk==3.16.3
-aiohttp==3.9.5
+aiohttp==3.10.11
 gunicorn==21.2.0
 gspread==5.12.0
 python-dotenv==1.0.0
