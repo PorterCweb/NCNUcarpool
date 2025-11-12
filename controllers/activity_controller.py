@@ -23,6 +23,7 @@ class ActivityController:
     
     def get_driver_activity(self, index: int) -> Optional[DriverActivity]:
         """取得特定司機活動"""
+        self.repository.refresh_driver_activities()
         return self.repository.get_driver_activity_by_index(index)
     
     def find_user_DriverActivities(self, user_id: str) -> List[DriverActivity]:
