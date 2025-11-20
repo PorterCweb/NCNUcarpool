@@ -11,7 +11,7 @@ from config import get_credentials_dict, SHEET_URL, DriverColumns, PassengerColu
 
 
 class ActivityRepository:
-    """活動資料存取層 - 實現 Repository Pattern + 智能快取"""
+    """活動資料存取層"""
     
     def __init__(self):
         credentials_dict = get_credentials_dict()
@@ -47,7 +47,12 @@ class ActivityRepository:
     
     def refresh_driver_activities(self, force: bool = False) -> List[List[str]]:
         """
-        重新載入司機表單資料（智能快取）
+        重新載入司機表單資料
+        
+        ※  盡量減少 force 的使用，因為有設置 cache 因此可以減少
+            API的使用次數，也能提升運行效率，若要使用 force 則要
+            注意是否有把 cache 刷新掉（導致快取並沒有寫上因此要
+            等30秒才自動刷新）
         
         Args:
             force: 是否強制刷新
@@ -220,8 +225,13 @@ class ActivityRepository:
     
     def refresh_passenger_activities(self, force: bool = False) -> List[List[str]]:
         """
-        重新載入乘客表單資料（智能快取）
+        重新載入乘客表單資料
         
+        ※  盡量減少 force 的使用，因為有設置 cache 因此可以減少
+            API的使用次數，也能提升運行效率，若要使用 force 則要
+            注意是否有把 cache 刷新掉（導致快取並沒有寫上因此要
+            等30秒才自動刷新）
+
         Args:
             force: 是否強制刷新
         

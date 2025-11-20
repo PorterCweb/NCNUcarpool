@@ -45,19 +45,6 @@ def callback():
     
     return 'OK'
 
-
-@app.route("/")
-def index():
-    """首頁端點"""
-    return "共乘阿穿 LINE Bot (MVC架構) 運行中"
-
-
-@app.route("/health")
-def health():
-    """健康檢查端點"""
-    return {"status": "healthy", "architecture": "MVC"}, 200
-
-
 # ==================== LINE Bot 事件處理器 ====================
 
 @line_handler.add(MessageEvent, message=TextMessageContent)

@@ -20,7 +20,7 @@ class ReservationController:
         """
         預約司機活動（乘客身份）
         
-        返回: (success, message, activity)
+        返回: (success, message)
         """
         # 刷新資料
         self.repository.refresh_driver_activities()
@@ -82,7 +82,7 @@ class ReservationController:
         """
         預約乘客活動（乘客身份）
         
-        返回: (success, message, activity)
+        返回: (success, message)
         """
         # 刷新資料
         self.repository.refresh_passenger_activities()

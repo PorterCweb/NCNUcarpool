@@ -9,7 +9,7 @@ from views.line_view import line_view
 import json
 
 class ActivityController:
-    """活動控制器 - 處理活動查詢邏輯"""
+    """處理活動查詢邏輯"""
     
     def __init__(self):
         self.repository = repository
